@@ -1,10 +1,13 @@
 <script setup>
 import { useUserStore } from '@/store/modules/user';
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onBeforeMount } from 'vue'
 import rq from '@/api/user/user'
 import { showFailToast } from 'vant';
+import { Loading } from 'vant';
 import 'vant/es/toast/style';
 import router from '@/router/index'
+import { getToken } from '@/utils/auth/auth';
+const userStore = useUserStore()
 const loginForm = reactive({
     username: '',
     passwords: ''
@@ -27,13 +30,19 @@ const onSubmit = (values) => {
                     const { data } = res
                     userStore.init(data)
                         .then(res => {
-                            router.replace({ path: '/mainPage' })
                             /*                             rq.getInfo(data)
-                                                            .then((res) => {
-                                                                userStore.initInfo(data).then((res) => {
-                                                                    router.redict({ path: '/mainPage' })
-                                                                })
+                                                            .then(res => {
+                                                                console.log('res: ', res)
+                                                                if (res.code == 200) {
+                                                                    userStore.initInfo(res.data)
+                                                                        .then(() => {
+                                                                            router.replace({ path: '/mainPage' })
+                                                                        })
+                                                                } else {
+                                                                    showFailToast('网络异常, 请稍后重试')
+                                                                }
                                                             }) */
+                            router.replace({ path: '/mainPage' })
                         })
                 } else {
                     showFailToast('网络异常, 请稍后重试')
@@ -42,19 +51,25 @@ const onSubmit = (values) => {
     }
 }
 
-const auth = () => {
-    let url = window.location.href
-    console.log('getUrl: ', url)
-    if (url) {
-        const access_token = url.split('#')[0].split('?')[1].split('=')[1]
-        console.log('getToken: ', access_token)
-        if (access_token) {
-
-        }
-    } else {
-        loadLogo()
-    }
+const init = () => {
+    const token = window.location.href.split('/?')[1].split('=')[1].split('#/')[0]
+    getUserInfo(token)
 }
+
+const getUserInfo = (token) => {
+    userStore.init(token)
+        .then(() => {
+            rq.getInfo(token)
+                .then((res) => {
+                    const info = Object.assign(res[0].data.userInfo, res[1].data)
+                    userStore.initInfo(info)
+                        .then(res => {
+                            router.push({ path: '/home' })
+                        })
+                })
+        })
+}
+
 
 // 跳转到找回密码页面
 const toFindPWd = () => {
@@ -67,13 +82,19 @@ const toRegister = () => {
 }
 
 onMounted(() => {
+    // auth()
     loadLogo()
+    init()
 })
 </script>
 
 <template>
     <div class="container">
-        <div class="cover">
+        <div>
+            <van-overlay :show="true">
+            </van-overlay>
+        </div>
+        <!--         <div class="cover">
             <van-image width="250" height="250" fit="cover" position="center" :src="logoSrc" />
         </div>
         <div class="content">
@@ -97,12 +118,11 @@ onMounted(() => {
                     </van-field>
                 </van-cell-group>
                 <div class="tools">
-                    <span class="greyFont" @click="toFindPWd"> 忘记密码? </span>
                     <van-button round block native-type="submit" class="button">登录</van-button>
-                    <span class="greyFont" @click="toRegister"> 注册 </span>
+                    <span class="greyFont" @click="toFindPWd"> 忘记密码? </span>
                 </div>
             </van-form>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -155,7 +175,7 @@ onMounted(() => {
 
     .loginForm {
         .tools {
-            height: 200px;
+            height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;

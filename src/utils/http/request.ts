@@ -29,6 +29,7 @@ service.interceptors.request.use(
         return config;
     },
     (error: AxiosError) => {
+        console.log('err: ', error)
         return Promise.reject(error);
     }
 );
@@ -43,15 +44,19 @@ service.interceptors.response.use(
         switch (code) {
             case 200:   // 成功码200
                 break;
-            case 1:     // 判断token过期的方法是? 
-                errMessage = '本次登录过期, 请重新登陆';
-                router.push('/login');
+            case 250:     // 判断token过期的code是? 
+                if (message === "登陆信息校验失败,请检查登陆状态" && !getToken()) {
+                    errMessage = '本次登录过期, 请重新登陆';
+                    showFailToast(errMessage)
+                    router.replace({ path: '/login?redirect=/' });
+                }
+                break;
+            case 302: // 请求重定向
                 break;
             default:
                 errMessage = message;
                 break;
         }
-        if (errMessage) showFailToast(errMessage);
         return response.data;
     },
     // 非2xx时触发

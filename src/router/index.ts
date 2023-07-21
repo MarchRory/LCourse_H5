@@ -3,6 +3,14 @@ import Layout from '@/components/layout/Layout.vue'
 export const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
+        name: 'welcome',
+        meta: {
+            title: 'welcome'
+        },
+        component: () => import('@/views/welcome/index.vue')
+    },
+    {
+        path: '/login',
         name: 'login',
         meta: {
             title: '登录',

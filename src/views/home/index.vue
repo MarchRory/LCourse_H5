@@ -1,15 +1,18 @@
 <script setup>
+import { onMounted } from 'vue';
 import { useUserStore } from '@/store/modules/user';
+import rq from '@/api/user/user'
 
-const quitLog = () => {
-    const useStore = useUserStore()
-    useStore.logOut()
-}
+onMounted(() => {
+
+})
+
+
 </script>
 
 <template>
     <div>
-        <van-button type="warning" @click="quitLog">警告按钮</van-button>
+
     </div>
 </template>
 

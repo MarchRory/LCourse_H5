@@ -2,9 +2,16 @@
 </script>
 
 <template>
-  <div>
+  <div id="app">
     <router-view />
   </div>
 </template>
 
-<style scoped></style>
+<style lang="less">
+@import '@/styles/common.less';
+
+#app {
+  padding: 0;
+  .container();
+}
+</style>

@@ -5,18 +5,29 @@ import router from '@/router'
 
 interface userInfo {
     token: string | undefined,
-    username: string | null,
-    stuId: number | null,
-    avatar: string | null
+    name: string | null,
+    sex: string | null,
+    studentId: number | null, // 学号
+    yibanId: number | null,
+    uId: number | null,        // 报名时候用的这个id
+    avatar: string | null,
+    enrollmentYear: string | null,   // 入学年份
+    contact: object | null
+
 }
 
 export const useUserStore = defineStore('userInfo', {
     state: (): userInfo => {
         return {
             token: getToken(),
-            username: null,
-            stuId: null,  //学号
+            name: null,
+            studentId: null,  //学号
             avatar: null,
+            yibanId: null,
+            uId: null,
+            enrollmentYear: null,
+            sex: null,
+            contact: null
         }
     },
     actions: {
@@ -33,22 +44,26 @@ export const useUserStore = defineStore('userInfo', {
         },
         initInfo(data: any) {
             return new Promise((resolve, reject) => {
-                const { userInfo } = data
-                this.username = userInfo.username
-                this.avatar = userInfo.avatar
+                this.name = data.name
+                this.studentId = data.studentId
+                this.avatar = data.avatar
+                this.yibanId = data.yibanId
+                this.uId = data.uId
+                this.enrollmentYear = data.enrollmentYear
+                this.sex = data.sex
+                this.contact = data.contact
                 resolve(true)
             })
         },
         clearState() {
-            this.username = null
-            this.stuId = null
-            this.avatar = null
+
         },
         logOut() {
             rq.logOut()
                 .then(() => {
                     this.clearToken()
                     this.clearState()
+                    useUserStore().$reset()
                     router.push({ path: '/login?redirect=/' })
                 })
         }

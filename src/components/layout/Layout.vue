@@ -3,17 +3,17 @@ import { ref } from 'vue'
 const tabbar = ref([
     {
         path: '/home',
-        icon: '',
+        icon: 'column',
         title: '首页'
     },
     {
         path: '/plan',
-        icon: '',
+        icon: 'cluster',
         title: '课程规划'
     },
     {
         path: '/user',
-        icon: '',
+        icon: 'setting',
         title: '个人中心'
     }
 ])
@@ -22,12 +22,12 @@ const tabbar = ref([
 
 <template>
     <div class="container">
-        <div class="layout">
+        <div class="main">
             <router-view />
         </div>
 
         <div>
-            <van-tabbar route>
+            <van-tabbar route safe-area-inset-top safe-area-inset-bottom inactive-color="#BEBAB3" active-color="#E3562A">
                 <van-tabbar-item replace v-for="(item, index) in tabbar" :key="index" :to="item.path" :icon="item.icon">
                     {{ item.title }}
                 </van-tabbar-item>
@@ -36,4 +36,18 @@ const tabbar = ref([
     </div>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+:deep(.van-tabbar) {
+    border-radius: 18px 18px 0px 0px;
+    box-sizing: border-box;
+    border: 2px solid #BEBAB3;
+    height: calc(var(--van-tabbar-height) + 8px);
+}
+
+.main {
+    width: 100vw;
+    height: calc(100vh - var(--van-tabbar-height));
+    margin-bottom: var(--van-tabbar-height);
+    overflow-y: auto;
+}
+</style>

@@ -18,20 +18,45 @@ export default {
             data
         })
     },
+    /**
+     * 
+     */
+    async yibanLogin(callback: string) {
+        return window.location.href = import.meta.env.VITE_APP_API_BASE_URL + `/user/yiban/login?callback=${callback}`
+    },
 
     /**
      * 通过token获取用户信息
      * @returns 
      */
     async getInfo(token: string) {
-        return await request({
-            url: '/user/info',
-            method: 'GET',
-            params: { token },
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
+        return await Promise.all([
+            request({
+                url: '/user/info',
+                method: 'GET',
+                params: { token },
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }),
+            request({
+                url: '/user/student/user',
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'swpu_token': token
+                }
+            })
+        ])
+
+        /*         return await request({
+                    url: '/user/info',
+                    method: 'GET',
+                    params: { token },
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }) */
     },
 
     /**

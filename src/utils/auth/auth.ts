@@ -7,9 +7,11 @@ export function getToken() {
 }
 
 export function setToken(token: string) {
+    localStorage.setItem(tokenKey, token)
     return Cookies.set(tokenKey, token)
 }
 
 export function removeToken() {
+    localStorage.removeItem(tokenKey)
     return Cookies.remove(tokenKey)
 }
