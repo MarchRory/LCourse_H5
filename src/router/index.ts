@@ -18,14 +18,6 @@ export const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/login/index.vue')
     },
     {
-        path: '/register',
-        name: 'register',
-        meta: {
-            title: '注册',
-        },
-        component: () => import('@/views/register/index.vue')
-    },
-    {
         path: '/mainPage',
         component: Layout,
         redirect: '/home',
@@ -86,7 +78,7 @@ export const routes: Array<RouteRecordRaw> = [
         path: '/detail',
         name: 'detail',
         meta: {
-            title: '可成详情'
+            title: '课程详情'
         },
         component: () => import('@/views/courseDetail/index.vue')
     },
@@ -94,7 +86,7 @@ export const routes: Array<RouteRecordRaw> = [
         path: '/command',
         name: 'command',
         meta: {
-            title: '可成评价'
+            title: '课程评价'
         },
         component: () => import('@/views/command/index.vue')
     },

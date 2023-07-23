@@ -1,8 +1,10 @@
 import router from "./router"
-import { getToken } from "./utils/auth/auth"
+import { getToken, setToken, removeToken } from "./utils/auth/auth"
 import NProgress from "nprogress"   // 路由加载时候的进度条
 
 NProgress.configure({ showSpinner: false })
+
+const authPath = import.meta.env.VITE_APP_API_BASE_URL + `/user/yiban/login?callback=${import.meta.env.VITE_APP_REDIRECT_PATH}`
 
 const whiteList = ['/', '/login']
 
@@ -10,15 +12,24 @@ router.beforeEach((to, from, next) => {
     NProgress.start()
     const hasToken = getToken()
     // 读取到token
-    if (hasToken && hasToken != 'undefined') {
-        next()
+    //debugger
+    if (hasToken) {
+        if (to.path === '/') {
+            next('/login')
+            NProgress.done()
+        }
     } else {  // 初次登录无 token 或者 token 过期
-        if (whiteList.indexOf(to.path) !== -1) {
-            next()
-        } else {
-            next(`/?redirect=${to.path}`)
+        if (whiteList.indexOf(to.path) != -1) {
+            let path = window.location.href
+            if (path.includes('?')) {
+                const token = window.location.href.split('?')[1].split('=')[1].split('#/')[0]
+                setToken(token)
+                NProgress.done()
+            }
+            //next(`/?redirect=${to.path}`)
         }
     }
+    next()
     NProgress.done()
 })
 

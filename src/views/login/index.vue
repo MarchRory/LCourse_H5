@@ -4,7 +4,6 @@ import { ref, reactive, onMounted, onBeforeMount } from 'vue'
 import rq from '@/api/user/user'
 import { showFailToast } from 'vant';
 import { Loading } from 'vant';
-import 'vant/es/toast/style';
 import router from '@/router/index'
 import { getToken } from '@/utils/auth/auth';
 const userStore = useUserStore()
@@ -64,7 +63,9 @@ const getUserInfo = (token) => {
                     const info = Object.assign(res[0].data.userInfo, res[1].data)
                     userStore.initInfo(info)
                         .then(res => {
-                            router.push({ path: '/home' })
+                            setTimeout(() => {
+                                router.replace({ path: '/home' })
+                            }, 800)
                         })
                 })
         })
@@ -92,6 +93,12 @@ onMounted(() => {
     <div class="container">
         <div>
             <van-overlay :show="true">
+                <van-loading color="#E3562A" size="100">
+                    <template #icon>
+                        <van-icon name="star-o" size="80" />
+                    </template>
+                    正在获取数据...
+                </van-loading>
             </van-overlay>
         </div>
         <!--         <div class="cover">
@@ -148,12 +155,26 @@ onMounted(() => {
     border: 0;
 }
 
+/**  loading  */
+:deep(.van-overlay) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .van-loading {
+        .flex-c-c {
+            flex-direction: column;
+        }
+    }
+}
+
 .container {
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
     padding: 0 16px;
+    height: 100vh;
 
     div {
         margin-bottom: 30px;

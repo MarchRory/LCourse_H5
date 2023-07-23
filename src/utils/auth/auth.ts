@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 const tokenKey = 'swpu_token'
 
 export function getToken() {
-    return Cookies.get(tokenKey)
+    return localStorage.getItem(tokenKey)
 }
 
 export function setToken(token: string) {

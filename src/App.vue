@@ -8,10 +8,13 @@
 </template>
 
 <style lang="less">
-@import '@/styles/common.less';
-
 #app {
   padding: 0;
-  .container();
+
+  .van-sticky--fixed {
+    background-color: white;
+    padding-top: 30px;
+    padding-bottom: 20px;
+  }
 }
 </style>

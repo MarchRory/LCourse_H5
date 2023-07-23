@@ -21,8 +21,8 @@ export default {
     /**
      * 
      */
-    async yibanLogin(callback: string) {
-        return window.location.href = import.meta.env.VITE_APP_API_BASE_URL + `/user/yiban/login?callback=${callback}`
+    async yibanLogin() {
+        return window.location.href = import.meta.env.VITE_APP_API_BASE_URL + `/user/yiban/login?callback=${import.meta.env.VITE_APP_REDIRECT_PATH}`
     },
 
     /**

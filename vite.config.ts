@@ -5,7 +5,7 @@ import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from 'unplugin-vue-components/resolvers'
 import AutoImport from 'unplugin-auto-import/vite'
 import { viteVConsole } from 'vite-plugin-vconsole'
-import path from 'path'
+import path, { resolve } from 'path'
 
 export default ({ command, mode }) => {
   // 获取环境变量
@@ -73,8 +73,8 @@ export default ({ command, mode }) => {
           javascriptEnabled: true,
           globalVars: {
             primary: '#fff'
-          }
-          /* additionalData: `@import "${resolve(__dirname, 'src/styles/index.less')}";`, */
+          },
+          additionalData: `@import "${resolve(__dirname, 'src/styles/variables.less')}";`,
         },
       },
     },

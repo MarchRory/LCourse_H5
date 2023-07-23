@@ -1,10 +1,15 @@
 <script setup>
+import { onMounted } from 'vue';
 import { useUserStore } from '@/store/modules/user';
-import { showConfirmDialog } from 'vant';
-import 'vant/es/dialog/style'
 const useStore = useUserStore()
 
 const checked = ref(false)
+
+onMounted(() => {
+
+})
+
+const avatar = ref(useStore.avatar)
 
 const userInfo = [
     { icon: 'manager', key: '姓名', content: useStore.name },
@@ -47,8 +52,7 @@ const handleSwitchChange = (value) => {
         </div> -->
         <div class="guide"> 个人中心 </div>
         <div class="avatar">
-            <van-image round width="8rem" height="8rem" fit="cover" position="center"
-                src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" />
+            <van-image round width="8rem" height="8rem" fit="cover" position="center" :src="avatar" />
         </div>
         <div class="infoBox" style="margin: 0 auto;">
             <div class="icon">

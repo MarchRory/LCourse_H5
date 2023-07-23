@@ -6,10 +6,10 @@ import router from '@/router'
 interface userInfo {
     token: string | undefined,
     name: string | null,
-    sex: string | null,
-    studentId: number | null, // 学号
-    yibanId: number | null,
-    uId: number | null,        // 报名时候用的这个id
+    sex: number | null,
+    studentId: string | null, // 学号
+    yiBanId: string | null,
+    uid: number | null,        // 报名时候用的这个id
     avatar: string | null,
     enrollmentYear: string | null,   // 入学年份
     contact: object | null
@@ -23,8 +23,8 @@ export const useUserStore = defineStore('userInfo', {
             name: null,
             studentId: null,  //学号
             avatar: null,
-            yibanId: null,
-            uId: null,
+            yiBanId: null,
+            uid: null,
             enrollmentYear: null,
             sex: null,
             contact: null
@@ -47,8 +47,8 @@ export const useUserStore = defineStore('userInfo', {
                 this.name = data.name
                 this.studentId = data.studentId
                 this.avatar = data.avatar
-                this.yibanId = data.yibanId
-                this.uId = data.uId
+                this.yiBanId = data.yiBanId
+                this.uid = data.uid
                 this.enrollmentYear = data.enrollmentYear
                 this.sex = data.sex
                 this.contact = data.contact

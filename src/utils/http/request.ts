@@ -1,7 +1,6 @@
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
 import type { Response } from './types';
 import { showFailToast } from 'vant';
-import 'vant/es/toast/style';
 import router from '@/router';
 import { getToken } from '../auth/auth';
 /**
