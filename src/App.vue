@@ -8,6 +8,9 @@
 </template>
 
 <style lang="less">
+body {
+  display: block;
+}
 #app {
   padding: 0;
 

@@ -32,6 +32,7 @@ export default {
     async getCourseDetail(curriculumId: number) {
         return await request({
             url: `/curriculum/detail/${curriculumId}`,
+
             method: 'GET',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

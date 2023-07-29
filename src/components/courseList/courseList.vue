@@ -48,6 +48,7 @@ export default {
                 .then((res: any) => {
                     if (res.code == 200) {
                         const { data } = res
+                        console.log(data)
                         this.total = data.total
                         if (this.categorycopy == this.category) {
                             data.list.forEach((element: any) => {
