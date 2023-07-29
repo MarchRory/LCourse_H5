@@ -7,7 +7,8 @@ export function getToken() {
 }
 
 export function setToken(token: string) {
-    return Cookies.set(tokenKey, token) && localStorage.setItem(tokenKey, token)
+    localStorage.setItem(tokenKey, token)
+    return Cookies.set(tokenKey, token)
 }
 
 export function removeToken() {

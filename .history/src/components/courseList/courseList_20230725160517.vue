@@ -17,7 +17,7 @@ export default {
         *}
         */
     },
-    setup(props) {
+    async setup(props) {
         const { category } = toRefs(props)
         return {
             category,

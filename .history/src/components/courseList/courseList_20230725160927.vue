@@ -36,6 +36,7 @@ export default {
                 finished: false
             },
             total: 0,
+            defaultCover: require('@/assets/defaultCover.jpg'),
             categorycopy: '',
         }
     },
@@ -102,7 +103,8 @@ export default {
                 <van-cell v-for="( course, index ) in  coursesList " :key="index" @click="openDetail(course.id)">
                     <div class="course">
                         <div>
-                            <van-image width="100%" height="230" fit="cover" lazy-load :src="course.cover" />
+                            <van-image width="100%" height="230" fit="cover" lazy-load
+                                :src="course.cover || defaultCover" />
                             <div class="category"> {{ course.scoringStandards }}</div>
                         </div>
                         <div class="timeRange">

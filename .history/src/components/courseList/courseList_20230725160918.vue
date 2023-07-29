@@ -36,6 +36,7 @@ export default {
                 finished: false
             },
             total: 0,
+            defaultCover: require('@/assets/defaultCover.jpg'),
             categorycopy: '',
         }
     },

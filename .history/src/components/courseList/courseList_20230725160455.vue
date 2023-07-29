@@ -17,10 +17,13 @@ export default {
         *}
         */
     },
-    setup(props) {
+    async setup(props) {
         const { category } = toRefs(props)
+        let logo = await import("@/assets/schoolLogo.jpg")
+        const defaultCover = logo.default
         return {
             category,
+            defaultCover
         }
     },
     data() {

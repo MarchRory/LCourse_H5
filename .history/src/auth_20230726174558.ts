@@ -1,7 +1,8 @@
+import { RouteLocationMatched } from "vue-router"
 import router from "./router"
 import { getToken, setToken, removeToken } from "./utils/auth/auth"
-import NProgress from "nprogress"   // 路由加载时候的进度条
 import getPageTitle from "./utils/pageTitle"
+import NProgress from "nprogress"   // 路由加载时候的进度条
 
 NProgress.configure({ showSpinner: false })
 

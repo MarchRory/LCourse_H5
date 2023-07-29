@@ -1,7 +1,7 @@
 import router from "./router"
 import { getToken, setToken, removeToken } from "./utils/auth/auth"
-import NProgress from "nprogress"   // 路由加载时候的进度条
 import getPageTitle from "./utils/pageTitle"
+import NProgress from "nprogress"   // 路由加载时候的进度条
 
 NProgress.configure({ showSpinner: false })
 
@@ -9,7 +9,7 @@ const authPath = import.meta.env.VITE_APP_API_BASE_URL + `/user/yiban/login?call
 
 const whiteList = ['/', '/login']
 
-router.beforeEach((to: any, from, next: Function) => {
+router.beforeEach((to, from, next) => {
     NProgress.start()
     document.title = getPageTitle(to.meta.title)
     const hasToken = getToken()
