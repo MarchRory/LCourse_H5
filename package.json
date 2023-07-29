@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite  --host 192.168.31.50",
+    "dev": "vite  --host 192.168.43.209",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue,.ts src --fix"
@@ -18,7 +18,7 @@
     "pinia": "^2.1.4",
     "pinia-plugin-persistedstate": "^3.1.0",
     "postcss-px-to-viewport-8-plugin": "^1.2.2",
-    "vant": "^4.6.2",
+    "vant": "^4.6.3",
     "vconsole": "^3.15.1",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
