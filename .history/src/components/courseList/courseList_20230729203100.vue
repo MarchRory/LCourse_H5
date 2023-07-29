@@ -7,7 +7,7 @@ export default {
     props: {
         category: {
             tyep: String,
-            default: null,
+            default: '',
             required: true
         },
         keywords: {
@@ -47,7 +47,7 @@ export default {
                 finished: false
             },
             total: 0,
-            categorycopy: '' as any,
+            categorycopy: '',
         }
     },
     methods: {
@@ -57,8 +57,7 @@ export default {
                     category: this.category,
                     title: this.keywords,
                     semesterId: this.userStore.semesterId,
-                    state: this.state,
-                    reviewed: 0,
+                    state:  
                 },
                 this.selectParams
             )

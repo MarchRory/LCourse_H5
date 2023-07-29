@@ -1,8 +1,8 @@
 import request from '@/utils/http/request'
 
 interface selectCourseParams {
-    title: string | null,       // 课程名关键字, 用于输入框搜索
-    category?: string | null,    // 课程标签关键字, 用于首页按照标签查找
+    title: string,       // 课程名关键字, 用于输入框搜索
+    category?: string,    // 课程标签关键字, 用于首页按照标签查找
     pageNum: number,
     pageSize: number,
     semesterId: number | null,  // 学期id
@@ -20,7 +20,6 @@ export default {
      * @returns 
      */
     async getCourses(params: selectCourseParams) {
-        params.title = params.title == '' ? null : params.title;
         return await request({
             url: '/curriculum/selectCoursePage',
             method: "GET",

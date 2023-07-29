@@ -58,7 +58,18 @@ export const useUserStore = defineStore('userInfo', {
             })
         },
         clearState() {
-
+            return {
+                token: undefined,
+                name: null,
+                studentId: null,
+                avatar: null,
+                yiBanId: null,
+                uid: null,
+                enrollmentYear: null,
+                sex: null,
+                contact: null,
+                semesterId: null
+            }
         },
         logOut() {
             rq.logOut()

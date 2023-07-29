@@ -2,22 +2,17 @@
 import { toRefs } from 'vue';
 import rqCourse from '../../api/courses/courses'
 import router from '@/router';
-import { useUserStore } from '@/store/modules/user';
 export default {
     props: {
         category: {
             tyep: String,
-            default: null,
+            default: '',
             required: true
         },
         keywords: {
             type: String,
             default: ''
         },
-        state: {
-            type: Number,
-            default: 2
-        }
         /*  学期Id
         *semesterId: {
         *    type: [Number, String],
@@ -28,10 +23,8 @@ export default {
     },
     setup(props) {
         const { category } = toRefs(props)
-        const userStore = useUserStore()
         return {
             category,
-            userStore
         }
     },
     data() {
@@ -47,27 +40,19 @@ export default {
                 finished: false
             },
             total: 0,
-            categorycopy: '' as any,
+            categorycopy: '',
         }
     },
     methods: {
         loadList() {
-            let params = Object.assign(
-                {
-                    category: this.category,
-                    title: this.keywords,
-                    semesterId: this.userStore.semesterId,
-                    state: this.state,
-                    reviewed: 0,
-                },
-                this.selectParams
-            )
+            let params = Object.assign({ keyWords: this.category }, this.selectParams)
             this.loadStatus.loading = true
             this.loadStatus.finished = false
             rqCourse.getCourses(params)
                 .then((res: any) => {
                     if (res.code == 200) {
                         const { data } = res
+                        console.log(data)
                         this.total = data.total
                         if (this.categorycopy == this.category) {
                             data.list.forEach((element: any) => {
@@ -79,8 +64,6 @@ export default {
                         }
                         if (this.coursesList.length === this.total) {
                             this.loadStatus.finished = true
-                        } else {
-                            this.selectParams.pageNum++
                         }
                     } else {
                         this.loadStatus.error = true
@@ -90,6 +73,7 @@ export default {
                 })
         },
         openDetail(courseId: number | string) {
+            console.log('couseId: ', courseId)
             const query = { courseId: courseId }
             router.push({ path: '/detail', query })
         }

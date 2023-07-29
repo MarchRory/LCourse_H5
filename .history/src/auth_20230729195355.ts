@@ -32,8 +32,8 @@ router.beforeEach((to: any, from, next: Function) => {
             }
             //next(`/?redirect=${to.path}`)
         }
-        next()
     }
+    next()
     NProgress.done()
 })
 

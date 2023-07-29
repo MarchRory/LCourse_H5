@@ -47,7 +47,7 @@ export default {
                 finished: false
             },
             total: 0,
-            categorycopy: '' as any,
+            categorycopy: '',
         }
     },
     methods: {

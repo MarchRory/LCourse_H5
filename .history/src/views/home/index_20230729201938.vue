@@ -2,7 +2,6 @@
 import { onMounted } from "vue";
 import { useUserStore } from "@/store/modules/user/index";
 import rqUser from "@/api/user/user";
-import rqS from '@/api/semester/semester'
 import { defineAsyncComponent } from "vue";
 import { get } from "vant/lib/utils";
 import router from "@/router/index";
@@ -43,11 +42,7 @@ const tags = reactive([
 ]);
 
 onMounted(() => {
-  rqS.getSemesterNow().then((res) => {
-    if (res.code == 200) {
-      userStore.setSemesterId(res.data.id)
-    }
-  })
+
 })
 
 const searchTag = (key, index) => {

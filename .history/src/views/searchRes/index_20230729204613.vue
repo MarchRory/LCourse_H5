@@ -49,11 +49,11 @@ import { ref } from "vue";
 import rq from "@/api/courses/courses";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
-import defaultCover from '@/assets/imgs/Cool-Kids-Discussion.png'
 var pageNum = ref(0)
 const userStore = useUserStore()
 const searchVal = ref(""); //搜索框绑定值
 const isFound = ref(false); //是否搜索到状态
+const defaultCover = ref('../../assets/imgs/Cool-Kids-Discussion.png')
 const isSearch = ref(false); //是否搜索
 let resultsArr: any = ref([]); //搜索结果数组
 const router = useRouter();

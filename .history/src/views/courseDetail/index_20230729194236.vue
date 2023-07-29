@@ -42,10 +42,10 @@ const router = useRouter();
 const route = useRoute();
 const courseId = ref(Number(route.query.courseId));
 const isSignUp = computed(() => {
-  return JSON.parse(route.query.isSignUp as any);
+  return JSON.parse(route.query.isSignUp);
 });
 
-const detailsObj: any = ref({});
+const detailsObj = ref({});
 const getDetails = () => {
   rq.getCourseDetail(courseId.value).then((res: any) => {
     if (res.code == 200) {

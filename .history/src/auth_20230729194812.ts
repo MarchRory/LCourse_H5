@@ -14,13 +14,13 @@ router.beforeEach((to: any, from, next: Function) => {
     document.title = getPageTitle(to.meta.title)
     const hasToken = getToken()
     // 读取到token
+    //debugger
     if (hasToken) {
         if (to.path === '/') {
             next('/login')
             NProgress.done()
         } else {
             next()
-            NProgress.done()
         }
     } else {  // 初次登录无 token 或者 token 过期
         if (whiteList.indexOf(to.path) != -1) {
@@ -32,8 +32,8 @@ router.beforeEach((to: any, from, next: Function) => {
             }
             //next(`/?redirect=${to.path}`)
         }
-        next()
     }
+    next()
     NProgress.done()
 })
 

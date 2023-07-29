@@ -7,7 +7,7 @@ export default {
     props: {
         category: {
             tyep: String,
-            default: null,
+            default: '',
             required: true
         },
         keywords: {
@@ -47,7 +47,7 @@ export default {
                 finished: false
             },
             total: 0,
-            categorycopy: '' as any,
+            categorycopy: '',
         }
     },
     methods: {

@@ -7,17 +7,13 @@ export default {
     props: {
         category: {
             tyep: String,
-            default: null,
+            default: '',
             required: true
         },
         keywords: {
             type: String,
             default: ''
         },
-        state: {
-            type: Number,
-            default: 2
-        }
         /*  学期Id
         *semesterId: {
         *    type: [Number, String],
@@ -47,21 +43,12 @@ export default {
                 finished: false
             },
             total: 0,
-            categorycopy: '' as any,
+            categorycopy: '',
         }
     },
     methods: {
         loadList() {
-            let params = Object.assign(
-                {
-                    category: this.category,
-                    title: this.keywords,
-                    semesterId: this.userStore.semesterId,
-                    state: this.state,
-                    reviewed: 0,
-                },
-                this.selectParams
-            )
+            let params = Object.assign({ category: this.category, title: this.keywords }, this.selectParams)
             this.loadStatus.loading = true
             this.loadStatus.finished = false
             rqCourse.getCourses(params)

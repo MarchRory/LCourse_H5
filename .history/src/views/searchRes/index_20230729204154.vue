@@ -6,7 +6,7 @@
           <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
         </div>
         <div class="search-box">
-          <input v-model="searchVal" class="search-ipt" type="text" placeholder="输入课程名关键词查询课程" />
+          <input v-model="searchVal" class="search-ipt" type="text" placeholder="输入课程名关键词查询" />
           <img @click="searchBtn" class="search-icon" src="../../assets/imgs/Search-Icon.png" alt="" />
         </div>
       </div>
@@ -15,13 +15,13 @@
     <div v-if="isFound" class="results-content">
       <div class="title">
         <span>{{ resultsArr.length }}</span>
-        <span>个搜索结果</span>
+        <span>Results</span>
       </div>
       <ul class="results-list">
         <li @click="toDetailsBnt(v.id, v.isSignUp)" class="list-item" v-for="(v, i) in resultsArr" :key="i">
           <div class="item-top">
-            <img class="item-img" :src="v.cover || defaultCover" alt="" />
-            <div class="item-top-label">{{ v.pointsRules }}</div>
+            <img class="item-img" src="../../assets/imgs/Cool-Kids-Discussion.png" alt="" />
+            <div class="item-top-label">{{ v.scoringStandards }}</div>
           </div>
           <div class="item-bottom">
             <p class="time">
@@ -49,11 +49,11 @@ import { ref } from "vue";
 import rq from "@/api/courses/courses";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
-import defaultCover from '@/assets/imgs/Cool-Kids-Discussion.png'
 var pageNum = ref(0)
 const userStore = useUserStore()
 const searchVal = ref(""); //搜索框绑定值
 const isFound = ref(false); //是否搜索到状态
+
 const isSearch = ref(false); //是否搜索
 let resultsArr: any = ref([]); //搜索结果数组
 const router = useRouter();
@@ -93,6 +93,7 @@ const searchBtn = () => {
             pageNum.value++
           }
           isFound.value = true;
+          searchVal.value = "";
         }
       }
     });

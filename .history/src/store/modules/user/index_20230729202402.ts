@@ -68,9 +68,6 @@ export const useUserStore = defineStore('userInfo', {
                     useUserStore().$reset()
                     router.push({ path: '/login?redirect=/' })
                 })
-        },
-        setSemesterId(id: number) {
-            this.semesterId = id
         }
     },
     getters: {

@@ -14,6 +14,7 @@ router.beforeEach((to: any, from, next: Function) => {
     document.title = getPageTitle(to.meta.title)
     const hasToken = getToken()
     // 读取到token
+    debugger
     if (hasToken) {
         if (to.path === '/') {
             next('/login')
@@ -32,8 +33,8 @@ router.beforeEach((to: any, from, next: Function) => {
             }
             //next(`/?redirect=${to.path}`)
         }
-        next()
     }
+    next()
     NProgress.done()
 })
 
