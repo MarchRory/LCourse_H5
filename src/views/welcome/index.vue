@@ -1,16 +1,16 @@
 <script setup>
-import { onMounted } from 'vue'
-import rq from '@/api/user/user'
-import router from '@/router/index'
-import { getToken } from "@/utils/auth/auth"
+import { onMounted } from "vue";
+import rq from "@/api/user/user";
+import router from "@/router/index";
+import { getToken } from "@/utils/auth/auth";
 
 onMounted(() => {
-    if (!getToken()) {
-        rq.yibanLogin()
-    } else {
-        router.push({ path: '/login' })
-    }
-})
+  if (!getToken()) {
+    rq.yibanLogin();
+  } else {
+    router.push({ path: "/login" });
+  }
+});
 </script>
 
 <template></template>

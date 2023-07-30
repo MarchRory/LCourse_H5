@@ -12,7 +12,7 @@
       <van-cell title="信息修改" is-link value="去修改" @click="open" />
     </van-cell-group>
     <van-cell-group title="课程信息">
-      <van-cell title="我的课程" value="" is-link />
+      <van-cell title="我的课程" value="" is-link @click="toUserCourse" />
       <van-cell title="我的目标" value="" is-link />
     </van-cell-group>
     <van-action-sheet
@@ -48,6 +48,9 @@ const userStore = useUserStore();
 const userInfo = ref(userStore);
 const open = () => {
   show.value = true;
+};
+const toUserCourse = () => {
+  router.push({ name: "UserCourse" });
 };
 const toChangeUserInfo = () => {
   router.push({ name: "UserInfo" });
