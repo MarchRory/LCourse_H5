@@ -1,0 +1,80 @@
+<template>
+  <div>
+    <van-nav-bar
+      title="个人信息修改"
+      left-text="返回"
+      left-arrow
+      @click-left="onClickLeft"
+    />
+    <van-form @submit="onSubmit">
+      <van-cell-group inset>
+        <van-field name="uploader" label="头像">
+          <template #input>
+            <van-uploader
+              v-model="files"
+              :after-read="afterRead"
+              :before-read="beforeRead"
+              :max-count="1"
+            >
+              <van-image width="60" height="60" :src="avatar" />
+            </van-uploader>
+          </template>
+        </van-field>
+        <van-field
+          v-model="nickname"
+          name="昵称"
+          label="昵称"
+          placeholder="用户名"
+          :rules="[{ required: true, message: '请填写用户名' }]"
+        />
+      </van-cell-group>
+      <div style="margin: 16px">
+        <van-button round block type="warning" native-type="submit">
+          提交
+        </van-button>
+      </div>
+    </van-form>
+  </div>
+</template>
+
+<script setup>
+import { useUserStore } from "@/store/modules/user";
+import upload from "@/api/upload/upload.ts";
+import userApi from "@/api/user/user.ts";
+import { showToast, Toast } from "vant";
+
+const router = useRouter();
+const userStore = useUserStore();
+const files = ref([]);
+const nickname = ref(userStore.name);
+const avatar = ref(userStore.avatar);
+const afterRead = (file) => {
+  upload.setAvatar(file.file).then((res) => {
+    avatar.value = res.data;
+  });
+};
+const beforeRead = (file) => {
+  if (file.type !== "image/jpeg") {
+    Toast("请上传 jpg 格式图片");
+    return false;
+  }
+  return true;
+};
+const onSubmit = () => {
+  userApi
+    .updateUser({
+      id: userStore.uid,
+      nickname: nickname.value,
+      avatar: avatar.value,
+    })
+    .then((res) => {
+      showToast(res.message);
+      userStore.avatar = avatar.value;
+    });
+};
+const onClickLeft = () => {
+  router.back();
+};
+</script>
+
+<style scoped></style>
