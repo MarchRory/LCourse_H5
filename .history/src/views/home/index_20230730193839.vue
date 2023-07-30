@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useUserStore } from "@/store/modules/user/index";
+import rqUser from "@/api/user/user";
 import rqS from '@/api/semester/semester'
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
 const courseCategory = ref("");
+// console.log(courseCategory)
 const searchBar = defineAsyncComponent(() =>
   import("@/components/searchBar/searchBar.vue")
 );
@@ -36,6 +38,8 @@ const tags = reactive([
     key: "其他方式劳动",
   },
 ]);
+const showCenter = ref(true)
+const signCode = ref('')
 
 onMounted(() => {
   rqS.getSemesterNow().then((res: any) => {
@@ -58,6 +62,10 @@ const toSearchBtn = () => {
 /* const scanQR = () => {
   router.push({ path: '/scan/scanQR' })
 } */
+
+const sign = () => {
+  showCenter.value = true
+}
 </script>
 
 <template>
@@ -75,7 +83,7 @@ const toSearchBtn = () => {
             </div>
           </div>
           <div class="tools">
-            <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
+            <van-icon name="scan" size="25" @click="sign" />
           </div>
         </div>
         <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
@@ -103,6 +111,21 @@ const toSearchBtn = () => {
     <div>
       <course-list :category="courseCategory" />
     </div>
+
+    <van-popup v-model:show="showCenter" round :style="{ padding: '64px' }">
+      <div class="signBox">
+        <div class="signTitle">
+          签到码签到
+        </div>
+        <div class="inputArea">
+          <van-field v-model="signCode" size="large" type="text" label="签到码" />
+        </div>
+        <div class="tools">
+          <div>取消</div>
+          <div>签到</div>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -137,7 +160,7 @@ const toSearchBtn = () => {
       border-radius: 50%;
       width: 90px;
       height: 90px;
-      //border: 2px solid #bebab3;
+      border: 2px solid #bebab3;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -171,5 +194,30 @@ const toSearchBtn = () => {
       }
     }
   }
+
+  .signBox {
+    width: 300px;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    .signTitle {
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    .inputArea {
+      :deep(.van-field) {
+        flex-wrap: wrap;
+        border: 2px solid black;
+        padding: 10px 15px;
+        width: 230px;
+        border-radius: 10px;
+      }
+    }
+  }
+
 }
 </style>

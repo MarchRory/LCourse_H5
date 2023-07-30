@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useUserStore } from "@/store/modules/user/index";
+import rqUser from "@/api/user/user";
 import rqS from '@/api/semester/semester'
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
+import { showFailToast } from "vant";
 const courseCategory = ref("");
+// console.log(courseCategory)
 const searchBar = defineAsyncComponent(() =>
   import("@/components/searchBar/searchBar.vue")
 );
@@ -36,6 +39,8 @@ const tags = reactive([
     key: "其他方式劳动",
   },
 ]);
+const showCenter = ref(true)
+const signCode = ref('')
 
 onMounted(() => {
   rqS.getSemesterNow().then((res: any) => {
@@ -58,6 +63,18 @@ const toSearchBtn = () => {
 /* const scanQR = () => {
   router.push({ path: '/scan/scanQR' })
 } */
+
+const sign = () => {
+  if (!signCode.value) {
+    showFailToast('还没有输入签到码哦')
+  }
+  showCenter.value = true
+}
+
+const close = () => {
+  signCode.value = ''
+  showCenter.value = false
+}
 </script>
 
 <template>
@@ -75,7 +92,7 @@ const toSearchBtn = () => {
             </div>
           </div>
           <div class="tools">
-            <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
+            <van-icon name="scan" size="25" @click="sign" />
           </div>
         </div>
         <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
@@ -103,6 +120,21 @@ const toSearchBtn = () => {
     <div>
       <course-list :category="courseCategory" />
     </div>
+
+    <van-popup v-model:show="showCenter" round :style="{ padding: '64px' }" :transition-appear="true">
+      <div class="signBox">
+        <div class="signTitle">
+          签到码签到
+        </div>
+        <div class="inputArea">
+          <van-field v-model="signCode" size="large" type="text" label="签到码" />
+        </div>
+        <div class="tools">
+          <div @click="close">取消</div>
+          <div class="signUp" @click="sign">签到</div>
+        </div>
+      </div>
+    </van-popup>
   </div>
 </template>
 
@@ -137,7 +169,7 @@ const toSearchBtn = () => {
       border-radius: 50%;
       width: 90px;
       height: 90px;
-      //border: 2px solid #bebab3;
+      border: 2px solid #bebab3;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -171,5 +203,62 @@ const toSearchBtn = () => {
       }
     }
   }
+
+  .signBox {
+    width: 280px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    .signTitle {
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    .inputArea {
+      :deep(.van-field) {
+        flex-wrap: wrap;
+        border: 1px solid #f7a660;
+        //padding: 20px 25px;
+        width: 400px;
+        border-radius: 10px;
+
+        .van-field__label {
+          width: 130px;
+          border-right: 2px solid #efbf81;
+        }
+
+        #van-field-1-label {
+          color: #f79823;
+        }
+      }
+    }
+
+    .tools {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      border-top: 2px solid rgb(243, 139, 60);
+      position: relative;
+      top: 115px;
+
+      div {
+        padding: 20px;
+        width: 215px;
+        font-weight: 600;
+        letter-spacing: 5px;
+        font-size: 35px;
+      }
+
+      .signUp {
+        color: white;
+        background-color: #fba665;
+      }
+    }
+  }
+
 }
 </style>

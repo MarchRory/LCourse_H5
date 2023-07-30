@@ -6,7 +6,6 @@ import { defineAsyncComponent } from 'vue'
 import rq from '@/api/courses/courses'
 import { showSuccessToast } from 'vant';
 import resPic from '@/assets/imgs/commentRes.gif'
-import router from '@/router';
 const backBtn = defineAsyncComponent(
     () => import('@/components/backButton/backButton.vue')
 )
@@ -29,9 +28,6 @@ const submit = () => {
         }).then((res: any) => {
             if (res.code == 200) {
                 showSuccessToast('课程评价成功');
-                router.go(-1)
-            } else {
-                showFailToast(res.message)
             }
         })
     } else {

@@ -1,10 +1,13 @@
-<script setup lang="ts">
+<script setup>
 import { onMounted } from "vue";
 import { useUserStore } from "@/store/modules/user/index";
+import rqUser from "@/api/user/user";
 import rqS from '@/api/semester/semester'
 import { defineAsyncComponent } from "vue";
+import { get } from "vant/lib/utils";
 import router from "@/router/index";
 const courseCategory = ref("");
+// console.log(courseCategory)
 const searchBar = defineAsyncComponent(() =>
   import("@/components/searchBar/searchBar.vue")
 );
@@ -14,6 +17,7 @@ const courseList = defineAsyncComponent(() =>
 const userStore = useUserStore();
 const keyWords = ref("");
 const chosenTagIndex = ref(0);
+const coursesList = reactive(new Array());
 const tags = reactive([
   {
     tag: "全部",
@@ -38,14 +42,14 @@ const tags = reactive([
 ]);
 
 onMounted(() => {
-  rqS.getSemesterNow().then((res: any) => {
+  rqS.getSemesterNow().then((res) => {
     if (res.code == 200) {
       userStore.setSemesterId(res.data.id)
     }
   })
 })
 
-const searchTag = (key: string, index: number) => {
+const searchTag = (key, index) => {
   chosenTagIndex.value = index;
   courseCategory.value = key;
 };
@@ -58,6 +62,10 @@ const toSearchBtn = () => {
 /* const scanQR = () => {
   router.push({ path: '/scan/scanQR' })
 } */
+
+const sign = () => {
+
+}
 </script>
 
 <template>
@@ -75,7 +83,7 @@ const toSearchBtn = () => {
             </div>
           </div>
           <div class="tools">
-            <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
+            <van-icon name="scan" size="25" @click="sign" />
           </div>
         </div>
         <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
@@ -137,7 +145,7 @@ const toSearchBtn = () => {
       border-radius: 50%;
       width: 90px;
       height: 90px;
-      //border: 2px solid #bebab3;
+      border: 2px solid #bebab3;
       display: flex;
       align-items: center;
       justify-content: center;

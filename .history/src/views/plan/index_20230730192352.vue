@@ -45,7 +45,7 @@ const openObject = (id: number) => {
                     <div>
                         <van-progress v-if="obj.fixRestrictions" :pivot-text="`${(5 / obj.fixRestrictions) * 100}%`"
                             color="#E3562A" :percentage="(5 / obj.fixRestrictions) * 100" />
-                        <div v-else style="color: #bbbbba;">该目标暂时没有设置修读要求</div>
+                        <div v-else style="color: #bbbbba;">该目标暂时没有设置课程</div>
                     </div>
                 </div>
             </div>

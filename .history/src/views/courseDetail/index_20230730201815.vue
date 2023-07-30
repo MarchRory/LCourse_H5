@@ -5,10 +5,6 @@
         <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
       </div>
       <h1>{{ detailsObj.title }}</h1>
-
-      <div class="tools" @click="showCenter = true">
-        <van-icon name="edit" size="25" />
-      </div>
     </div>
 
     <div class="img-box">
@@ -58,10 +54,10 @@ import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import rq from "@/api/courses/courses";
 import { showToast } from "vant";
-import { showFailToast, showSuccessToast } from "vant/es";
+import { showFailToast } from "vant/es";
 const router = useRouter();
 const route = useRoute();
-const showCenter = ref(false)
+const showCenter = ref(true)
 const signCode = ref('')
 const courseId = ref(Number(route.query.courseId));
 const isSignUp = computed(() => {
@@ -98,19 +94,6 @@ const sign = () => {
     showFailToast('还没有输入签到码哦')
     return;
   }
-  rq.sign({
-    courseId: Number(route.query.courseId),
-    code: signCode.value
-  }).then((res: any) => {
-    if (res.code == 200) {
-      if (res.code == 200) {
-        showSuccessToast('签到成功')
-        router.push({ path: '/command', query: { couseId: Number(route.query.courseId) } })
-      } else {
-        showFailToast(res.message)
-      }
-    }
-  })
 
 }
 
@@ -210,18 +193,6 @@ const close = () => {
 
       font-weight: normal;
       color: #3c3a36;
-    }
-
-    .tools {
-      border-radius: 50%;
-      position: relative;
-      left: 74%;
-      width: 90px;
-      height: 90px;
-      border: 2px solid #bebab3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
 

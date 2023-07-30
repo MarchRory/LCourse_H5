@@ -1,58 +1,54 @@
 <script lang="ts">
-import { toRefs } from "vue";
-import rqCourse from "../../api/courses/courses";
-import router from "@/router";
-import { useUserStore } from "@/store/modules/user";
+import { toRefs } from 'vue';
+import rqCourse from '../../api/courses/courses'
+import router from '@/router';
+import { useUserStore } from '@/store/modules/user';
 export default {
     props: {
         category: {
             tyep: String,
-            default: null,
-            required: true,
+            default: '',
+            required: true
         },
         keywords: {
             type: String,
-            default: "",
+            default: ''
         },
         state: {
             type: Number,
-            default: 2,
-        },
-        userType: {
-            type: Number,
-            default: 0,
-        },
+            default: 2
+        }
     },
     setup(props) {
         const { category } = toRefs(props);
         const userStore = useUserStore();
-        const defaultCover = ref("");
+        const defaultCover = ref('');
         (async () => {
-            let dc = await import("@/assets/imgs/Cool-Kids-Discussion.png");
-            defaultCover.value = dc.default;
-        })();
+            let dc = await import('@/assets/imgs/Cool-Kids-Discussion.png')
+            defaultCover.value = dc.default
+        })()
 
         return {
             category,
             userStore,
-            defaultCover,
-        };
+            defaultCover
+        }
     },
     data() {
         return {
             coursesList: [] as any,
             selectParams: {
                 pageNum: 1,
-                pageSize: 15,
+                pageSize: 15
             },
             loadStatus: {
                 loading: false,
                 error: false,
-                finished: false,
+                finished: false
             },
             total: 0,
-            categorycopy: "" as any,
-        };
+            categorycopy: '' as any,
+        }
     },
     methods: {
         loadList() {
@@ -62,61 +58,61 @@ export default {
                     title: this.keywords,
                     semesterId: this.userStore.semesterId,
                     state: this.state,
-                    usertype: this.userType,
                     reviewed: 0,
                 },
-                this.selectParams,
-            );
-            this.loadStatus.loading = true;
-            this.loadStatus.finished = false;
-            rqCourse
-                .getCourses(params)
+                this.selectParams
+            )
+            this.loadStatus.loading = true
+            this.loadStatus.finished = false
+            rqCourse.getCourses(params)
                 .then((res: any) => {
                     if (res.code == 200) {
-                        const { data } = res;
-                        this.total = data.total;
+                        const { data } = res
+                        this.total = data.total
                         if (this.categorycopy == this.category) {
                             data.list.forEach((element: any) => {
-                                this.coursesList.push(element);
+                                this.coursesList.push(element)
                             });
                         } else {
-                            this.coursesList = data.list;
-                            this.categorycopy = this.category;
+                            this.coursesList = data.list
+                            this.categorycopy = this.category
                         }
                         if (this.coursesList.length === this.total) {
-                            this.loadStatus.finished = true;
+                            this.loadStatus.finished = true
                         } else {
-                            this.selectParams.pageNum++;
+                            this.selectParams.pageNum++
                         }
                     } else {
-                        this.loadStatus.error = true;
+                        this.loadStatus.error = true
                     }
+                }).finally(() => {
+                    this.loadStatus.loading = false
                 })
-                .finally(() => {
-                    this.loadStatus.loading = false;
-                });
         },
         openDetail(courseId: number | string) {
-            const query = { courseId: courseId };
-            router.push({ path: "/detail", query });
-        },
+            const query = { courseId: courseId }
+            router.push({ path: '/detail', query })
+        }
     },
     watch: {
         category: {
             handler(newVal, oldVal) {
-                if (newVal || newVal == "") {
-                    this.categorycopy = oldVal;
-                    this.loadList();
+                if (newVal || newVal == '') {
+                    this.categorycopy = oldVal
+                    this.loadList()
                 }
             },
-            immediate: true,
-        },
-    },
-};
+            immediate: true
+        }
+    }
+}
 
 // 组件对外发送事件
 /* type Emits = {
 } */
+
+
+
 </script>
 
 <template>
@@ -124,12 +120,12 @@ export default {
         <div class="list">
             <van-list v-model:loading="loadStatus.loading" :finished="loadStatus.finished" v-model:error="loadStatus.error"
                 error-text="请求失败，点击重新加载" finished-text="没有更多了" @load="loadList">
-                <van-cell v-for="(course, index) in coursesList" :key="index" @click="openDetail(course.id)">
+                <van-cell v-for="( course, index ) in  coursesList " :key="index" @click="openDetail(course.id)">
                     <div class="course">
                         <div>
                             <van-image width="100%" height="230" fit="cover" lazy-load
                                 :src="course.cover || defaultCover" />
-                            <div class="category">{{ course.pointsRules }}</div>
+                            <div class="category"> {{ course.pointsRules }}</div>
                         </div>
                         <div class="timeRange">
                             {{ course.hostingStart }} 至 {{ course.hostingEnd }}
@@ -160,7 +156,7 @@ export default {
         position: absolute;
         padding: 3px 20px;
         border-radius: 27px;
-        background-color: #65aaea;
+        background-color: #65AAEA;
         color: white;
         left: 61%;
         top: 60%;
@@ -175,7 +171,7 @@ export default {
     }
 
     .timeRange {
-        color: #5ba092;
+        color: #5BA092;
     }
 
     .title {
