@@ -5,6 +5,7 @@ import rqS from '@/api/semester/semester'
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
 const courseCategory = ref("");
+// console.log(courseCategory)
 const searchBar = defineAsyncComponent(() =>
   import("@/components/searchBar/searchBar.vue")
 );

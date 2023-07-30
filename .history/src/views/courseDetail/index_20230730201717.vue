@@ -5,10 +5,6 @@
         <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
       </div>
       <h1>{{ detailsObj.title }}</h1>
-
-      <div class="tools" @click="showCenter = true">
-        <van-icon name="edit" size="25" />
-      </div>
     </div>
 
     <div class="img-box">
@@ -34,22 +30,6 @@
         立即报名
       </van-button>
     </div>
-
-
-    <van-popup v-model:show="showCenter" round :style="{ padding: '64px' }" :transition-appear="true">
-      <div class="signBox">
-        <div class="signTitle">
-          签到码签到
-        </div>
-        <div class="inputArea">
-          <van-field v-model="signCode" size="large" type="text" label="签到码" />
-        </div>
-        <div class="tools">
-          <div @click="close">取消</div>
-          <div class="signUp" @click="sign">签到</div>
-        </div>
-      </div>
-    </van-popup>
   </div>
 </template>
 
@@ -58,10 +38,10 @@ import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import rq from "@/api/courses/courses";
 import { showToast } from "vant";
-import { showFailToast, showSuccessToast } from "vant/es";
+import { showFailToast } from "vant/es";
 const router = useRouter();
 const route = useRoute();
-const showCenter = ref(false)
+const showCenter = ref(true)
 const signCode = ref('')
 const courseId = ref(Number(route.query.courseId));
 const isSignUp = computed(() => {
@@ -98,19 +78,6 @@ const sign = () => {
     showFailToast('还没有输入签到码哦')
     return;
   }
-  rq.sign({
-    courseId: Number(route.query.courseId),
-    code: signCode.value
-  }).then((res: any) => {
-    if (res.code == 200) {
-      if (res.code == 200) {
-        showSuccessToast('签到成功')
-        router.push({ path: '/command', query: { couseId: Number(route.query.courseId) } })
-      } else {
-        showFailToast(res.message)
-      }
-    }
-  })
 
 }
 
@@ -210,74 +177,6 @@ const close = () => {
 
       font-weight: normal;
       color: #3c3a36;
-    }
-
-    .tools {
-      border-radius: 50%;
-      position: relative;
-      left: 74%;
-      width: 90px;
-      height: 90px;
-      border: 2px solid #bebab3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-
-  .signBox {
-    width: 280px;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-
-    .signTitle {
-      font-size: 36px;
-      font-weight: 600;
-    }
-
-    .inputArea {
-      :deep(.van-field) {
-        flex-wrap: wrap;
-        border: 1px solid #f7a660;
-        //padding: 20px 25px;
-        width: 400px;
-        border-radius: 10px;
-
-        .van-field__label {
-          width: 130px;
-          border-right: 2px solid #efbf81;
-        }
-
-        #van-field-1-label {
-          color: #f79823;
-        }
-      }
-    }
-
-    .tools {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      border-top: 2px solid rgb(243, 139, 60);
-      position: relative;
-      top: 115px;
-
-      div {
-        padding: 20px;
-        width: 215px;
-        font-weight: 600;
-        letter-spacing: 5px;
-        font-size: 35px;
-      }
-
-      .signUp {
-        color: white;
-        background-color: #fba665;
-      }
     }
   }
 }

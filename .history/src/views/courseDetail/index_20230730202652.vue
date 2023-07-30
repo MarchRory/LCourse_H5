@@ -58,7 +58,7 @@ import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import rq from "@/api/courses/courses";
 import { showToast } from "vant";
-import { showFailToast, showSuccessToast } from "vant/es";
+import { showFailToast } from "vant/es";
 const router = useRouter();
 const route = useRoute();
 const showCenter = ref(false)
@@ -98,19 +98,6 @@ const sign = () => {
     showFailToast('还没有输入签到码哦')
     return;
   }
-  rq.sign({
-    courseId: Number(route.query.courseId),
-    code: signCode.value
-  }).then((res: any) => {
-    if (res.code == 200) {
-      if (res.code == 200) {
-        showSuccessToast('签到成功')
-        router.push({ path: '/command', query: { couseId: Number(route.query.courseId) } })
-      } else {
-        showFailToast(res.message)
-      }
-    }
-  })
 
 }
 

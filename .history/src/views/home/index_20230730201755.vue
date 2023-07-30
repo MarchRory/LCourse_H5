@@ -5,6 +5,7 @@ import rqS from '@/api/semester/semester'
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
 const courseCategory = ref("");
+// console.log(courseCategory)
 const searchBar = defineAsyncComponent(() =>
   import("@/components/searchBar/searchBar.vue")
 );
@@ -75,7 +76,7 @@ const toSearchBtn = () => {
             </div>
           </div>
           <div class="tools">
-            <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
+            <van-icon name="scan" size="25" @click="sign" />
           </div>
         </div>
         <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
@@ -137,7 +138,7 @@ const toSearchBtn = () => {
       border-radius: 50%;
       width: 90px;
       height: 90px;
-      //border: 2px solid #bebab3;
+      border: 2px solid #bebab3;
       display: flex;
       align-items: center;
       justify-content: center;

@@ -6,8 +6,9 @@ import { useUserStore } from '@/store/modules/user';
 export default {
     props: {
         category: {
-            tyep: [String, null],
+            tyep: String,
             default: null,
+            required: true
         },
         keywords: {
             type: String,

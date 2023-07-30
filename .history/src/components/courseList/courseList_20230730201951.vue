@@ -8,6 +8,7 @@ export default {
         category: {
             tyep: [String, null],
             default: null,
+            required: true
         },
         keywords: {
             type: String,
