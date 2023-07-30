@@ -1,14 +1,20 @@
 <template>
   <div class="info" v-if="showParent">
     <van-nav-bar title="个人中心" />
-    <van-image round width="5rem" height="5rem" :src="userInfo.avatar" />
-    <van-cell-group title="个人信息">
-      <van-cell title="用户名" :value="userInfo.name" />
+    <van-cell-group>
+      <van-cell title="用户名" :value="userInfo.name">
+        <template #title>
+          <van-image round width="3rem" height="3rem" :src="userInfo.avatar" />
+        </template>
+      </van-cell>
       <van-cell title="姓名" :value="userInfo.name" />
       <van-cell title="学号" :value="userInfo.studentId" />
       <van-cell title="信息修改" is-link value="去修改" @click="open" />
     </van-cell-group>
-
+    <van-cell-group title="课程信息">
+      <van-cell title="我的课程" value="" is-link />
+      <van-cell title="我的目标" value="" is-link />
+    </van-cell-group>
     <van-action-sheet
       v-model:show="show"
       cancel-text="取消"
@@ -27,7 +33,6 @@
 import "vant/es/cell/style";
 import "vant/es/cell-group/style";
 import "vant/es/nav-bar/style";
-import { showToast } from "vant";
 import { useUserStore } from "@/store/modules/user";
 const showParent = ref(true);
 const router = useRouter();
