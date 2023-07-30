@@ -73,6 +73,14 @@ export const routes: Array<RouteRecordRaw> = [
         },
         component: () => import("@/views/user/passwordInfo.vue"),
       },
+      {
+        path: "/userCourse",
+        name: "UserCourse",
+        meta: {
+          title: "用户课程",
+        },
+        component: () => import("@/views/user/course/userCourse.vue"),
+      },
     ],
   },
   {
