@@ -4,7 +4,7 @@ import { useUserStore } from "@/store/modules/user/index";
 import rqS from "@/api/semester/semester";
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
-import searchBar from '@/components/searchBar/searchBar.vue' // 这里不动态获取，因为需要加载时拿到searchBar的高
+import searchBar from '@/components/searchBar/searchBar.vue' // 这里不动态获取，因为需要拿到searchBar的高
 const courseCategory = ref("");
 const courseList = defineAsyncComponent(
   () => import("@/components/courseList/courseList.vue"),
@@ -38,7 +38,6 @@ const tags = reactive([
 const header = ref<HTMLDivElement | null>(null)
 const sbar = ref<HTMLElement | null>(null)
 const headerHeight = ref(0)
-
 onMounted(() => {
   headerHeight.value = (header.value as HTMLDivElement).offsetHeight
   rqS.getSemesterNow().then((res: any) => {

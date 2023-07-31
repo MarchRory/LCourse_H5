@@ -4,8 +4,10 @@ import { useUserStore } from "@/store/modules/user/index";
 import rqS from "@/api/semester/semester";
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
-import searchBar from '@/components/searchBar/searchBar.vue' // 这里不动态获取，因为需要加载时拿到searchBar的高
 const courseCategory = ref("");
+const searchBar = defineAsyncComponent(
+  () => import("@/components/searchBar/searchBar.vue"),
+);
 const courseList = defineAsyncComponent(
   () => import("@/components/courseList/courseList.vue"),
 );
@@ -35,12 +37,10 @@ const tags = reactive([
     key: "其他方式劳动",
   },
 ]);
-const header = ref<HTMLDivElement | null>(null)
-const sbar = ref<HTMLElement | null>(null)
+const header = ref<Element | null>(null)
 const headerHeight = ref(0)
-
 onMounted(() => {
-  headerHeight.value = (header.value as HTMLDivElement).offsetHeight
+  headerHeight.value = (header.value as Element).clientHeight
   rqS.getSemesterNow().then((res: any) => {
     if (res.code == 200) {
       userStore.setSemesterId(res.data.id);
@@ -66,44 +66,46 @@ const toSearchBtn = () => {
 <template>
   <div class="container">
     <div ref="header">
-      <div class="header">
-        <div class="welcomeInfo">
-          <div class="leftSide">
-            <div style="text-align: left">
-              <span style="color: #3c3a36; font-size: 16px">欢</span>
-              <span style="color: rgb(163, 163, 163)">迎回来</span>
+      <van-sticky :offset-top="0">
+        <div class="header">
+          <div class="welcomeInfo">
+            <div class="leftSide">
+              <div style="text-align: left">
+                <span style="color: #3c3a36; font-size: 16px">欢</span>
+                <span style="color: rgb(163, 163, 163)">迎回来</span>
+              </div>
+              <div style="font-size: 28px; font-weight: 300">
+                {{ userStore.name }}
+              </div>
             </div>
-            <div style="font-size: 28px; font-weight: 300">
-              {{ userStore.name }}
+            <div class="tools">
+              <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
             </div>
           </div>
-          <div class="tools">
-            <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
-          </div>
-        </div>
-        <search-bar ref="sbar" @click="toSearchBtn" :key-words="keyWords" @search-course="search"
-          @update:key-words="keyWords = $event" />
-        <div class="tag">
-          <span style="
+          <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
+            @update:key-words="keyWords = $event" />
+          <div class="tag">
+            <span style="
               font-weight: 300;
               line-height: 21px;
               font-size: 16px;
               width: 47px;
             ">分类:
-          </span>
-          <div class="tagListBox">
-            <div class="tagList">
-              <van-tag mark :color="chosenTagIndex == index ? '#E3562A' : '#65AAEA'" size="medium"
-                v-for="(item, index) in tags" :key="index" @click="searchTag(item.key, index)">
-                {{ item.tag }}
-              </van-tag>
+            </span>
+            <div class="tagListBox">
+              <div class="tagList">
+                <van-tag mark :color="chosenTagIndex == index ? '#E3562A' : '#65AAEA'" size="medium"
+                  v-for="(item, index) in tags" :key="index" @click="searchTag(item.key, index)">
+                  {{ item.tag }}
+                </van-tag>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </van-sticky>
     </div>
 
-    <div :style="{ height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)` }" style="overflow-y: auto;">
+    <div :style="{ height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)` }">
       <course-list :category="courseCategory" />
     </div>
   </div>
@@ -111,6 +113,7 @@ const toSearchBtn = () => {
 
 <style scoped lang="less">
 .container {
+  padding: 20px;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -124,7 +127,6 @@ const toSearchBtn = () => {
     width: 100%;
     background-color: white;
     position: sticky;
-    padding-bottom: 10px;
 
     .welcomeInfo {
       display: flex;

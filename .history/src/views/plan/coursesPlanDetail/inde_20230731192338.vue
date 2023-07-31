@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { onMounted, defineAsyncComponent } from 'vue'
+import { onMounted, defineAsyncComponent, watch } from 'vue'
 import rqObj from '@/api/objectives/objectives'
 import { showFailToast } from 'vant';
 const route = useRoute()
@@ -16,6 +16,8 @@ const courseSke = defineAsyncComponent(
 const course = defineAsyncComponent(
     () => import('@/components/coursePreview/coursePreview.vue')
 )
+const header = ref<HTMLDivElement | null>(null)
+const headerHeight = ref(0)
 onMounted(() => {
     let objId = Number(route.query.id)
     Promise.all([rqObj.getObjDetail(objId), rqObj.getObjCourses(objId)])
@@ -39,14 +41,18 @@ onMounted(() => {
         })
 })
 
-/* watch(
-    () => header.value,
+watch(
+    () => skeletonLoad.value,
     (newV) => {
-        if (newV) {
-            headerHeight.value = (header.value as HTMLDivElement).offsetHeight
+        if (!newV) {
+            console.log(newV)
+            console.log(header.value)
+            nextTick(() => {
+                headerHeight.value = (header.value as HTMLDivElement).offsetHeight
+            })
         }
     }
-) */
+)
 </script>
 
 <template>
@@ -60,7 +66,11 @@ onMounted(() => {
         </header>
 
 
-        <div v-if="list && list.length" class="list">
+        <div v-if="list && list.length" :style="{ height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)` }">
+            <van-cell v-for="( course, index ) in  list " :key="index">
+                <course :course="course"></course>
+            </van-cell>
+
             <van-cell v-for="( course, index ) in  list " :key="index">
                 <course :course="course"></course>
             </van-cell>
@@ -74,8 +84,6 @@ onMounted(() => {
 .container {
     width: 100%;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
 
     header {
         height: 140px;
@@ -101,12 +109,6 @@ onMounted(() => {
             height: 100%;
             width: 100px;
         }
-    }
-
-    .list {
-        margin-top: 10px;
-        overflow-y: auto;
-        height: calc(100vh - 150px);
     }
 }
 </style>

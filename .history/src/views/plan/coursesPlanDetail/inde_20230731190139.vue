@@ -38,33 +38,28 @@ onMounted(() => {
             objInfo.value = data
         })
 })
-
-/* watch(
-    () => header.value,
-    (newV) => {
-        if (newV) {
-            headerHeight.value = (header.value as HTMLDivElement).offsetHeight
-        }
-    }
-) */
 </script>
 
 <template>
     <course-ske :ske-load="skeletonLoad"></course-ske>
 
     <div class="container" v-if="!skeletonLoad">
-        <header ref="header">
-            <back-btn />
-            <div class="title">{{ objInfo.objectivesName }}</div>
-            <div class="seat"></div>
-        </header>
+        <van-sticky :offset-top="0">
+            <header>
+                <back-btn />
+                <div class="title">{{ objInfo.objectivesName }}</div>
+                <div class="seat"></div>
+            </header>
+        </van-sticky>
 
 
-        <div v-if="list && list.length" class="list">
-            <van-cell v-for="( course, index ) in  list " :key="index">
-                <course :course="course"></course>
-            </van-cell>
-        </div>
+        <van-cell v-if="list && list.length" v-for="( course, index ) in  list " :key="index">
+            <course :course="course"></course>
+        </van-cell>
+
+        <van-cell v-if="list && list.length" v-for="( course, index ) in  list " :key="index">
+            <course :course="course"></course>
+        </van-cell>
 
         <van-empty v-else description="老师还没有给这个目标分配课程哦" />
     </div>
@@ -74,8 +69,6 @@ onMounted(() => {
 .container {
     width: 100%;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
 
     header {
         height: 140px;
@@ -101,12 +94,6 @@ onMounted(() => {
             height: 100%;
             width: 100px;
         }
-    }
-
-    .list {
-        margin-top: 10px;
-        overflow-y: auto;
-        height: calc(100vh - 150px);
     }
 }
 </style>

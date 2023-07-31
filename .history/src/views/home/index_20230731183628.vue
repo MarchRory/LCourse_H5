@@ -4,8 +4,10 @@ import { useUserStore } from "@/store/modules/user/index";
 import rqS from "@/api/semester/semester";
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
-import searchBar from '@/components/searchBar/searchBar.vue' // 这里不动态获取，因为需要加载时拿到searchBar的高
 const courseCategory = ref("");
+const searchBar = defineAsyncComponent(
+  () => import("@/components/searchBar/searchBar.vue"),
+);
 const courseList = defineAsyncComponent(
   () => import("@/components/courseList/courseList.vue"),
 );
@@ -35,12 +37,10 @@ const tags = reactive([
     key: "其他方式劳动",
   },
 ]);
-const header = ref<HTMLDivElement | null>(null)
-const sbar = ref<HTMLElement | null>(null)
+const header = ref<Element | null>(null)
 const headerHeight = ref(0)
-
 onMounted(() => {
-  headerHeight.value = (header.value as HTMLDivElement).offsetHeight
+  headerHeight.value = (header.value as Element).offsetHeight
   rqS.getSemesterNow().then((res: any) => {
     if (res.code == 200) {
       userStore.setSemesterId(res.data.id);
@@ -81,7 +81,7 @@ const toSearchBtn = () => {
             <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
           </div>
         </div>
-        <search-bar ref="sbar" @click="toSearchBtn" :key-words="keyWords" @search-course="search"
+        <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
           @update:key-words="keyWords = $event" />
         <div class="tag">
           <span style="
@@ -111,6 +111,7 @@ const toSearchBtn = () => {
 
 <style scoped lang="less">
 .container {
+  padding: 20px;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -124,7 +125,6 @@ const toSearchBtn = () => {
     width: 100%;
     background-color: white;
     position: sticky;
-    padding-bottom: 10px;
 
     .welcomeInfo {
       display: flex;

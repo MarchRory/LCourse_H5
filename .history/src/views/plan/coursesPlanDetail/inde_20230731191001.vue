@@ -16,6 +16,8 @@ const courseSke = defineAsyncComponent(
 const course = defineAsyncComponent(
     () => import('@/components/coursePreview/coursePreview.vue')
 )
+const header = ref<HTMLDivElement | null>(null)
+const headerHeight = ref(0)
 onMounted(() => {
     let objId = Number(route.query.id)
     Promise.all([rqObj.getObjDetail(objId), rqObj.getObjCourses(objId)])
@@ -23,14 +25,17 @@ onMounted(() => {
             if (res[0].code == 200 && res[1].code == 200) {
                 objInfo.value = res[0].data
                 list.value = res[1].data.list
+                setTimeout(() => {
+                    skeletonLoad.value = false
+                }, 400)
             } else {
                 showFailToast('网络异常, 课程信息获取失败')
             }
         })
         .finally(() => {
             setTimeout(() => {
-                skeletonLoad.value = false
-            }, 400)
+                headerHeight.value = (header.value as HTMLDivElement).offsetHeight
+            }, 300)
         })
     rqObj.getObjDetail(objId)
         .then((res: any) => {
@@ -38,15 +43,6 @@ onMounted(() => {
             objInfo.value = data
         })
 })
-
-/* watch(
-    () => header.value,
-    (newV) => {
-        if (newV) {
-            headerHeight.value = (header.value as HTMLDivElement).offsetHeight
-        }
-    }
-) */
 </script>
 
 <template>
@@ -60,7 +56,11 @@ onMounted(() => {
         </header>
 
 
-        <div v-if="list && list.length" class="list">
+        <div v-if="list && list.length" :style="{ height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)` }">
+            <van-cell v-for="( course, index ) in  list " :key="index">
+                <course :course="course"></course>
+            </van-cell>
+
             <van-cell v-for="( course, index ) in  list " :key="index">
                 <course :course="course"></course>
             </van-cell>
@@ -74,8 +74,6 @@ onMounted(() => {
 .container {
     width: 100%;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
 
     header {
         height: 140px;
@@ -101,12 +99,6 @@ onMounted(() => {
             height: 100%;
             width: 100px;
         }
-    }
-
-    .list {
-        margin-top: 10px;
-        overflow-y: auto;
-        height: calc(100vh - 150px);
     }
 }
 </style>

@@ -38,7 +38,6 @@ const tags = reactive([
 const header = ref<HTMLDivElement | null>(null)
 const sbar = ref<HTMLElement | null>(null)
 const headerHeight = ref(0)
-
 onMounted(() => {
   headerHeight.value = (header.value as HTMLDivElement).offsetHeight
   rqS.getSemesterNow().then((res: any) => {

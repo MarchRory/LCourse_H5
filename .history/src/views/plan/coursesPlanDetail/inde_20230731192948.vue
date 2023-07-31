@@ -60,7 +60,11 @@ onMounted(() => {
         </header>
 
 
-        <div v-if="list && list.length" class="list">
+        <div v-if="list && list.length" :style="{ height: `calc(100vh- 140px)` }">
+            <van-cell v-for="( course, index ) in  list " :key="index">
+                <course :course="course"></course>
+            </van-cell>
+
             <van-cell v-for="( course, index ) in  list " :key="index">
                 <course :course="course"></course>
             </van-cell>
@@ -101,12 +105,6 @@ onMounted(() => {
             height: 100%;
             width: 100px;
         }
-    }
-
-    .list {
-        margin-top: 10px;
-        overflow-y: auto;
-        height: calc(100vh - 150px);
     }
 }
 </style>

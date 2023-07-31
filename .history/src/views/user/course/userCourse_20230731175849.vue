@@ -1,13 +1,13 @@
 <template>
   <van-config-provider :theme-vars="themeVars">
-    <div ref="header">
+    <van-sticky id="vSti" :offset-top="0">
       <van-nav-bar title="我的课程" left-text="返回" left-arrow @click-left="onClickLeft">
       </van-nav-bar>
       <van-dropdown-menu title="课程状态" active-color="#e1562a">
         <van-dropdown-item v-model="state" :options="option" />
       </van-dropdown-menu>
-    </div>
-    <div class="container" :style="{ height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)` }">
+    </van-sticky>
+    <div class="container">
       <div class="course-list">
         <course-list category="" user-type="1" :state="state" />
       </div>
@@ -17,12 +17,8 @@
 
 <script setup>
 import CourseList from "@/components/courseList/courseList.vue";
-import { ref, onMounted } from "vue";
-const header = ref(null)
-const headerHeight = ref(0)
-onMounted(() => {
-  headerHeight.value = header.value.offsetHeight
-})
+const want = document.getElementById('#vSti')
+console.log(want)
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",

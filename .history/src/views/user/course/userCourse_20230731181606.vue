@@ -7,7 +7,7 @@
         <van-dropdown-item v-model="state" :options="option" />
       </van-dropdown-menu>
     </div>
-    <div class="container" :style="{ height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)` }">
+    <div class="container" :style="{ height: 'calc(100vh - var(--van-tabbar-height))' }">
       <div class="course-list">
         <course-list category="" user-type="1" :state="state" />
       </div>

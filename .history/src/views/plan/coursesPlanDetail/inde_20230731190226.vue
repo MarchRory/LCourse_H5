@@ -38,15 +38,6 @@ onMounted(() => {
             objInfo.value = data
         })
 })
-
-/* watch(
-    () => header.value,
-    (newV) => {
-        if (newV) {
-            headerHeight.value = (header.value as HTMLDivElement).offsetHeight
-        }
-    }
-) */
 </script>
 
 <template>
@@ -60,8 +51,8 @@ onMounted(() => {
         </header>
 
 
-        <div v-if="list && list.length" class="list">
-            <van-cell v-for="( course, index ) in  list " :key="index">
+        <div>
+            <van-cell v-if="list && list.length" v-for="( course, index ) in  list " :key="index">
                 <course :course="course"></course>
             </van-cell>
         </div>
@@ -74,8 +65,6 @@ onMounted(() => {
 .container {
     width: 100%;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
 
     header {
         height: 140px;
@@ -101,12 +90,6 @@ onMounted(() => {
             height: 100%;
             width: 100px;
         }
-    }
-
-    .list {
-        margin-top: 10px;
-        overflow-y: auto;
-        height: calc(100vh - 150px);
     }
 }
 </style>

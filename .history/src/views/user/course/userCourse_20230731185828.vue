@@ -1,6 +1,6 @@
 <template>
   <van-config-provider :theme-vars="themeVars">
-    <div ref="header">
+    <div ref="header" style="padding-top: 15px;">
       <van-nav-bar title="我的课程" left-text="返回" left-arrow @click-left="onClickLeft">
       </van-nav-bar>
       <van-dropdown-menu title="课程状态" active-color="#e1562a">

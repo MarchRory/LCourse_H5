@@ -64,6 +64,10 @@ onMounted(() => {
             <van-cell v-for="( course, index ) in  list " :key="index">
                 <course :course="course"></course>
             </van-cell>
+
+            <van-cell v-for="( course, index ) in  list " :key="index">
+                <course :course="course"></course>
+            </van-cell>
         </div>
 
         <van-empty v-else description="老师还没有给这个目标分配课程哦" />
