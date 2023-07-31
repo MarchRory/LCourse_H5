@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useUserStore } from "@/store/modules/user/index";
-import rqS from '@/api/semester/semester'
+import rqS from "@/api/semester/semester";
 import { defineAsyncComponent } from "vue";
 import router from "@/router/index";
 const courseCategory = ref("");
-const searchBar = defineAsyncComponent(() =>
-  import("@/components/searchBar/searchBar.vue")
+const searchBar = defineAsyncComponent(
+  () => import("@/components/searchBar/searchBar.vue"),
 );
-const courseList = defineAsyncComponent(() =>
-  import("@/components/courseList/courseList.vue")
+const courseList = defineAsyncComponent(
+  () => import("@/components/courseList/courseList.vue"),
 );
 const userStore = useUserStore();
 const keyWords = ref("");
@@ -40,17 +40,17 @@ const tags = reactive([
 onMounted(() => {
   rqS.getSemesterNow().then((res: any) => {
     if (res.code == 200) {
-      userStore.setSemesterId(res.data.id)
+      userStore.setSemesterId(res.data.id);
     }
-  })
-})
+  });
+});
 
 const searchTag = (key: string, index: number) => {
   chosenTagIndex.value = index;
   courseCategory.value = key;
 };
 
-const search = () => { };
+const search = () => {};
 const toSearchBtn = () => {
   router.push({ path: "/searchRes" });
 };
@@ -78,20 +78,32 @@ const toSearchBtn = () => {
             <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
           </div>
         </div>
-        <search-bar @click="toSearchBtn" :key-words="keyWords" @search-course="search"
-          @update:key-words="keyWords = $event" />
+        <search-bar
+          @click="toSearchBtn"
+          :key-words="keyWords"
+          @search-course="search"
+          @update:key-words="keyWords = $event"
+        />
         <div class="tag">
-          <span style="
+          <span
+            style="
               font-weight: 300;
               line-height: 21px;
               font-size: 16px;
               width: 47px;
-            ">分类:
+            "
+            >分类:
           </span>
           <div class="tagListBox">
             <div class="tagList">
-              <van-tag mark :color="chosenTagIndex == index ? '#E3562A' : '#65AAEA'" size="medium"
-                v-for="(item, index) in tags" :key="index" @click="searchTag(item.key, index)">
+              <van-tag
+                mark
+                :color="chosenTagIndex == index ? '#E3562A' : '#65AAEA'"
+                size="medium"
+                v-for="(item, index) in tags"
+                :key="index"
+                @click="searchTag(item.key, index)"
+              >
                 {{ item.tag }}
               </van-tag>
             </div>
@@ -105,7 +117,6 @@ const toSearchBtn = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped lang="less">
 .container {

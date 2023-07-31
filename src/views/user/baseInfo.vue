@@ -1,40 +1,42 @@
 <template>
-  <div>
-    <van-nav-bar
-      title="个人信息修改"
-      left-text="返回"
-      left-arrow
-      @click-left="onClickLeft"
-    />
-    <van-form @submit="onSubmit">
-      <van-cell-group inset>
-        <van-field name="uploader" label="头像">
-          <template #input>
-            <van-uploader
-              v-model="files"
-              :after-read="afterRead"
-              :before-read="beforeRead"
-              :max-count="1"
-            >
-              <van-image width="60" height="60" :src="avatar" />
-            </van-uploader>
-          </template>
-        </van-field>
-        <van-field
-          v-model="nickname"
-          name="昵称"
-          label="昵称"
-          placeholder="用户名"
-          :rules="[{ required: true, message: '请填写用户名' }]"
-        />
-      </van-cell-group>
-      <div style="margin: 16px">
-        <van-button round block type="warning" native-type="submit">
-          提交
-        </van-button>
-      </div>
-    </van-form>
-  </div>
+  <van-config-provider :theme-vars="themeVars">
+    <div>
+      <van-nav-bar
+        title="个人信息修改"
+        left-text="返回"
+        left-arrow
+        @click-left="onClickLeft"
+      />
+      <van-form @submit="onSubmit">
+        <van-cell-group inset>
+          <van-field name="uploader" label="头像">
+            <template #input>
+              <van-uploader
+                v-model="files"
+                :after-read="afterRead"
+                :before-read="beforeRead"
+                :max-count="1"
+              >
+                <van-image width="60" height="60" :src="avatar" />
+              </van-uploader>
+            </template>
+          </van-field>
+          <van-field
+            v-model="nickname"
+            name="昵称"
+            label="昵称"
+            placeholder="用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+          />
+        </van-cell-group>
+        <div style="margin: 16px">
+          <van-button round block type="warning" native-type="submit">
+            提交
+          </van-button>
+        </div>
+      </van-form>
+    </div>
+  </van-config-provider>
 </template>
 
 <script setup>
@@ -42,7 +44,10 @@ import { useUserStore } from "@/store/modules/user";
 import upload from "@/api/upload/upload.ts";
 import userApi from "@/api/user/user.ts";
 import { showToast, Toast } from "vant";
-
+const themeVars = reactive({
+  navBarTextColor: "#e1562a",
+  navBarIconColor: "#e1562a",
+});
 const router = useRouter();
 const userStore = useUserStore();
 const files = ref([]);
