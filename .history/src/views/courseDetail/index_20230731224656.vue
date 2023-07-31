@@ -80,9 +80,9 @@
           {{ btnContent }}
         </van-button>
 
-        <div @click="toComment" v-if="detailsObj.state > 2 && detailsObj.signUpstate != 3"
+        <div @click="toComment"
           style="display: flex; flex-direction: column; align-items: center; color: rgba(252, 131, 26, 0.879);">
-          <van-icon name="smile-comment" size="30"></van-icon>
+          <van-icon v-if="detailsObj.signUpstate != 3" name="smile-comment" size="30"></van-icon>
           评价课程
         </div>
       </div>

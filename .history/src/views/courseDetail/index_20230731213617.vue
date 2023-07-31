@@ -1,7 +1,5 @@
 <template>
-  <course-ske :ske-load="skeLoad"></course-ske>
-
-  <div class="details" v-if="!skeLoad">
+  <div class="details">
     <div class="details-top">
       <div class="back-btn">
         <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
@@ -15,16 +13,17 @@
 
     <div class="mainInfo">
       <div class="img-box">
-        <van-image width="100%" height="240" fit="cover" lazy-load :src="detailsObj.cover || defaultCover" />
+        <img src="../../assets/imgs/Illustration.png" alt="" />
       </div>
       <div class="label">
+        <span>{{ detailsObj.semester }}</span>
         <span>{{ detailsObj.scoringStandards }}</span>
       </div>
 
       <div class="info">
         <div>
           <span class="point">举办学期</span>
-          <strong style="font-size: 18px;">{{ detailsObj.semester }}</strong>
+          <span style="font-weight: bold;">{{ detailsObj.semester }}</span>
         </div>
         <div class="time">
           <span class="point">报名时间</span>
@@ -39,11 +38,11 @@
           <span>{{ detailsObj.courseCategory }}</span>
         </div>
         <div>
-          <span class="point">主办单位</span>
+          <span class="point">主办方</span>
           <span>{{ detailsObj.organizer }}</span>
         </div>
         <div>
-          <span class="point">承办单位</span>
+          <span class="point">承办方</span>
           <span>{{ detailsObj.undertaker }}</span>
         </div>
         <div>
@@ -75,14 +74,14 @@
       </div>
 
       <div class="application">
-        <van-button :disabled="btnState != 1" @click="RegisterNowBtn" class="application-btn"
-          :color="btnColor[`${btnState === 1 ? 0 : 1}`]">
-          {{ btnContent }}
+        <van-button :disabled="Boolean(isSignUp)" @click="RegisterNowBtn" class="application-btn"
+          color="linear-gradient(to right, #ff6034, #ee0a24)">
+          立即报名
         </van-button>
 
-        <div @click="toComment" v-if="detailsObj.state > 2 && detailsObj.signUpstate != 3"
+        <div @click="toComment"
           style="display: flex; flex-direction: column; align-items: center; color: rgba(252, 131, 26, 0.879);">
-          <van-icon name="smile-comment" size="30"></van-icon>
+          <van-icon v-if="detailsObj.signUpstate != 3" name="smile-comment" size="30"></van-icon>
           评价课程
         </div>
       </div>
@@ -107,67 +106,30 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, defineAsyncComponent, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import rq from "@/api/courses/courses";
 import { showToast } from "vant";
 import { showFailToast, showSuccessToast } from "vant/es";
-import defaultCover from '@/assets/imgs/Illustration.png'
 const router = useRouter();
 const route = useRoute();
 const showCenter = ref(false)
 const signCode = ref('')
-const skeLoad = ref(true)
 const courseId = ref(Number(route.query.courseId));
-const btnState = ref(0)
-const btnContent = ref('')
-const btnColor = ['linear-gradient(to right, #ff6034, #ee0a24)', 'grey']
+const isSignUp = computed(() => {
+  return Number(route.query.isSignUp);
+});
+
 const detailsObj: any = ref({});
-const courseSke = defineAsyncComponent(
-  () => import('@/components/coursePageSkeleton/coursePageSkeleton.vue')
-)
-
-const checkStaus = () => {
-  // 按钮状态
-
-  if (detailsObj.value.state !== 2) {         // 非报名状态 -->
-    btnState.value = 0                                // 0 课程进行中, 不可报名
-    btnContent.value = '当前无法报名'
-  } else if (detailsObj.value.state == 2) {   // 报名状态  -->
-    if (detailsObj.value.numberLimit == detailsObj.value.signUpCount && detailsObj.value.signUpstate != 2) {
-      btnState.value = -1
-      btnContent.value = '课程已满员'                 // -1 报名中但满员
-    } else if (detailsObj.value.signUpstate == 0) {
-      btnState.value = 1                             // 1  用户没有报名且当前课程支持报名
-      btnContent.value = '报名课程'
-    } else if (detailsObj.value.signUpstate == 1) {
-      btnState.value = 2                             // 2  报名成功等待被录取
-      btnContent.value = '等待录取'
-    } else if (detailsObj.value.signUpstate == -1) {
-      btnState.value = 3                             // 3  未审核通过, 不可继续报名
-      btnContent.value = '未通过审核'
-    }
-  }
-}
-
 const getDetails = () => {
-  skeLoad.value = true
-  rq.getCourseDetail(courseId.value)
-    .then((res: any) => {
-      if (res.code == 200) {
-        const { data } = res
-        detailsObj.value = data
-      }
-    })
-    .then(() => {
-      checkStaus()
-    })
-    .finally(() => {
-      setTimeout(() => {
-        skeLoad.value = false
-      }, 200)
-    })
+  rq.getCourseDetail(courseId.value).then((res: any) => {
+    if (res.code == 200) {
+      const { data } = res
+      detailsObj.value = data
+    }
+  });
 };
+getDetails();
 const RegisterNowBtn = () => {
   rq.joinCourse(courseId.value).then((res: any) => {
     if (res.code == 200) {
@@ -211,10 +173,6 @@ const close = () => {
   signCode.value = ''
   showCenter.value = false
 }
-
-onMounted(() => {
-  getDetails();
-})
 </script>
 
 <style lang="less" scoped>
@@ -235,13 +193,17 @@ onMounted(() => {
     .application-btn {
       width: 70vw;
       border-radius: 1rem;
-      color: white;
     }
   }
 
   .img-box {
     margin: 0 auto;
     margin-top: 1.25rem;
+
+    img {
+      width: 23.4375rem;
+      height: 16.0625rem;
+    }
   }
 
   .mainInfo {

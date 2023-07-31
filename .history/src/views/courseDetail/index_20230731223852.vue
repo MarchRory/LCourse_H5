@@ -80,9 +80,9 @@
           {{ btnContent }}
         </van-button>
 
-        <div @click="toComment" v-if="detailsObj.state > 2 && detailsObj.signUpstate != 3"
+        <div @click="toComment"
           style="display: flex; flex-direction: column; align-items: center; color: rgba(252, 131, 26, 0.879);">
-          <van-icon name="smile-comment" size="30"></van-icon>
+          <van-icon v-if="detailsObj.signUpstate != 3" name="smile-comment" size="30"></van-icon>
           评价课程
         </div>
       </div>
@@ -122,34 +122,12 @@ const courseId = ref(Number(route.query.courseId));
 const btnState = ref(0)
 const btnContent = ref('')
 const btnColor = ['linear-gradient(to right, #ff6034, #ee0a24)', 'grey']
-const detailsObj: any = ref({});
+
 const courseSke = defineAsyncComponent(
   () => import('@/components/coursePageSkeleton/coursePageSkeleton.vue')
 )
 
-const checkStaus = () => {
-  // 按钮状态
-
-  if (detailsObj.value.state !== 2) {         // 非报名状态 -->
-    btnState.value = 0                                // 0 课程进行中, 不可报名
-    btnContent.value = '当前无法报名'
-  } else if (detailsObj.value.state == 2) {   // 报名状态  -->
-    if (detailsObj.value.numberLimit == detailsObj.value.signUpCount && detailsObj.value.signUpstate != 2) {
-      btnState.value = -1
-      btnContent.value = '课程已满员'                 // -1 报名中但满员
-    } else if (detailsObj.value.signUpstate == 0) {
-      btnState.value = 1                             // 1  用户没有报名且当前课程支持报名
-      btnContent.value = '报名课程'
-    } else if (detailsObj.value.signUpstate == 1) {
-      btnState.value = 2                             // 2  报名成功等待被录取
-      btnContent.value = '等待录取'
-    } else if (detailsObj.value.signUpstate == -1) {
-      btnState.value = 3                             // 3  未审核通过, 不可继续报名
-      btnContent.value = '未通过审核'
-    }
-  }
-}
-
+const detailsObj: any = ref({});
 const getDetails = () => {
   skeLoad.value = true
   rq.getCourseDetail(courseId.value)
@@ -159,15 +137,13 @@ const getDetails = () => {
         detailsObj.value = data
       }
     })
-    .then(() => {
-      checkStaus()
-    })
     .finally(() => {
       setTimeout(() => {
         skeLoad.value = false
       }, 200)
     })
 };
+getDetails();
 const RegisterNowBtn = () => {
   rq.joinCourse(courseId.value).then((res: any) => {
     if (res.code == 200) {
@@ -213,7 +189,27 @@ const close = () => {
 }
 
 onMounted(() => {
-  getDetails();
+  // 按钮状态
+  if (detailsObj.state != 2) {         // 非报名状态 -->
+    btnState.value = 0                                // 0 课程进行中, 不可报名
+    btnContent.value = '当前无法报名'
+  } else if (detailsObj.state == 2) {   // 报名状态  -->
+
+    if (detailsObj.numberLimit == detailsObj.signUpCount && detailsObj.signUpstate != 2) {
+      btnState.value = -1
+      btnContent.value = '课程已满员'                 // -1 报名中但满员
+    } else if (detailsObj.signUpstate == 0) {
+      btnState.value = 1                             // 1  用户没有报名且当前课程支持报名
+      btnContent.value = '报名课程'
+    } else if (detailsObj.signUpstate == 1) {
+      btnState.value = 2                             // 2  报名成功等待被录取
+      btnContent.value = '等待录取'
+    } else if (detailsObj.signUpstate == -1) {
+      btnState.value = 3                             // 3  未审核通过, 不可继续报名
+      btnContent.value = '未通过审核'
+    }
+    console.log(btnState.value)
+  }
 })
 </script>
 
