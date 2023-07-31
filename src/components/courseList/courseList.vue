@@ -24,14 +24,13 @@ export default {
     },
   },
   setup(props) {
-    const { category } = toRefs(props);
+    const { category, state } = toRefs(props);
     const userStore = useUserStore();
     const defaultCover = ref("");
     (async () => {
       let dc = await import("@/assets/imgs/Cool-Kids-Discussion.png");
       defaultCover.value = dc.default;
     })();
-
     return {
       category,
       userStore,

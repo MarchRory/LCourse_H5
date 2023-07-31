@@ -26,8 +26,11 @@
 import { useUserStore } from "@/store/modules/user";
 import upload from "@/api/upload/upload.ts";
 import userApi from "@/api/user/user.ts";
-import { showFailToast, showSuccessToast, showToast, Toast } from "vant";
-
+import { showToast, Toast } from "vant";
+const themeVars = reactive({
+  navBarTextColor: "#e1562a",
+  navBarIconColor: "#e1562a",
+});
 const router = useRouter();
 const userStore = useUserStore();
 const files = ref([]);
