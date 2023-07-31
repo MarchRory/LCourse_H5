@@ -280,7 +280,7 @@ const close = () => {
 
       div {
         padding: 20px;
-        width: 240px;
+        width: 230px;
         font-weight: 600;
         letter-spacing: 5px;
         font-size: 35px;

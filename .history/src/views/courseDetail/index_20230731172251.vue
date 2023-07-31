@@ -39,8 +39,7 @@
         评价课程
       </div>
     </div>
-    <van-popup v-model:show="showCenter" round :style="{ padding: 'px', overflow: 'hidden' }" :transition-appear="true"
-      :close-on-click-overlay="false">
+    <van-popup v-model:show="showCenter" round :style="{ padding: '64px' }" :transition-appear="true">
       <div class="signBox">
         <div class="signTitle">
           签到码签到
@@ -237,12 +236,12 @@ const close = () => {
   }
 
   .signBox {
-    width: 550px;
-    height: 600px;
+    width: 280px;
+    height: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
 
     .signTitle {
       font-size: 36px;
@@ -274,13 +273,12 @@ const close = () => {
       align-items: center;
       justify-content: flex-start;
       border-top: 2px solid rgb(243, 139, 60);
-      overflow: hidden;
       position: relative;
-      top: 60px;
+      top: 115px;
 
       div {
         padding: 20px;
-        width: 240px;
+        width: 215px;
         font-weight: 600;
         letter-spacing: 5px;
         font-size: 35px;
@@ -289,6 +287,7 @@ const close = () => {
       .signUp {
         color: white;
         background-color: #fba665;
+        border-bottom-right-radius: 10%;
       }
     }
   }

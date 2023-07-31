@@ -14,10 +14,10 @@ const { list, total } = storeToRefs(planStore)
 
 onMounted(() => {
     skeletonLoad.value = true
-    planStore.getObjectives()
     setTimeout(() => {
-        skeletonLoad.value = false
+        planStore.getObjectives()
     }, 300)
+    skeletonLoad.value = false
 })
 
 const openObject = (id: number) => {

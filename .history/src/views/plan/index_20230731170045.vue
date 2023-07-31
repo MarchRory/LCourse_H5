@@ -5,7 +5,6 @@ const route = useRouter()
 const isLoad = ref(false)
 import { storeToRefs } from 'pinia'
 import { usePlanStore } from '@/store/modules/plan/index'
-const skeletonLoad = ref(false)
 const courseSke = defineAsyncComponent(
     () => import('@/components/coursePageSkeleton/coursePageSkeleton.vue')
 )
@@ -13,11 +12,7 @@ const planStore = usePlanStore()
 const { list, total } = storeToRefs(planStore)
 
 onMounted(() => {
-    skeletonLoad.value = true
     planStore.getObjectives()
-    setTimeout(() => {
-        skeletonLoad.value = false
-    }, 300)
 })
 
 const openObject = (id: number) => {
@@ -26,8 +21,7 @@ const openObject = (id: number) => {
 </script>
 
 <template>
-    <course-ske :ske-load="skeletonLoad"></course-ske>
-    <div v-if="!skeletonLoad" class="container">
+    <div class="container">
         <van-sticky :offset-top="0">
             <header>
                 <div class="temp" style="width: 12vw;"></div>

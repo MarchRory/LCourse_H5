@@ -275,12 +275,10 @@ const close = () => {
       justify-content: flex-start;
       border-top: 2px solid rgb(243, 139, 60);
       overflow: hidden;
-      position: relative;
-      top: 60px;
 
       div {
         padding: 20px;
-        width: 240px;
+        width: 230px;
         font-weight: 600;
         letter-spacing: 5px;
         font-size: 35px;
