@@ -1,9 +1,12 @@
 <script lang="ts">
+import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
+import CoursePreview from "@/components/coursePreview/coursePreview.vue";
 import { toRefs } from "vue";
 import rqCourse from "../../api/courses/courses";
 import router from "@/router";
 import { useUserStore } from "@/store/modules/user";
 export default {
+  components: { CoursePageSkeleton, CoursePreview },
   props: {
     category: {
       tyep: String,
@@ -40,6 +43,7 @@ export default {
   },
   data() {
     return {
+      skeleton: true,
       coursesList: [] as any,
       selectParams: {
         pageNum: 1,
@@ -75,6 +79,7 @@ export default {
           if (res.code == 200) {
             const { data } = res;
             this.total = data.total;
+            this.skeleton=false;
             if (this.categorycopy == this.category) {
               data.list.forEach((element: any) => {
                 this.coursesList.push(element);
@@ -122,24 +127,20 @@ export default {
 <template>
   <div>
     <div class="list">
-      <van-list v-model:loading="loadStatus.loading" :finished="loadStatus.finished" v-model:error="loadStatus.error"
-        error-text="请求失败，点击重新加载" finished-text="没有更多了" @load="loadList">
-        <van-cell v-for="(course, index) in coursesList" :key="index" @click="openDetail(course.id)">
-          <div class="course">
-            <div>
-              <van-image width="100%" height="230" fit="cover" lazy-load :src="course.cover || defaultCover" />
-              <div class="category">{{ course.pointsRules }}</div>
-            </div>
-            <div class="timeRange">
-              {{ course.hostingStart }} 至 {{ course.hostingEnd }}
-            </div>
-            <div class="title">
-              {{ course.title }}
-            </div>
-            <div class="introduce">
-              {{ course.courseLocation }}
-            </div>
-          </div>
+      <van-list
+        v-model:loading="loadStatus.loading"
+        :finished="loadStatus.finished"
+        v-model:error="loadStatus.error"
+        error-text="请求失败，点击重新加载"
+        finished-text="没有更多了"
+        @load="loadList"
+      >
+        <van-cell
+          v-for="(course, index) in coursesList"
+          :key="index"
+          @click="openDetail(course.id)"
+        >
+          <coursePreview :course="course"></coursePreview>
         </van-cell>
       </van-list>
     </div>

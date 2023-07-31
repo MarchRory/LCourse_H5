@@ -81,6 +81,14 @@ export const routes: Array<RouteRecordRaw> = [
         },
         component: () => import("@/views/user/course/userCourse.vue"),
       },
+      {
+        path: "/userObjectives",
+        name: "UserObjectives",
+        meta: {
+          title: "用户规划",
+        },
+        component: () => import("@/views/user/course/userObjectives.vue"),
+      },
     ],
   },
   {

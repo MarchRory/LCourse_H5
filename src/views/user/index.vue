@@ -1,6 +1,8 @@
 <template>
   <div class="info" v-if="showParent">
-    <van-nav-bar title="个人中心" />
+    <van-nav-bar>
+      <template #title><span style="color: #e1562a">个人中心</span></template>
+    </van-nav-bar>
     <van-cell-group>
       <van-cell title="用户名" :value="userInfo.name">
         <template #title>
@@ -13,9 +15,14 @@
     </van-cell-group>
     <van-cell-group title="课程信息">
       <van-cell title="我的课程" value="" is-link @click="toUserCourse" />
-      <van-cell title="历史目标" value="" is-link />
+      <van-cell title="历史规划" value="" is-link @click="toUserObjectives"/>
     </van-cell-group>
-    <van-action-sheet v-model:show="show" cancel-text="取消" close-on-click-action @cancel="onCancel">
+    <van-action-sheet
+      v-model:show="show"
+      cancel-text="取消"
+      close-on-click-action
+      @cancel="onCancel"
+    >
       <van-cell-group>
         <van-cell title="个人信息修改" is-link @click="toChangeUserInfo" />
         <van-cell title="密码修改" is-link @click="toChangePwd" />
@@ -43,6 +50,9 @@ const userStore = useUserStore();
 const userInfo = ref(userStore);
 const open = () => {
   show.value = true;
+};
+const toUserObjectives = () => {
+  router.push({ name: "UserObjectives" });
 };
 const toUserCourse = () => {
   router.push({ name: "UserCourse" });

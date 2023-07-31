@@ -1,12 +1,9 @@
 <template>
   <van-config-provider :theme-vars="themeVars">
     <div>
-      <van-nav-bar
-        title="密码修改"
-        left-text="返回"
-        left-arrow
-        @click-left="onClickLeft"
-      />
+      <van-nav-bar left-text="返回" left-arrow @click-left="onClickLeft">
+        <template #title><span style="color: #e1562a">密码修改</span></template>
+      </van-nav-bar>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
           <van-field
