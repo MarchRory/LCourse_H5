@@ -6,6 +6,7 @@ import rq from '@/api/courses/courses'
 import { showSuccessToast } from 'vant';
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import resPic from '@/assets/imgs/commentRes.gif'
+import router from '@/router';
 const backBtn = defineAsyncComponent(
     () => import('@/components/backButton/backButton.vue')
 )
@@ -49,10 +50,34 @@ const submit = debounce(() => {
         }
     })
 }, 300)
+
+
+/* const submit = () => {
+    if (evaluateText.value && score.value) {
+        rq.commentToCourse({
+            score: score.value,
+            courseId: courseId.value,
+            evaluateText: evaluateText.value,
+            anonymous: anonymous.value
+        }).then((res: any) => {
+            if (res.code == 200) {
+                showSuccessToast('课程评价成功');
+                router.go(-1)
+            } else {
+                showFailToast(res.message)
+            }
+        })
+    } else {
+        showFailToast('还有项目没有填写哦')
+    }
+} */
 </script>
 
 <template>
     <div class="container">
+        <div>
+
+        </div>
         <van-sticky :offset-top="0">
             <header>
                 <back-btn />

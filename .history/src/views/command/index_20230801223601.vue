@@ -49,6 +49,27 @@ const submit = debounce(() => {
         }
     })
 }, 300)
+
+
+/* const submit = () => {
+    if (evaluateText.value && score.value) {
+        rq.commentToCourse({
+            score: score.value,
+            courseId: courseId.value,
+            evaluateText: evaluateText.value,
+            anonymous: anonymous.value
+        }).then((res: any) => {
+            if (res.code == 200) {
+                showSuccessToast('课程评价成功');
+                router.go(-1)
+            } else {
+                showFailToast(res.message)
+            }
+        })
+    } else {
+        showFailToast('还有项目没有填写哦')
+    }
+} */
 </script>
 
 <template>

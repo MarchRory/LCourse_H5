@@ -70,7 +70,7 @@ const onSubmit = debounce(() => {
         showFailToast(res.message);
       }
     });
-}, 500)
+}, 300)
 
 const onClickLeft = () => {
   router.back();

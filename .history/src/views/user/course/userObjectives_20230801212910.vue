@@ -93,9 +93,6 @@ const openObject = (id) => {
       .seat {
         height: 100%;
         width: calc(690px - @objInfoWidth);
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
 
       .ObjInfo {

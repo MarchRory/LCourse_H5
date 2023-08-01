@@ -79,16 +79,7 @@ export default {
       data,
     });
   },
-  async commentToSelf(data: commentToSelfObj) {
-    if (!data.score) {
-      data.score = 80 + Math.floor(Math.random() * 10)
-    }
-    return await request({
-      url: '/curriculum/selfEvaluation/',
-      method: 'POST',
-      data
-    })
-  },
+  commentToSelf(data: )
 
   async sign(signInfo: signInfo) {
     return await request({

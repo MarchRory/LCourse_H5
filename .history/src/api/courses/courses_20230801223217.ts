@@ -13,7 +13,6 @@ interface selectCourseParams {
 } // 后面还要补一个semsesterId
 
 interface commentToCourseObj {
-  score: number; // 自嗨的打分
   courseId: number;
   evaluateText: string;
   anonymous: boolean;

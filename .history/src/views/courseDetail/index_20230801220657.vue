@@ -171,8 +171,7 @@ const getDetails = () => {
       }, 200)
     })
 };
-
-const RegisterNowBtn = debounce(() => {
+const RegisterNowBtn = () => {
   rq.joinCourse(courseId.value).then((res: any) => {
     if (res.code == 200) {
       showSuccessToast('报名成功')
@@ -182,9 +181,8 @@ const RegisterNowBtn = debounce(() => {
     } else {
       showFailToast("遇到错误, 报名失败")
     }
-  })
-}, 500)
-
+  });
+};
 const backBtn = () => {
   router.go(-1);
 };
@@ -193,6 +191,7 @@ const toComment = () => {
 }
 
 const sign = throttle(() => {
+
   if (!signCode.value) {
     showFailToast('还没有输入签到码哦')
     return;

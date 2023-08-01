@@ -8,7 +8,7 @@
       </div>
       <h1>{{ detailsObj.title }}</h1>
 
-      <div v-if="detailsObj.state === 3 && detailsObj.signUpstate == 2" class="tools" @click="showCenter = true">
+      <div v-if="detailsObj.state === 3" class="tools" @click="showCenter = true">
         <van-icon name="edit" size="25" />
       </div>
     </div>
@@ -109,7 +109,6 @@
 <script setup lang='ts'>
 import { ref, defineAsyncComponent, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { debounce, throttle } from "@/utils/freqCtrl/freqCtrl";
 import rq from "@/api/courses/courses";
 import { showFailToast, showSuccessToast } from "vant/es";
 import defaultCover from '@/assets/imgs/Illustration.png'
@@ -171,8 +170,7 @@ const getDetails = () => {
       }, 200)
     })
 };
-
-const RegisterNowBtn = debounce(() => {
+const RegisterNowBtn = () => {
   rq.joinCourse(courseId.value).then((res: any) => {
     if (res.code == 200) {
       showSuccessToast('报名成功')
@@ -182,9 +180,8 @@ const RegisterNowBtn = debounce(() => {
     } else {
       showFailToast("遇到错误, 报名失败")
     }
-  })
-}, 500)
-
+  });
+};
 const backBtn = () => {
   router.go(-1);
 };
@@ -192,7 +189,7 @@ const toComment = () => {
   router.push({ path: '/command', query: { couseId: Number(route.query.courseId), title: detailsObj.title } })
 }
 
-const sign = throttle(() => {
+const sign = () => {
   if (!signCode.value) {
     showFailToast('还没有输入签到码哦')
     return;
@@ -210,8 +207,8 @@ const sign = throttle(() => {
       }
     }
   })
-}, 500)
 
+}
 const close = () => {
   signCode.value = ''
   showCenter.value = false

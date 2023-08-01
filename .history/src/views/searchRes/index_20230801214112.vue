@@ -7,7 +7,7 @@
         </div>
         <div class="search-box">
           <input v-model="searchVal" class="search-ipt" type="text" placeholder="输入课程关键词或课程地点查询" />
-          <img @click="searchBtn" class="search-icon" src="../../assets/imgs/Search-Icon.png" alt="" />
+          <img @click="dt.debounce(searchBtn)" class="search-icon" src="../../assets/imgs/Search-Icon.png" alt="" />
         </div>
       </div>
     </van-sticky>
@@ -38,7 +38,7 @@
 <script setup lang='ts'>
 import { ref, defineAsyncComponent } from "vue";
 import rq from "@/api/courses/courses";
-import { throttle } from '@/utils/freqCtrl/freqCtrl'
+import dt from '@/utils/freqCtrl/freqCtrl'
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
 const courseList = defineAsyncComponent(
@@ -57,8 +57,7 @@ const backBtn = () => {
   router.go(-1);
 };
 //搜索函数
-const searchBtn = throttle(() => {
-  console.log(searchVal.value != "")
+const searchBtn = () => {
   if (searchVal.value != "") {
     rq.getCourses({
       title: searchVal.value,
@@ -85,7 +84,7 @@ const searchBtn = throttle(() => {
       }
     });
   }
-}, 500) 
+}; 
 </script>
 
 <style lang="less" scoped>

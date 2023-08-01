@@ -27,7 +27,7 @@
 
 <script setup>
 import { useUserStore } from "@/store/modules/user";
-import { debounce } from "@/utils/freqCtrl/freqCtrl";
+import { throttle } from "@/utils/freqCtrl/freqCtrl";
 import upload from "@/api/upload/upload.ts";
 import userApi from "@/api/user/user.ts";
 import { showFailToast, showSuccessToast, showToast, Toast } from "vant";
@@ -53,7 +53,7 @@ const beforeRead = (file) => {
   return true;
 };
 
-const onSubmit = debounce(() => {
+const onSubmit = throttle(() => {
   userApi
     .updateUser({
       id: userStore.uid,
@@ -70,7 +70,7 @@ const onSubmit = debounce(() => {
         showFailToast(res.message);
       }
     });
-}, 500)
+}, 300)
 
 const onClickLeft = () => {
   router.back();

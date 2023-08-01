@@ -4,12 +4,13 @@ import { showFailToast } from 'vant';
 import { defineAsyncComponent } from 'vue'
 import rq from '@/api/courses/courses'
 import { showSuccessToast } from 'vant';
-import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import resPic from '@/assets/imgs/commentRes.gif'
+import router from '@/router';
 const backBtn = defineAsyncComponent(
     () => import('@/components/backButton/backButton.vue')
 )
 const route = useRoute()
+console.log(route.query)
 const title = ref(route.query.title)
 const courseId = ref(Number(route.query.courseId))
 const evaluateText = ref('')
@@ -21,38 +22,32 @@ const handleSwitchChange = (value: boolean) => {
 }
 const isCommentSuccess = ref(false)
 
-const submit = debounce(() => {
-    if (!selfComment.value) {
-        showFailToast('你还没有填写自我评价哦')
-        return;
-    }
-
-    Promise.all([
+const submit = () => {
+    if (evaluateText.value && score.value) {
         rq.commentToCourse({
             score: score.value,
             courseId: courseId.value,
             evaluateText: evaluateText.value,
             anonymous: anonymous.value
-        }),
-        rq.commentToSelf({
-            score: score.value,
-            courseId: courseId.value,
-            evaluateText: selfComment.value,
+        }).then((res: any) => {
+            if (res.code == 200) {
+                showSuccessToast('课程评价成功');
+                router.go(-1)
+            } else {
+                showFailToast(res.message)
+            }
         })
-    ]).then((res: any) => {
-        if (res[0].code == 200 && res[1].code == 200) {
-            showSuccessToast('课程评价成功');
-            isCommentSuccess.value = true
-        } else {
-            let message = res[0].code != 200 ? '课程' : '自我'
-            showFailToast('遇到错误, ' + message + '评价失败')
-        }
-    })
-}, 300)
+    } else {
+        showFailToast('还有项目没有填写哦')
+    }
+}
 </script>
 
 <template>
     <div class="container">
+        <div>
+
+        </div>
         <van-sticky :offset-top="0">
             <header>
                 <back-btn />
@@ -84,10 +79,6 @@ const submit = debounce(() => {
                 <div style="text-align: left;margin-left: 20px;">课程评分</div>
                 <van-rate style="margin-bottom: 50px;" v-model="score" :size="25" color="#ffd21e" void-icon="star"
                     void-color="#eee" allow-half />
-                <div
-                    style="text-align: center;margin-bottom: 40px; margin-top: -20px; font-size: 10px; color: rgb(143, 141, 141)">
-                    若不手动打分,
-                    系统将在80~90间随机生成分数</div>
             </div>
 
             <van-button type="warning" size="large" @click="submit">发布评价</van-button>

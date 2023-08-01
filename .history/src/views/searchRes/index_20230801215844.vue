@@ -38,7 +38,7 @@
 <script setup lang='ts'>
 import { ref, defineAsyncComponent } from "vue";
 import rq from "@/api/courses/courses";
-import { throttle } from '@/utils/freqCtrl/freqCtrl'
+import { debounce } from '@/utils/freqCtrl/freqCtrl'
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
 const courseList = defineAsyncComponent(
@@ -57,35 +57,37 @@ const backBtn = () => {
   router.go(-1);
 };
 //搜索函数
-const searchBtn = throttle(() => {
+const searchBtn = () => {
   console.log(searchVal.value != "")
-  if (searchVal.value != "") {
-    rq.getCourses({
-      title: searchVal.value,
-      pageNum: pageNum.value,
-      semesterId: userStore.semesterId,
-      pageSize: 15,
-      state: 0,
-      reviewed: 0
-    }).then((res: any) => {
-      if (res.code === 200) {
-        if (res.data.list.length < 1) {
-          isFound.value = false;
-          isSearch.value = true;
-          searchVal.value = "";
-        } else {
-          res.data.list.forEach((item: any) => {
-            resultsArr.value.push(item)
-          })
-          if (res.data.total != resultsArr.length) {
-            pageNum.value++
+  debounce(() => {
+    if (searchVal.value != "") {
+      rq.getCourses({
+        title: searchVal.value,
+        pageNum: pageNum.value,
+        semesterId: userStore.semesterId,
+        pageSize: 15,
+        state: 0,
+        reviewed: 0
+      }).then((res: any) => {
+        if (res.code === 200) {
+          if (res.data.list.length < 1) {
+            isFound.value = false;
+            isSearch.value = true;
+            searchVal.value = "";
+          } else {
+            res.data.list.forEach((item: any) => {
+              resultsArr.value.push(item)
+            })
+            if (res.data.total != resultsArr.length) {
+              pageNum.value++
+            }
+            isFound.value = true;
           }
-          isFound.value = true;
         }
-      }
-    });
-  }
-}, 500) 
+      });
+    }
+  }, 400)
+}; 
 </script>
 
 <style lang="less" scoped>

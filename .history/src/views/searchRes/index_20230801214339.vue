@@ -57,8 +57,7 @@ const backBtn = () => {
   router.go(-1);
 };
 //搜索函数
-const searchBtn = throttle(() => {
-  console.log(searchVal.value != "")
+const searchBtn = () => {
   if (searchVal.value != "") {
     rq.getCourses({
       title: searchVal.value,
@@ -85,7 +84,7 @@ const searchBtn = throttle(() => {
       }
     });
   }
-}, 500) 
+}; 
 </script>
 
 <style lang="less" scoped>

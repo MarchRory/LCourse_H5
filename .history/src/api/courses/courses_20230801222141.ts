@@ -20,9 +20,10 @@ interface commentToCourseObj {
 }
 
 interface commentToSelfObj {
-  courseId: number | null,   // 课程id
-  score: number,             // 打分, 不打则在80到90间生成随机数
+  courseId: number | null,
+  score: number,
   evaluateText: string
+
 }
 
 interface signInfo {
@@ -79,16 +80,7 @@ export default {
       data,
     });
   },
-  async commentToSelf(data: commentToSelfObj) {
-    if (!data.score) {
-      data.score = 80 + Math.floor(Math.random() * 10)
-    }
-    return await request({
-      url: '/curriculum/selfEvaluation/',
-      method: 'POST',
-      data
-    })
-  },
+  commentToSelf(data: )
 
   async sign(signInfo: signInfo) {
     return await request({

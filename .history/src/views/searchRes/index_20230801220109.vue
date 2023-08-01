@@ -38,7 +38,7 @@
 <script setup lang='ts'>
 import { ref, defineAsyncComponent } from "vue";
 import rq from "@/api/courses/courses";
-import { throttle } from '@/utils/freqCtrl/freqCtrl'
+import { debounce } from '@/utils/freqCtrl/freqCtrl'
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
 const courseList = defineAsyncComponent(
@@ -57,7 +57,7 @@ const backBtn = () => {
   router.go(-1);
 };
 //搜索函数
-const searchBtn = throttle(() => {
+const searchBtn = debounce(() => {
   console.log(searchVal.value != "")
   if (searchVal.value != "") {
     rq.getCourses({

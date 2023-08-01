@@ -6,14 +6,14 @@ export const debounce = (fn: Function, delay: number = 500) => {
         if (timer) {
             clearTimeout(timer)
         }
-        console.log('sss')
+
         timer = setTimeout(() => {
             fn(...args)
         }, delay)
     }
 }
 
-// 节流, 短时间高频触发, 只生效第一次触发
+
 export const throttle = (fn: Function, delay: number = 500) => {
     let flag = ref(true)
 
@@ -24,6 +24,20 @@ export const throttle = (fn: Function, delay: number = 500) => {
             fn(...args)
             flag.value = true
         }, delay)
+    }
+}
+
+// 节流, 短时间高频触发, 只生效第一次触发
+export function throttle(fn: { apply: (arg0: any, arg1: any[]) => void }, delay: number = 400) {
+    var timerId = true
+    return function (this: any, ...args: any) {
+        if (timerId) {
+            fn.apply(this, args)
+            timerId = false
+            setTimeout(() => {
+                timerId = true
+            }, delay)
+        }
     }
 }
 

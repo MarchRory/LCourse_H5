@@ -12,17 +12,11 @@ interface selectCourseParams {
   reviewed?: number | null
 } // 后面还要补一个semsesterId
 
-interface commentToCourseObj {
+interface commentObj {
   score: number; // 自嗨的打分
   courseId: number;
   evaluateText: string;
   anonymous: boolean;
-}
-
-interface commentToSelfObj {
-  courseId: number | null,   // 课程id
-  score: number,             // 打分, 不打则在80到90间生成随机数
-  evaluateText: string
 }
 
 interface signInfo {
@@ -72,22 +66,12 @@ export default {
     });
   },
 
-  async commentToCourse(data: commentToCourseObj) {
+  async commentToCourse(data: commentObj) {
     return await request({
       url: "/curriculum/courseEvaluate/",
       method: "POST",
       data,
     });
-  },
-  async commentToSelf(data: commentToSelfObj) {
-    if (!data.score) {
-      data.score = 80 + Math.floor(Math.random() * 10)
-    }
-    return await request({
-      url: '/curriculum/selfEvaluation/',
-      method: 'POST',
-      data
-    })
   },
 
   async sign(signInfo: signInfo) {
