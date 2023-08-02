@@ -37,6 +37,7 @@ declare module 'vue' {
     VanPullRefresh: typeof import('vant/es')['PullRefresh']
     VanRate: typeof import('vant/es')['Rate']
     VanSkeleton: typeof import('vant/es')['Skeleton']
+    VanSkeletonAvatar: typeof import('vant/es')['SkeletonAvatar']
     VanSkeletonImage: typeof import('vant/es')['SkeletonImage']
     VanSkeletonParagraph: typeof import('vant/es')['SkeletonParagraph']
     VanSticky: typeof import('vant/es')['Sticky']
