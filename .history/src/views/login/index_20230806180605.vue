@@ -36,9 +36,8 @@ const onSubmit = (values) => {
 
 const authLogin = () => {
     rq.yibanLogin()
-};
-
-(() => {
+}
+onMounted(() => {
     if (getToken()) {
         router.replace({ path: '/wait' })
     }
@@ -52,7 +51,7 @@ const authLogin = () => {
         </div>
         <div class="content">
             <span style="color: #787877; font-size: 30px; margin-top: -10px;">登录</span>
-            <span style="color: #949390; letter-spacing: 0px; font-size: 15px;">选择登录方式</span>
+            <span style="color: #949390; letter-spacing: 0px; font-size: 15px;">使用XXX账号登录</span>
         </div>
         <div class="loginForm">
             <van-form @submit="onSubmit">
@@ -99,6 +98,7 @@ const authLogin = () => {
     border-radius: 16px;
     background: #E3562A;
     border: 0;
+    font-weight: bold;
 }
 
 /**  loading  */
@@ -158,7 +158,7 @@ const authLogin = () => {
             font-family: Gen Jyuu Gothic;
             letter-spacing: 0px;
             line-height: 18px;
-            font-weight: 500;
+            font-weight: 100;
         }
 
         :deep(.authButton) {

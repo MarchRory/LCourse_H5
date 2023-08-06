@@ -27,6 +27,7 @@ router.beforeEach((to: any, from, next: Function) => {
         }
     } else {  // 初次登录无 token 或者 退出登录
         console.log(from)
+        console.log('to: ', whiteList.indexOf(to.path) != -1 && !to.query.isLogOut)
         if (whiteList.indexOf(to.path) != -1 && !to.query.isLogOut) {
             let path = window.location.href
             if (path.includes('?')) {
@@ -37,12 +38,9 @@ router.beforeEach((to: any, from, next: Function) => {
             } else {
                 next()
             }
+            //next(`/?redirect=${to.path}`)
         } else {
-            // to.query 里有isLogOut, 但是tokne依然在url里, 这时候必须要对url处理去token
-            let url = window.location.href
-            url = url.split('wait')[0] + '#/'
-            window.location.href = url
-            //next()
+            next()
             NProgress.done()
         }
     }

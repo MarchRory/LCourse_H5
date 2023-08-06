@@ -13,8 +13,7 @@
       </van-dropdown-menu>
     </div>
     <course-page-skeleton :skeLoad="listLoading" v-if="listLoading"></course-page-skeleton>
-    <div class="container" v-else
-      :style="{ height: `calc(100vh - ${headerHeight}px - var(--van-tabbar-height))`, overflowY: 'auto', overflowX: 'hidden' }">
+    <div class="container" v-else>
       <van-empty v-if="!hasTotal" description="暂无课程信息" />
 
       <van-pull-refresh v-else v-model="reLoad" @refresh="refresh">
@@ -36,7 +35,6 @@ import CoursePreview from "@/components/coursePreview/coursePreview.vue";
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
 import { useUserStore } from '@/store/modules/user/index'
 import { ref, reactive, onMounted } from 'vue'
-import { listProps } from "vant";
 const userStore = useUserStore()
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
@@ -44,7 +42,6 @@ const themeVars = reactive({
 });
 const courseList = ref([]);
 const header = ref()
-const headerHeight = ref(0)
 const router = useRouter();
 const state = ref(null);
 const pageNUm = ref(1)
@@ -61,7 +58,7 @@ watch(state, () => {
 const option = [
   { text: "全部", value: null },
   { text: "报名中", value: 2 },
-  { text: '审核中', value: 5 },
+  { text: '审核中', value: -1 },
   { text: "进行中", value: 3 },
   { text: "已结束", value: 4 },
 ];
@@ -107,9 +104,7 @@ const onLoad = () => {
       if (!total) {
         return;
       }
-      list.forEach((item) => {
-        courseList.value.push(item)
-      })
+      courseList.value = res.data.list;
     })
     .finally(() => {
       loading.value = true;
@@ -126,7 +121,7 @@ const openEvaluations = () => {
 }
 
 onMounted(() => {
-  headerHeight.value = header.value.offsetHeight
+  console.log(header.value.offsetHeight)
 })
 </script>
 
@@ -136,7 +131,7 @@ onMounted(() => {
 }
 
 .container {
-  padding: 10px 20px 20px 20px;
+  padding: 20px;
   background-color: #f5f6f8;
 
   .list {

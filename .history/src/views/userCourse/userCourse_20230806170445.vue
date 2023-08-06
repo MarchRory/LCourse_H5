@@ -1,23 +1,18 @@
 <template>
   <van-config-provider :theme-vars="themeVars">
-    <div ref="header">
-      <van-nav-bar @click-right="openEvaluations">
-        <template #title><span style="color: #e1562a">我的课程</span></template>
-        <template #right>
-          <van-icon v-if="!userStore.EvaluationsCnt" name="chat-o" size="28" />
-          <van-icon v-else name="chat-o" size="28" :badge="userStore.EvaluationsCnt" />
-        </template>
-      </van-nav-bar>
-      <van-dropdown-menu active-color="#e1562a">
-        <van-dropdown-item v-model="state" :options="option" />
-      </van-dropdown-menu>
-    </div>
+    <van-nav-bar @click-right="openEvaluations">
+      <template #title><span style="color: #e1562a">我的课程</span></template>
+      <template #right>
+        <van-icon v-if="!userStore.EvaluationsCnt" name="chat-o" size="28" />
+        <van-icon v-else name="chat-o" size="28" :badge="userStore.EvaluationsCnt" />
+      </template>
+    </van-nav-bar>
+    <van-dropdown-menu active-color="#e1562a">
+      <van-dropdown-item v-model="state" :options="option" />
+    </van-dropdown-menu>
     <course-page-skeleton :skeLoad="listLoading" v-if="listLoading"></course-page-skeleton>
-    <div class="container" v-else
-      :style="{ height: `calc(100vh - ${headerHeight}px - var(--van-tabbar-height))`, overflowY: 'auto', overflowX: 'hidden' }">
-      <van-empty v-if="!hasTotal" description="暂无课程信息" />
-
-      <van-pull-refresh v-else v-model="reLoad" @refresh="refresh">
+    <div class="container" v-else>
+      <van-pull-refresh v-model="reLoad" @refresh="refresh">
         <div class="list">
           <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
             <van-cell v-for="course in courseList" :key="course.id">
@@ -35,33 +30,30 @@ import courseApi from "@/api/courses/courses.ts";
 import CoursePreview from "@/components/coursePreview/coursePreview.vue";
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
 import { useUserStore } from '@/store/modules/user/index'
-import { ref, reactive, onMounted } from 'vue'
-import { listProps } from "vant";
+import { ref, reactive } from 'vue'
 const userStore = useUserStore()
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",
 });
 const courseList = ref([]);
-const header = ref()
-const headerHeight = ref(0)
 const router = useRouter();
-const state = ref(null);
+const state = ref(0);
 const pageNUm = ref(1)
 const passType = ref(null)
 const listLoading = ref(false);
-const hasTotal = ref(0)
+const total = ref(0)
 const reLoad = ref(false)
 watch(state, () => {
   passType.value = state.value >= 3 ? 1 : null
-  hasTotal.value = 0
-  courseList.value = []
-  onLoad();
+  total.value = 0
+  courseList.value = [=
+    onLoad();
 });
 const option = [
   { text: "全部", value: null },
   { text: "报名中", value: 2 },
-  { text: '审核中', value: 5 },
+  { text: '审核中', value: -1 },
   { text: "进行中", value: 3 },
   { text: "已结束", value: 4 },
 ];
@@ -102,14 +94,8 @@ const onLoad = () => {
       passType: passType.value
     })
     .then((res) => {
-      const { list, total } = res.data
-      hasTotal.value = total
-      if (!total) {
-        return;
-      }
-      list.forEach((item) => {
-        courseList.value.push(item)
-      })
+
+      courseList.value = res.data.list;
     })
     .finally(() => {
       loading.value = true;
@@ -117,17 +103,12 @@ const onLoad = () => {
       listLoading.value = false;
     })
 };
-onLoad();
 const onClickLeft = () => {
   router.back();
 };
 const openEvaluations = () => {
   router.push({ path: '/evalutions' })
 }
-
-onMounted(() => {
-  headerHeight.value = header.value.offsetHeight
-})
 </script>
 
 <style scoped lang="less">
@@ -136,7 +117,7 @@ onMounted(() => {
 }
 
 .container {
-  padding: 10px 20px 20px 20px;
+  padding: 20px;
   background-color: #f5f6f8;
 
   .list {

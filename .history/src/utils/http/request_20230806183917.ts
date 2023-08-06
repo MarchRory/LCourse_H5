@@ -47,7 +47,7 @@ service.interceptors.response.use(
             case 100: // 请求重定向
                 showFailToast('登录过期, 请重新登录')
                 removeToken()
-                router.push({ path: `/?redirect=/` })
+                router.replace({ path: '/' })
                 break;
             default:
                 break;

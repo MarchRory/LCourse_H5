@@ -36,9 +36,8 @@ const onSubmit = (values) => {
 
 const authLogin = () => {
     rq.yibanLogin()
-};
-
-(() => {
+}
+onMounted(() => {
     if (getToken()) {
         router.replace({ path: '/wait' })
     }

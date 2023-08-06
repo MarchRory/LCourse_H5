@@ -239,7 +239,7 @@ onMounted(() => {
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    height: 90px;
+    height: 60px;
     background-color: white;
 
     .application-btn {
@@ -256,7 +256,7 @@ onMounted(() => {
   }
 
   .mainInfo {
-    height: calc(100vh - 4vh - 4rem - 70px);
+    height: calc(100vh - 4vh - 4rem - 120px);
     overflow-y: auto;
   }
 

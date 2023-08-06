@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
 import { showFailToast } from 'vant';
-import { getToken, removeToken } from '../auth/auth';
-import router from '../../router/index'
+import { getToken } from '../auth/auth';
+import { useUserStore } from '@/store/modules/user';
 /**
  *  axios版本: 1.2.0-alpha.1
  *  1.4.0版本用着有些问题不知道怎么解决, 这里就不弄了
@@ -46,8 +46,8 @@ service.interceptors.response.use(
                 break;
             case 100: // 请求重定向
                 showFailToast('登录过期, 请重新登录')
-                removeToken()
-                router.push({ path: `/?redirect=/` })
+                let userStore = useUserStore()
+                userStore.logOut()
                 break;
             default:
                 break;

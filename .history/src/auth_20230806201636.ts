@@ -40,9 +40,9 @@ router.beforeEach((to: any, from, next: Function) => {
         } else {
             // to.query 里有isLogOut, 但是tokne依然在url里, 这时候必须要对url处理去token
             let url = window.location.href
-            url = url.split('wait')[0] + '#/'
-            window.location.href = url
-            //next()
+            url = url.split('?token=')[0] + '#/'
+            console.log('tokenUrl', url)
+            next()
             NProgress.done()
         }
     }

@@ -36,7 +36,6 @@ import CoursePreview from "@/components/coursePreview/coursePreview.vue";
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
 import { useUserStore } from '@/store/modules/user/index'
 import { ref, reactive, onMounted } from 'vue'
-import { listProps } from "vant";
 const userStore = useUserStore()
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
@@ -61,7 +60,7 @@ watch(state, () => {
 const option = [
   { text: "全部", value: null },
   { text: "报名中", value: 2 },
-  { text: '审核中', value: 5 },
+  { text: '审核中', value: -1 },
   { text: "进行中", value: 3 },
   { text: "已结束", value: 4 },
 ];
@@ -107,9 +106,7 @@ const onLoad = () => {
       if (!total) {
         return;
       }
-      list.forEach((item) => {
-        courseList.value.push(item)
-      })
+      courseList.value = res.data.list;
     })
     .finally(() => {
       loading.value = true;

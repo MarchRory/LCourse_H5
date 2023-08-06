@@ -80,7 +80,7 @@ export const useUserStore = defineStore("userInfo", {
             window.localStorage.clear()
           })
           .finally(() => {
-            router.replace({ path: '/', query: { isLogOut: 1 } });
+            router.replace({ path: "/", });
           })
       });
     },

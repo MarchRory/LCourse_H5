@@ -25,26 +25,22 @@ router.beforeEach((to: any, from, next: Function) => {
             next()
             NProgress.done()
         }
-    } else {  // 初次登录无 token 或者 退出登录
+    } else {  // 初次登录无 token 或者 token 过期
         console.log(from)
-        if (whiteList.indexOf(to.path) != -1 && !to.query.isLogOut) {
+        if (whiteList.indexOf(to.path) != -1) {
             let path = window.location.href
             if (path.includes('?')) {
                 const token = window.location.href.split('?')[1].split('=')[1].split('#/')[0]
                 setToken(token)
                 next('/wait')
                 NProgress.done()
-            } else {
-                next()
             }
+            //next(`/?redirect=${to.path}`)
         } else {
-            // to.query 里有isLogOut, 但是tokne依然在url里, 这时候必须要对url处理去token
-            let url = window.location.href
-            url = url.split('wait')[0] + '#/'
-            window.location.href = url
-            //next()
+            next(`/?redirect=${to.path}`)
             NProgress.done()
         }
+        next()
     }
     NProgress.done()
 })

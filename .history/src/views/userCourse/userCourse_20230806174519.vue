@@ -61,7 +61,7 @@ watch(state, () => {
 const option = [
   { text: "全部", value: null },
   { text: "报名中", value: 2 },
-  { text: '审核中', value: 5 },
+  { text: '审核中', value: -1 },
   { text: "进行中", value: 3 },
   { text: "已结束", value: 4 },
 ];

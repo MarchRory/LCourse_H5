@@ -77,10 +77,10 @@ export const useUserStore = defineStore("userInfo", {
         this.clearToken()
           .then(() => {
             useUserStore().$reset();
-            window.localStorage.clear()
+            //window.localStorage.clear()
           })
           .finally(() => {
-            router.replace({ path: '/', query: { isLogOut: 1 } });
+            router.replace({ path: "/?redirect=/" });
           })
       });
     },

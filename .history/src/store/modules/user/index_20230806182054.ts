@@ -8,7 +8,7 @@ interface badge {
 }
 
 interface userInfo extends badge {
-  token: string | null;
+  token: string | undefined;
   realName: String | null;
   name: string | null;
   sex: number | null;
@@ -49,7 +49,7 @@ export const useUserStore = defineStore("userInfo", {
     clearToken() {
       return new Promise((resolve) => {
         removeToken();
-        this.token = null;
+        this.token = undefined;
         resolve(true)
       })
     },
@@ -80,7 +80,7 @@ export const useUserStore = defineStore("userInfo", {
             window.localStorage.clear()
           })
           .finally(() => {
-            router.replace({ path: '/', query: { isLogOut: 1 } });
+            router.replace({ path: "/" });
           })
       });
     },

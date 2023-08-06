@@ -73,6 +73,7 @@ const authLogin = () => {
                 <div class="tools">
                     <van-button round block native-type="submit" class="button">账号密码登录</van-button>
                     <van-button round block class="button authButton" @click="authLogin">易班授权登录</van-button>
+                    <span style="color: #949390; letter-spacing: 0px; font-size: 15px;">选择登录方式</span>
                 </div>
             </van-form>
         </div>

@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie'
+
 const tokenKey = 'swpu_token'
 
 export function getToken() {
@@ -9,5 +11,5 @@ export function setToken(token: string) {
 }
 
 export function removeToken(): void {
-    return localStorage.removeItem(tokenKey)
+    localStorage.removeItem(tokenKey)
 }

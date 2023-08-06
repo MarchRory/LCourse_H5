@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { ref } from 'vue';
 import { getToken, setToken, removeToken } from "@/utils/auth/auth";
 import rq from "@/api/user/user";
 import router from "@/router";
@@ -80,7 +81,7 @@ export const useUserStore = defineStore("userInfo", {
             window.localStorage.clear()
           })
           .finally(() => {
-            router.replace({ path: '/', query: { isLogOut: 1 } });
+            router.replace({ path: '/', query: { isLogOut: true } });
           })
       });
     },
