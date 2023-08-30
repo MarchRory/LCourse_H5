@@ -33,6 +33,7 @@ router.beforeEach((to: any, from, next: Function) => {
             if (url.indexOf('user') != -1 && originUrl.includes('errorMessage')) {
                 let message = window.location.href.split('errorMessage=')[1].split('#/')[0]
                 let res = decodeURIComponent(message)
+                console.log(res)
                 setTimeout(() => {
                     showNotify({ type: 'danger', message: res })
                 }, 400)

@@ -18,8 +18,9 @@
           <van-cell title="信息修改" is-link value="去修改" @click="open" />
         </van-cell-group>
         <van-cell-group title="我的易班">
-          <van-cell v-if="userStore.hasBind" title="易班账号绑定" value="已绑定" />
-          <van-cell v-else title="易班账号绑定" value='去绑定' is-link @click="bindYiban" />
+          <van-cell title="易班账号绑定" value='去绑定' is-link @click="bindYiban" />
+          <!--           <van-cell v-if="userStore.hasBind" title="易班账号绑定" value="已绑定" />
+          <van-cell v-else title="易班账号绑定" value='去绑定' is-link @click="bindYiban" /> -->
         </van-cell-group>
         <van-cell-group title="课程信息">
           <van-cell title="历史规划" value="" is-link @click="toUserObjectives" />

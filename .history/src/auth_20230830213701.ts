@@ -30,11 +30,10 @@ router.beforeEach((to: any, from, next: Function) => {
             let originUrl = window.location.href
             let url = originUrl.split('/#/')[0].split('/')
 
-            if (url.indexOf('user') != -1 && originUrl.includes('errorMessage')) {
+            if (url[url.length - 1] === 'user' && originUrl.includes('errorMessage')) {
                 let message = window.location.href.split('errorMessage=')[1].split('#/')[0]
-                let res = decodeURIComponent(message)
                 setTimeout(() => {
-                    showNotify({ type: 'danger', message: res })
+                    showNotify({ type: 'danger', message: message })
                 }, 400)
                 next({ path: '/user', query: { isBind: false } })
             }

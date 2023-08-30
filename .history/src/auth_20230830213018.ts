@@ -14,31 +14,19 @@ router.beforeEach((to: any, from, next: Function) => {
     const hasToken = getToken()
     // 读取到token
     if (hasToken) {
-        /*         if (window.location.href.includes('errorMessage')) {
-                    let message = window.location.href.split('errorMessage=')[1].split('#/')[0]
-                    setTimeout(() => {
-                        showNotify({ type: 'danger', message: message })
-                    }, 400)
-                    let url = window.location.href.split('?')[0]
-                    window.location.href = url 
-                    debugger
-                    next()
-                    NProgress.done()
-                } */
+        if (window.location.href.includes('errorMessage')) {
+            let message = window.location.href.split('errorMessage=')[1].split('#/')[0]
+            setTimeout(() => {
+                showNotify({ type: 'danger', message: message })
+            }, 400)
+            let url = window.location.href.split('?')[0]
+            window.location.href = url
+            NProgress.done()
+        }
 
         if (to.path === '/') {
-            let originUrl = window.location.href
-            let url = originUrl.split('/#/')[0].split('/')
-
-            if (url.indexOf('user') != -1 && originUrl.includes('errorMessage')) {
-                let message = window.location.href.split('errorMessage=')[1].split('#/')[0]
-                let res = decodeURIComponent(message)
-                setTimeout(() => {
-                    showNotify({ type: 'danger', message: res })
-                }, 400)
-                next({ path: '/user', query: { isBind: false } })
-            }
-            else if (url[url.length - 1] === 'user' && !originUrl.includes('errorMessage')) {
+            let url = window.location.href.split('/#/')[0].split('/')
+            if (url[url.length - 1] === 'user') {
                 next({ path: '/user', query: { isBind: true } })
             } else {
                 next('/wait')
