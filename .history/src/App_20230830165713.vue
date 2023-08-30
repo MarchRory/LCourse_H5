@@ -30,13 +30,16 @@ router.beforeEach((to: any, from: any) => {
 </script>
 
 <style lang="less">
+::root {
+  --van-tabbar-height: 130px !important;
+}
+
 body {
   display: block;
 }
 
 #app {
   padding: 0;
-  --van-tabbar-height: 130px !important;
 
   .van-sticky--fixed {
     background-color: white;

@@ -164,7 +164,7 @@ const onSubmit = debounce(() => {
       departmentId: myDepartmentId.value,
       department: myDepartmentName.value,
       sex: sex.value == '男' ? 1 : 0,
-      contact: contact.value
+      contact: contact
     })
     .then((res) => {
       if (res.code == 200) {
@@ -173,7 +173,7 @@ const onSubmit = debounce(() => {
         userStore.enrollmentYear = enrollmentYear.value
         userStore.department = myDepartmentName.value
         userStore.sex = sex.value == '男' ? 1 : 0
-        userStore.contact = contact.value
+        userStore.contact = contact
         showSuccessToast("信息已更新");
         router.go(-1);
       } else {

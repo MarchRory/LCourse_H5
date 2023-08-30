@@ -236,7 +236,7 @@ onActivated(() => {
 
   .application {
     position: fixed;
-    bottom: 30px;
+    bottom: 20px;
     padding-right: 15px;
     width: calc(100% - 8vw);
     display: flex;

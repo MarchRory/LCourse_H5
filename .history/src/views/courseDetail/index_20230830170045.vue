@@ -232,11 +232,11 @@ onActivated(() => {
 
 <style lang="less" scoped>
 .details {
-  padding: 10px 4vw;
+  padding: 20px 4vw;
 
   .application {
     position: fixed;
-    bottom: 30px;
+    bottom: 20px;
     padding-right: 15px;
     width: calc(100% - 8vw);
     display: flex;

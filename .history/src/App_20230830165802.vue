@@ -36,7 +36,7 @@ body {
 
 #app {
   padding: 0;
-  --van-tabbar-height: 130px !important;
+  --van-tabbar-height: 50px !important;
 
   .van-sticky--fixed {
     background-color: white;
