@@ -109,7 +109,7 @@ export default {
 <style scoped lang="less">
 .course {
   width: 680px;
-  //min-height: 500px;
+  min-height: 600px;
   height: auto;
   border-radius: 30px;
   background-color: white;
@@ -124,7 +124,7 @@ export default {
     background-color: #65aaea;
     color: white;
     left: 67%;
-    bottom: 5%;
+    top: 60%;
   }
 
   .complusoryTag {
@@ -140,7 +140,7 @@ export default {
     padding: 7px 18px;
     color: white;
     left: 6%;
-    bottom: 5%;
+    top: 60%;
   }
 
   .timeRange,
@@ -153,7 +153,6 @@ export default {
 
   .timeRange {
     color: #5ba092;
-
   }
 
   .title {

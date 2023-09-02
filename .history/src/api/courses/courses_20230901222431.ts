@@ -110,17 +110,6 @@ export default {
 
 
   /**
-   * 获取未读考评信息小红点
-   * @returns 
-   */
-  async getUnreadEvalutionsCnt() {
-    return await request({
-      url: '/curriculum/evaluations/count',
-      method: 'GET'
-    })
-  },
-
-  /**
    * 考评信息回显
    * @param data page, pageSize
    * @returns 

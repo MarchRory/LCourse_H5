@@ -153,7 +153,6 @@ export default {
 
   .timeRange {
     color: #5ba092;
-
   }
 
   .title {

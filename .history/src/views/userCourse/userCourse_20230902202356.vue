@@ -14,10 +14,10 @@
     </div>
     <course-page-skeleton :skeLoad="listLoading" v-if="listLoading" />
     <div class="container" v-else>
+      <van-empty v-if="!hasTotal" description="暂无课程信息" />
 
-      <div class="list" :style="{ height: `calc(100vh - ${headerHeight}px - var(--van-tabbar-height))` }">
-        <van-empty v-if="!hasTotal" description="暂无课程信息" />
-        <van-pull-refresh v-else v-model="reLoad" @refresh="refresh"
+      <div v-else class="list" :style="{ height: `calc(100vh - ${headerHeight}px - var(--van-tabbar-height))` }">
+        <van-pull-refresh v-model="reLoad" @refresh="refresh"
           :style="{ height: `calc(100vh - ${headerHeight}px - var(--van-tabbar-height))`, overflowY: 'auto', overflowX: 'hidden' }">
           <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
             <van-cell v-for="course in courseList" :key="course.id">
@@ -137,7 +137,8 @@ onMounted(() => {
 
 .container {
   padding: 10px 20px 20px 20px;
-  background-color: #f5f6f8;
+  //background-color: #f5f6f8;
+  background-color: rgb(245, 246, 248);
 
   .list {
     //height: calc(100vh - 20px - var(--van-tabbar-height) - var(--van-nav-bar-height)*2);

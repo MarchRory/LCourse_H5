@@ -109,7 +109,7 @@ export default {
 <style scoped lang="less">
 .course {
   width: 680px;
-  //min-height: 500px;
+  min-height: 600px;
   height: auto;
   border-radius: 30px;
   background-color: white;
@@ -153,7 +153,6 @@ export default {
 
   .timeRange {
     color: #5ba092;
-
   }
 
   .title {

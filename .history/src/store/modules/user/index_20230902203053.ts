@@ -90,18 +90,18 @@ export const useUserStore = defineStore("userInfo", {
     getEvaluationsCnt(data: number) {
       this.EvaluationsCnt = data
     },
+    clearState() { },
     logOut() {
-      rq.logOut()
-        .then(() => {
-          this.clearToken()
-            .then(() => {
-              useUserStore().$reset();
-              window.localStorage.clear()
-            })
-            .finally(() => {
-              router.replace({ path: '/', query: { isLogOut: 1 } });
-            })
-        });
+      rq.logOut().then(() => {
+        this.clearToken()
+          .then(() => {
+            useUserStore().$reset();
+            window.localStorage.clear()
+          })
+          .finally(() => {
+            router.replace({ path: '/', query: { isLogOut: 1 } });
+          })
+      });
     },
   },
   getters: {},

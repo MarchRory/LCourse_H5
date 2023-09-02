@@ -3,6 +3,25 @@ import { getToken, setToken, removeToken } from "@/utils/auth/auth";
 import rq from "@/api/user/user";
 import router from "@/router";
 
+function initState() {
+  return {
+    token: getToken(),
+    realName: null,
+    name: null,
+    studentId: null, //学号
+    avatar: null,
+    hasBind: false,
+    uid: null,
+    enrollmentYear: null,
+    sex: null,
+    contact: null,
+    semesterId: null,
+    EvaluationsCnt: 0,
+    semesterName: null,
+    department: null
+  }
+}
+
 interface badge {
   EvaluationsCnt: number
 }
@@ -25,22 +44,7 @@ interface userInfo extends badge {
 
 export const useUserStore = defineStore("userInfo", {
   state: (): userInfo => {
-    return {
-      token: getToken(),
-      realName: null,
-      name: null,
-      studentId: null, //学号
-      avatar: null,
-      hasBind: false,
-      uid: null,
-      enrollmentYear: null,
-      sex: null,
-      contact: null,
-      semesterId: null,
-      EvaluationsCnt: 0,
-      semesterName: null,
-      department: null
-    };
+    return initState()
   },
   actions: {
     init(token: string) {
@@ -90,18 +94,19 @@ export const useUserStore = defineStore("userInfo", {
     getEvaluationsCnt(data: number) {
       this.EvaluationsCnt = data
     },
+    clearState() { },
     logOut() {
-      rq.logOut()
-        .then(() => {
-          this.clearToken()
-            .then(() => {
-              useUserStore().$reset();
-              window.localStorage.clear()
-            })
-            .finally(() => {
-              router.replace({ path: '/', query: { isLogOut: 1 } });
-            })
-        });
+      rq.logOut().then(() => {
+        this.clearState();
+        this.clearToken()
+          .then(() => {
+            useUserStore().$reset();
+            window.localStorage.clear()
+          })
+          .finally(() => {
+            router.replace({ path: '/', query: { isLogOut: 1 } });
+          })
+      });
     },
   },
   getters: {},

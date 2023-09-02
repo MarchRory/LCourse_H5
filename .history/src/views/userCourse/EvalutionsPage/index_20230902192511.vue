@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user/index';
-import { reactive } from 'vue'
+import { reactive, defineAsyncComponent } from 'vue'
 import rq from '@/api/courses/courses'
 import router from '@/router';
 import { showNotify } from 'vant';
+const skeleton = defineAsyncComponent(
+    () => import('@/components/coursePageSkeleton/coursePageSkeleton.vue')
+);
 const defaultCover = ref('');
 (async () => {
     let dc = await import("@/assets/imgs/Cool-Kids-Discussion.png");
@@ -14,7 +17,7 @@ const themeVars = reactive({
     navBarIconColor: "#e1562a",
 });
 const EvaluationList = ref([] as any)
-const hasTotal = ref(-1)
+const hasTotal = ref(0)
 const page = ref(1)
 const pageSize = ref(10)             // 关于刷新的Size选择, 先留着，后面看有没有什么对Size的一些处理需求
 const reLoad = ref(false)
@@ -67,7 +70,6 @@ const getEvalutionList = () => {
                 // 有考评消息
                 if (EvaluationList.value.length < total) {
                     list.forEach((item: any) => {
-                        item.score = 5 * (item.score / 100)
                         EvaluationList.value.push(item)
                     });
                 }
@@ -87,14 +89,12 @@ const refreshList = () => {
     page.value = 1;
     EvaluationList.value = [];
     finished.value = false
-    reLoad.value = true;
-    (async () => {
-        getEvalutionList()
-    })()
+    reLoad.value = true
+        (async () => {
+            getEvalutionList()
+        })()
         .finally(() => {
-            setTimeout(() => {
-                reLoad.value = false
-            }, 400)
+            reLoad.value = false
         })
 }
 
@@ -111,52 +111,17 @@ const refreshList = () => {
                     <span style="color: #e1562a">全部已读</span>
                 </template>
             </van-nav-bar>
-            <van-skeleton v-if="listLoading" id="reFreashSke">
-                <template #template>
-                    <div :style="{ display: 'flex', width: '90vw', justifyContent: 'flex-start', flexDirection: 'column' }">
-                        <div style="display: flex;">
-                            <van-skeleton-image />
-                            <div :style="{ flex: 1, marginLeft: '16px' }">
-                                <van-skeleton-paragraph row-width="60%" v-for="(index) in 3" :key="index" />
-                            </div>
-                        </div>
-                        <div style="margin-top: 20px;">
-                            <van-skeleton-paragraph v-for="(index) in 5" :key="index" />
-                        </div>
-                    </div>
-                </template>
-            </van-skeleton>
+            <skeleton :skeLoad="listLoading" v-if="listLoading"></skeleton>
             <div class="mainBox" v-else>
+
                 <van-empty v-if="!hasTotal" description="当前暂无考评消息" />
                 <div v-else class="list">
-                    <van-skeleton v-show="reLoad" id="reFreashSke">
-                        <template #template>
-                            <div
-                                :style="{ display: 'flex', width: '90vw', justifyContent: 'flex-start', flexDirection: 'column' }">
-                                <div style="display: flex;">
-                                    <van-skeleton-image />
-                                    <div :style="{ flex: 1, marginLeft: '16px' }">
-                                        <van-skeleton-paragraph row-width="60%" />
-                                        <van-skeleton-paragraph />
-                                        <van-skeleton-paragraph />
-                                        <van-skeleton-paragraph />
-                                    </div>
-                                </div>
-                                <div style="margin-top: 20px;">
-                                    <van-skeleton-paragraph />
-                                    <van-skeleton-paragraph />
-                                    <van-skeleton-paragraph />
-                                    <van-skeleton-paragraph />
-                                </div>
-                            </div>
-                        </template>
-                    </van-skeleton>
-                    <van-pull-refresh v-show="!reLoad" v-model="reLoad" @refresh="refreshList">
+                    <van-pull-refresh v-model="reLoad" @refresh="refreshList">
                         <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了"
                             @load="getEvalutionList">
                             <van-cell v-for="(item, index) in EvaluationList" :key="index"
                                 @click="openDetail(item.courseId)"
-                                :style="{ backgroundColor: item.checked ? '#f1f1f1' : '#ffffff' }">
+                                :style="{ backgroundColor: item.checked ? '#ffffff' : '#f1f1f1' }">
                                 <div class="eachEvaluation">
                                     <div class="Info">
                                         <van-image width="160px" height="96px" fit="cover" :src="item.cover || defaultCover"
@@ -211,20 +176,6 @@ const refreshList = () => {
             height: calc(100vh - var(--van-nav-bar-height));
         }
 
-        .list {
-            #reFreashSke {
-                margin-top: 30px;
-
-                :deep(.van-skeleton-image) {
-                    background: #fbece1;
-                }
-
-                :deep(.van-skeleton-paragraph) {
-                    background-color: #fee9dd;
-                }
-            }
-        }
-
         .eachEvaluation {
             display: flex;
             flex-direction: column;
@@ -243,8 +194,7 @@ const refreshList = () => {
                 :deep(.van-image) {
                     background-color: bisque;
                     border-radius: 10px;
-                    overflow: hidden;
-                    border: 4px solid #f06622d1;
+                    border: 2px solid #f06622d1;
                 }
 
                 .baseInfo {

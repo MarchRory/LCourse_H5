@@ -8,7 +8,8 @@
         </div>
         <h1>{{ detailsObj.title }}</h1>
 
-        <div v-if="detailsObj.signUpstate == 2" class="tools" @click="showCenter = true">
+        <!-- <div v-if="detailsObj.signUpstate == 2" class="tools" @click="showCenter = true"> -->
+        <div class="tools" @click="showCenter = true">
           <div class="tools" @click="showCenter = true">
             <van-icon name="edit" size="30" />
           </div>
@@ -151,7 +152,7 @@ const checkStaus = () => {
   } else if (detailsObj.value.signUpstate === 3) {        // 完成签到 
     btnState.value = 0
     btnContent.value = '还未填写评价'
-  } else if (detailsObj.value.signUpstate === 4) {        // 完成课程自评
+  } else if (detailsObj.value.signUpstate === 4) {           // 完成课程自评
     btnState.value = 0
     btnContent.value = '等待老师考评'
   } else {                                                // 完成自评且老师已经考评, 此时全部完成
@@ -319,7 +320,6 @@ onActivated(() => {
   .details-top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     height: 4rem;
 
     .back-btn {

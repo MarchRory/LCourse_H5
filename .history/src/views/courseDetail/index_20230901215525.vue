@@ -21,7 +21,7 @@
           <van-image width="100%" height="240" fit="cover" lazy-load :src="detailsObj.cover || defaultCover" />
         </div>
         <div class="label">
-          <span>{{ detailsObj.courseCategory }}</span>
+          <span>{{ detailsObj.category }}</span>
         </div>
 
         <div class="info">
@@ -151,7 +151,7 @@ const checkStaus = () => {
   } else if (detailsObj.value.signUpstate === 3) {        // 完成签到 
     btnState.value = 0
     btnContent.value = '还未填写评价'
-  } else if (detailsObj.value.signUpstate === 4) {        // 完成课程自评
+  } else if (detailsObj.value.signUpstate === 4) {           // 完成课程自评
     btnState.value = 0
     btnContent.value = '等待老师考评'
   } else {                                                // 完成自评且老师已经考评, 此时全部完成
@@ -319,7 +319,6 @@ onActivated(() => {
   .details-top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     height: 4rem;
 
     .back-btn {

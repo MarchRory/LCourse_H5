@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user/index';
-import { reactive } from 'vue'
+import { reactive, defineAsyncComponent } from 'vue'
 import rq from '@/api/courses/courses'
 import router from '@/router';
 import { showNotify } from 'vant';
+const skeleton = defineAsyncComponent(
+    () => import('@/components/coursePageSkeleton/coursePageSkeleton.vue')
+);
 const defaultCover = ref('');
 (async () => {
     let dc = await import("@/assets/imgs/Cool-Kids-Discussion.png");
@@ -117,7 +120,8 @@ const refreshList = () => {
                         <div style="display: flex;">
                             <van-skeleton-image />
                             <div :style="{ flex: 1, marginLeft: '16px' }">
-                                <van-skeleton-paragraph row-width="60%" v-for="(index) in 3" :key="index" />
+                                <van-skeleton-paragraph row-width="60%" />
+                                <van-skeleton-paragraph v-for="(index) in 3" :key="index" />
                             </div>
                         </div>
                         <div style="margin-top: 20px;">
@@ -126,6 +130,7 @@ const refreshList = () => {
                     </div>
                 </template>
             </van-skeleton>
+            <!-- <skeleton :skeLoad="listLoading" v-if="listLoading"></skeleton> -->
             <div class="mainBox" v-else>
                 <van-empty v-if="!hasTotal" description="当前暂无考评消息" />
                 <div v-else class="list">

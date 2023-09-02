@@ -81,8 +81,6 @@ export default {
   async commentToCourse(data: commentToCourseObj) {
     if (data.score) {
       data.score = Math.floor(100 * (data.score / 10))
-    } else {
-      data.score = Math.floor(80 + Math.random() * 10)
     }
     return await request({
       url: "/curriculum/courseEvaluate/",
@@ -108,17 +106,6 @@ export default {
     });
   },
 
-
-  /**
-   * 获取未读考评信息小红点
-   * @returns 
-   */
-  async getUnreadEvalutionsCnt() {
-    return await request({
-      url: '/curriculum/evaluations/count',
-      method: 'GET'
-    })
-  },
 
   /**
    * 考评信息回显

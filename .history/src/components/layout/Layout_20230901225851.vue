@@ -32,7 +32,7 @@ const tabbar = ref([
 {
   rq.getUnreadEvalutionsCnt().then((res: any) => {
     if (res.code == 200) {
-      userStore.getEvaluationsCnt(res.data)
+
     }
   })
 }

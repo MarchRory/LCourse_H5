@@ -26,6 +26,7 @@ const submit = debounce(() => {
         showFailToast('你还没有填写自我评价哦')
         return;
     }
+    console.log(courseId)
     Promise.all([
         rq.commentToCourse({
             score: score.value,
@@ -34,7 +35,7 @@ const submit = debounce(() => {
             anonymous: anonymous.value
         }),
         rq.commentToSelf({
-            score: score.value,
+            score: score.value * 20,
             courseId: courseId.value,
             evaluateText: selfComment.value,
         })

@@ -80,17 +80,16 @@ export default {
   <div @click="openDetail">
     <div class="course">
       <div>
-        <van-image width="100%" height="230" fit="cover" lazy-load :src="course.cover || defaultCover">
-          <div class="category">{{ course.courseCategory }}</div>
-          <van-tag v-if="isComplusory" size="medium" class="complusoryTag"
-            :color="isComplusory == 1 ? '#ffb475' : '#52cdbd'" text-color="#ffffff">
-            {{ isComplusory == 1 ? "必修" : "选修" }}
-          </van-tag>
+        <van-image width="100%" height="230" fit="cover" lazy-load :src="course.cover || defaultCover" />
+        <div class="category">{{ course.courseCategory }}</div>
+        <van-tag v-if="isComplusory" size="medium" class="complusoryTag"
+          :color="isComplusory == 1 ? '#ffb475' : '#52cdbd'" text-color="#ffffff">
+          {{ isComplusory == 1 ? "必修" : "选修" }}
+        </van-tag>
 
-          <van-tag size="medium" class="stateTag" :color="stateColor" text-color="#ffffff">
-            {{ stateConent }}
-          </van-tag>
-        </van-image>
+        <van-tag size="medium" class="stateTag" :color="stateColor" text-color="#ffffff">
+          {{ stateConent }}
+        </van-tag>
 
       </div>
       <div class="timeRange">
@@ -109,7 +108,7 @@ export default {
 <style scoped lang="less">
 .course {
   width: 680px;
-  //min-height: 500px;
+  min-height: 600px;
   height: auto;
   border-radius: 30px;
   background-color: white;
@@ -124,7 +123,7 @@ export default {
     background-color: #65aaea;
     color: white;
     left: 67%;
-    bottom: 5%;
+    top: 60%;
   }
 
   .complusoryTag {
@@ -140,7 +139,7 @@ export default {
     padding: 7px 18px;
     color: white;
     left: 6%;
-    bottom: 5%;
+    top: 60%;
   }
 
   .timeRange,
@@ -153,7 +152,6 @@ export default {
 
   .timeRange {
     color: #5ba092;
-
   }
 
   .title {

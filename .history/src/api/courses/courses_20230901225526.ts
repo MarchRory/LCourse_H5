@@ -109,10 +109,6 @@ export default {
   },
 
 
-  /**
-   * 获取未读考评信息小红点
-   * @returns 
-   */
   async getUnreadEvalutionsCnt() {
     return await request({
       url: '/curriculum/evaluations/count',

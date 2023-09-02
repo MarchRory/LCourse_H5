@@ -67,7 +67,7 @@ const openObject = (id: number) => {
           </div>
         </div>
       </div>
-      <van-empty v-else description="当前学期暂无规划安排" />
+      <van-empty v-else description="暂无课程信息" />
     </van-pull-refresh>
   </div>
 </template>
