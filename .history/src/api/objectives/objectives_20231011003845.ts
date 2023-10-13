@@ -1,0 +1,44 @@
+import { request } from "@/utils/http/request";
+import { useUserStore } from "@/store/modules/user";
+const userStore = useUserStore();
+
+export default {
+  async getUserObjects() {
+    return await request.get({
+      url: `/curriculum/front/page?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
+    });
+  },
+
+  /**
+   * 获取课程规划详情
+   * @param objId 选定的课程目标Id
+   * @returns data.
+   */
+  async getObjDetail(objId: number) {
+    return await request.get({
+      url: `/curriculum/objectivesDetails/${objId}`,
+    });
+  },
+
+  /**
+   *
+   * @param objId
+   * @returns data.list -> 选定目标下的课程列表, data.total -> 选定课程目标下课程的总数
+   */
+  async getObjCourses(objId: number) {
+    return await request.get({
+      url: `/curriculum/item/page/${objId}?pageNum=1&pageSize=50`,
+    });
+  },
+  async getObjects(data: {
+    pageNum: number;
+    pageSize: number;
+    semesterId?: number | string;
+    userType: number;
+  }) {
+    return await request.get({
+      url: `/curriculum/front/page`,
+      data,
+    });
+  },
+};
