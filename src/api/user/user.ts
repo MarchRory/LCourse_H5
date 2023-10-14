@@ -49,6 +49,7 @@ export async function getInfo(token: string) {
       params: { token },
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        swpu_token: token,
       },
     }),
     request.get<userApiTypes.getInfoByStuIdResultModel>({
