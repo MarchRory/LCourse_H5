@@ -44,8 +44,6 @@ declare module 'vue' {
     VanSkeletonAvatar: typeof import('vant/es')['SkeletonAvatar']
     VanSkeletonImage: typeof import('vant/es')['SkeletonImage']
     VanSkeletonParagraph: typeof import('vant/es')['SkeletonParagraph']
-    VanSticky: typeof import('vant/es')['Sticky']
-    VanSwitch: typeof import('vant/es')['Switch']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VanTag: typeof import('vant/es')['Tag']

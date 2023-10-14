@@ -3,18 +3,18 @@ import * as coursesApiType from "../types/courses";
 import * as templateType from "../types/comment";
 
 enum API {
-  coursePage = "/curriculum/front/selectCoursePage",
-  courseDetail = "/curriculum/detail/front",
-  joinCouse = "/curriculum/join",
+  coursePage = "/curriculum/course/front/page",
+  courseDetail = "/curriculum/course/detail/front",
+  joinCourse = "/curriculum/course/join",
   commentCourse = "/curriculum/courseEvaluate/",
   commentSelf = "/curriculum/selfEvaluation/",
-  sign = "/curriculum/attendance/code",
-  unReadEvalutionsCnt = "/curriculum/evaluations/count",
-  evalutionsList = "/curriculum/evaluations",
-  readAllEvalutions = "/curriculum/evaluations/checkAll",
-  commenTemplateList = "/curriculum/template/page",
+  sign = "/curriculum/signUp/attendance/code",
+  unReadEvaluationCnt = "/curriculum/signUp/evaluations/count",
+  evaluationsList = "/curriculum/signUp/evaluations",
+  readAllEvaluations = "/curriculum/signUp/evaluations/checkAll",
+  commonTemplateList = "/curriculum/template/page",
   vocabularyCategory = "/curriculum/wordType/page",
-  vocabulary = "/curriculum/word/page"
+  vocabulary = "/curriculum/word/page",
 }
 
 /**
@@ -24,7 +24,7 @@ enum API {
  */
 export async function getCourses(params: coursesApiType.selectCourseParams) {
   params.title = params.title == "" ? null : params.title;
-  params.category = params.category == '' ? null : params.category
+  params.category = params.category == "" ? null : params.category;
   return await request.get<coursesApiType.coursesListResultModel>({
     url: API.coursePage,
     headers: {
@@ -49,12 +49,12 @@ export async function getCourseDetail(curriculumId: number) {
 }
 /**
  * 报名课程
- * @param curriculumId 
- * @returns 
+ * @param curriculumId
+ * @returns
  */
 export async function joinCourse(curriculumId: number) {
   return await request.put({
-    url: API.joinCouse + `/${curriculumId}`,
+    url: API.joinCourse + `/${curriculumId}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -62,11 +62,11 @@ export async function joinCourse(curriculumId: number) {
 }
 /**
  * 对课程评价
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 export async function commentToCourse(data: coursesApiType.commentToCourseObj) {
-  data.score *= 2
+  data.score *= 2;
   return await request.post({
     url: API.commentCourse,
     data,
@@ -74,22 +74,22 @@ export async function commentToCourse(data: coursesApiType.commentToCourseObj) {
 }
 /**
  * 自我评价
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 export async function commentToSelf(data: coursesApiType.commentToSelfObj) {
   if (!data.score) {
-    data.score = 80 + Math.floor(Math.random() * 10)
+    data.score = 80 + Math.floor(Math.random() * 10);
   }
   return await request.post({
     url: API.commentSelf,
-    data
-  })
+    data,
+  });
 }
 /**
  * 签到 { courseId: 课程id, code: 签到码 }
- * @param sign 
- * @returns 
+ * @param sign
+ * @returns
  */
 export async function sign(sign: coursesApiType.signInfo) {
   return await request.post({
@@ -97,66 +97,71 @@ export async function sign(sign: coursesApiType.signInfo) {
   });
 }
 
-
 /**
  * 获取未读考评信息小红点
- * @returns 
+ * @returns
  */
 export async function getUnreadEvalutionsCnt() {
   return await request.get<number | null>({
-    url: API.unReadEvalutionsCnt,
-  })
+    url: API.unReadEvaluationCnt,
+  });
 }
 
 /**
  * 考评信息回显
  * @param params page, pageSize
- * @returns 
+ * @returns
  */
 export async function getEvalutionsList(params: coursesApiType.page) {
   return await request.get({
-    url: API.evalutionsList,
-    params
-  })
+    url: API.evaluationsList,
+    params,
+  });
 }
 
 /**
  * 考评信息全部已读
- * @returns 
+ * @returns
  */
 export async function evaluationsCheckAll() {
   return await request.get({
-    url: API.readAllEvalutions,
-  })
+    url: API.readAllEvaluations,
+  });
 }
 /**
  * 获取评价模板
  */
-export async function getCommentTemplateAPI(params: templateType.templateAndVocabularyListParamsType) {
+export async function getCommentTemplateAPI(
+  params: templateType.templateAndVocabularyListParamsType,
+) {
   return await request.get<templateType.commentTemplateResultModel>({
-    url: API.commenTemplateList,
-    params
-  })
+    url: API.commonTemplateList,
+    params,
+  });
 }
 /**
  * 获取词汇种类列表
- * @param params 
- * @returns 
+ * @param params
+ * @returns
  */
-export async function getVocabularyCategoriesAPI(params: templateType.templateAndVocabularyListParamsType) {
+export async function getVocabularyCategoriesAPI(
+  params: templateType.templateAndVocabularyListParamsType,
+) {
   return await request.get<templateType.vocabularyCategoryResultModel>({
     url: API.vocabularyCategory,
-    params
-  })
+    params,
+  });
 }
 /**
  * 获取某类词汇列表
- * @param params 
- * @returns 
+ * @param params
+ * @returns
  */
-export async function getVocabularyListAPI(params: templateType.templateAndVocabularyListParamsType) {
+export async function getVocabularyListAPI(
+  params: templateType.templateAndVocabularyListParamsType,
+) {
   return await request.get<templateType.vocabularyResultModel>({
     url: API.vocabulary,
-    params
-  })
+    params,
+  });
 }

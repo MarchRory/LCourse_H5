@@ -15,13 +15,13 @@ const chartLoad = ref(false);
 var waterBallChart: echarts.ECharts;
 const chart = ref<HTMLElement>();
 const backBtn = defineAsyncComponent(
-  () => import("@/components/backButton/backButton.vue")
+  () => import("@/components/backButton/backButton.vue"),
 );
 const courseSke = defineAsyncComponent(
-  () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
+  () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue"),
 );
 const courseList = defineAsyncComponent(
-  () => import("@/components/courseList/courseList.vue")
+  () => import("@/components/courseList/courseList.vue"),
 );
 
 const getWaterBallOpts = (numerator: number, denominator: number) => {
@@ -168,7 +168,10 @@ const initwaterBallChart = () => {
     waterBallChart = echarts.init(chart.value);
     (async () => {
       waterBallChart.setOption(
-        getWaterBallOpts(objInfo.value.completed, objInfo.value.fixRestrictions)
+        getWaterBallOpts(
+          objInfo.value.completed,
+          objInfo.value.fixRestrictions,
+        ),
       );
       window.addEventListener("resize", () => {
         waterBallChart.resize();

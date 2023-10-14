@@ -5,7 +5,7 @@ export default {
     const formData = new FormData();
     formData.append("file", file);
     return request.post({
-      url: "/data/file/upload",
+      url: "/user/file/upload",
       data: formData,
       headers: { "Content-type": "multipart/form-data" },
     });

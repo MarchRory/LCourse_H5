@@ -1,20 +1,21 @@
 import { request } from "@/utils/http/request";
 import { useUserStore } from "@/store/modules/user";
 import { Response } from "@/utils/http/types";
-import { courseObjectiveItem, courseObjectivesResultModel } from "../types/courseObjectives";
+import { courseObjectivesResultModel } from "../types/courseObjectives";
 enum API {
-  objectiveDetail = '/curriculum/objectivesDetails/',
-  semesterObjectiveList = '/curriculum/front/page'
+  objectiveDetail = "/curriculum/objectives/",
+  semesterObjectiveList = "/curriculum/objectives/front/page",
+  itemPage = "/curriculum/objectives/item/page",
 }
 const userStore = useUserStore();
 
 /**
  * 获取学生本学期课程目标列表
- * @returns 
+ * @returns
  */
 export async function getUserObjects() {
   return await request.get<Response<courseObjectivesResultModel>>({
-    url: `/curriculum/front/page?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
+    url: `${API.semesterObjectiveList}?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
   });
 }
 
@@ -36,14 +37,14 @@ export async function getObjDetail(objId: number) {
  */
 export async function getObjCourses(objId: number) {
   return await request.get({
-    url: `/curriculum/item/page/${objId}?pageNum=1&pageSize=50`,
+    url: `${API.itemPage}/${objId}?pageNum=1&pageSize=50`,
   });
 }
 
 /**
- * 获取学生指定学期的课程目标列表 
+ * 获取学生指定学期的课程目标列表
  * @param params
- * @returns 
+ * @returns
  */
 export async function getObjects(params: {
   pageNum: number;
