@@ -1,0 +1,22 @@
+<script setup lang="ts">
+import { gsap } from "gsap";
+const props = defineProps<{
+  courseTotal: number;
+  monthDetails: Map<String, String>;
+  courseTimeTotal: string;
+}>();
+</script>
+
+<template>
+  <div class="container">
+    <div></div>
+  </div>
+</template>
+
+<style scoped lang="less">
+.container {
+  padding: 10vh 30px;
+  width: 100vw;
+  height: 80vh;
+}
+</style>

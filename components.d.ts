@@ -7,12 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AutoTyping: typeof import('./src/components/autoTyping/index.vue')['default']
+    AxiosProgressBar: typeof import('./src/components/axiosProgressBar/index.vue')['default']
     BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
     CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
     CoursePageSkeleton: typeof import('./src/components/coursePageSkeleton/coursePageSkeleton.vue')['default']
     CoursePreview: typeof import('./src/components/coursePreview/coursePreview.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Layout: typeof import('./src/components/layout/Layout.vue')['default']
+    Loading: typeof import('./src/components/loading/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./src/components/searchBar/searchBar.vue')['default']
@@ -23,6 +26,7 @@ declare module 'vue' {
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']
     VanConfigProvider: typeof import('vant/es')['ConfigProvider']
+    VanDivider: typeof import('vant/es')['Divider']
     VanDropdownItem: typeof import('vant/es')['DropdownItem']
     VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
     VanEmpty: typeof import('vant/es')['Empty']
@@ -44,9 +48,12 @@ declare module 'vue' {
     VanSkeletonAvatar: typeof import('vant/es')['SkeletonAvatar']
     VanSkeletonImage: typeof import('vant/es')['SkeletonImage']
     VanSkeletonParagraph: typeof import('vant/es')['SkeletonParagraph']
+    VanSticky: typeof import('vant/es')['Sticky']
+    VanSwitch: typeof import('vant/es')['Switch']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VanTag: typeof import('vant/es')['Tag']
     VanUploader: typeof import('vant/es')['Uploader']
+    VocabularyList: typeof import('./src/components/templateComment/components/vocabularyList.vue')['default']
   }
 }
