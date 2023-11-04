@@ -1,0 +1,1 @@
+const baseEventMap = new Map()
