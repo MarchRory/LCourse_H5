@@ -1,0 +1,32 @@
+import { wsDataType } from "@/utils/webSocket/types/ws";
+import { msgType } from "../../../types/eventType";
+import { mySocket } from "../../../useSocket";
+const TypeMap = {
+    reconnect: 1         // 断线重连
+
+}
+
+
+export function subscribeBaseType(wsInstance: mySocket): Map<string | number, Function> {
+    const baseEventMap = new Map()
+    const typesObj: msgType[] = [
+        {
+            type: TypeMap.reconnect,
+            callback: (newInstance: mySocket) => {
+                wsInstance = newInstance
+            }
+        },
+        {
+            type: 1,
+            callback: (wsData: wsDataType) => {
+                const { message } = wsData
+            }
+        }
+    ]
+    if (typesObj.length) {
+        typesObj.forEach((eventItem: msgType) => {
+            baseEventMap.set(eventItem.type, eventItem.callback)
+        })
+    }
+    return baseEventMap
+}

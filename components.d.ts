@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AutoTyping: typeof import('./src/components/autoTyping/index.vue')['default']
     AxiosProgressBar: typeof import('./src/components/axiosProgressBar/index.vue')['default']
     BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
     CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
@@ -26,7 +25,6 @@ declare module 'vue' {
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']
     VanConfigProvider: typeof import('vant/es')['ConfigProvider']
-    VanDivider: typeof import('vant/es')['Divider']
     VanDropdownItem: typeof import('vant/es')['DropdownItem']
     VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
     VanEmpty: typeof import('vant/es')['Empty']
