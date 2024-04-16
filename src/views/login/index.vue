@@ -7,6 +7,7 @@ import { Loading } from "vant";
 import router from "@/router/index";
 import { getToken } from "@/utils/auth/auth";
 import logoSrc from "@/assets/schoolLogo.jpg";
+
 const userStore = useUserStore();
 const loginForm = reactive({
   username: "",
@@ -27,6 +28,7 @@ const onSubmit = (values) => {
         });
       } else {
         showFailToast("网络异常, 请稍后重试");
+        console.log(res);
       }
     });
   }
@@ -46,21 +48,19 @@ const authLogin = () => {
 <template>
   <div class="container">
     <div class="cover">
-      <van-image
+      <!-- <van-image
         width="250"
         height="250"
         fit="cover"
         position="center"
         :src="logoSrc"
-      />
+      /> -->
     </div>
     <div class="content">
-      <span style="color: #787877; font-size: 30px; margin-top: -10px"
-        >登录</span
-      >
-      <span style="color: #949390; letter-spacing: 0px; font-size: 15px"
+      <span style="color: black; font-size: 30px; margin-top: -31px">登录</span>
+      <!-- <span style="color: #949390; letter-spacing: 0px; font-size: 15px"
         >选择登录方式</span
-      >
+      > -->
     </div>
     <div class="loginForm">
       <van-form @submit="onSubmit">
@@ -71,6 +71,7 @@ const authLogin = () => {
             label="账号"
             placeholder="请输入账号"
             :rules="[{ required: true, message: '请填写用户名' }]"
+            style="color: white"
           />
           <van-field
             v-model="loginForm.passwords"
@@ -79,9 +80,10 @@ const authLogin = () => {
             label="密码"
             placeholder="请输入密码"
             :rules="[{ required: true, message: '请填写密码' }]"
+            autocomplete="false"
           >
             <template #button>
-              <span @click="showPwd">
+              <span @click="showPwd" style="color: black">
                 <van-icon name="closed-eye" v-if="isShowPwd === 'password'" />
                 <van-icon name="eye-o" v-else />
               </span>
@@ -102,24 +104,35 @@ const authLogin = () => {
 </template>
 
 <style scoped lang="less">
+:deep(.van-cell-group){
+  background-color: transparent
+}
 :deep(.van-field) {
-  border-radius: 12px;
   padding: 16px;
   align-self: stretch;
   gap: 16px;
-  background: #ffffff;
-  border: 1px solid #bebab3;
+  border: 6px solid black;
   box-sizing: border-box;
+  // background-color: black;
+
+  input {
+    // background-color: white;
+    color: black;
+    &::placeholder {
+      color: #151514;
+    }
+  }
 
   .van-field__label {
     width: 3.2em;
-    color: #78746d;
+    color: black;
   }
 }
 
+
 :deep(.van-button) {
   border-radius: 16px;
-  background: #e3562a;
+  background: -webkit-linear-gradient(right, #8e2de2, #4a00e0);
   border: 0;
 }
 
@@ -143,9 +156,13 @@ const authLogin = () => {
   justify-content: center;
   padding: 0 16px;
   height: 100vh;
+  background: url("@/assets/imgs/cover.jpg") center no-repeat;
+  background-size: cover;
 
   div {
+    border-radius: 0;
     margin-bottom: 30px;
+    // background-color: #151514
   }
 
   .content {
@@ -153,6 +170,7 @@ const authLogin = () => {
     flex-direction: column;
     justify-content: space-around;
     height: 105px;
+    color: white;
 
     span {
       line-height: 32px;
@@ -172,7 +190,7 @@ const authLogin = () => {
 
     .greyFont {
       font-size: 25px;
-      color: #78746d;
+      color: #151514;
     }
 
     .button {
@@ -184,7 +202,8 @@ const authLogin = () => {
     }
 
     :deep(.authButton) {
-      background-color: #2aa4e3;
+      color: black;
+      background: white;
     }
   }
 }

@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <div>
-      <transition name="notify">
+      <!-- 消息提醒框 -->
+      <!-- <transition name="notify">
         <van-notice-bar
           scrollable
           v-show="isNotifyShow"
@@ -15,12 +16,13 @@
             border-radius: 10px;
             border: 1px solid var(--van-notice-bar-text-color);
             height: 40px;
+            background-color: white;
           "
           left-icon="volume-o"
           :text="notifyText"
           @replay="closeNotice"
         />
-      </transition>
+      </transition> -->
 
       <router-view v-slot="{ Component }">
         <transition :name="transitionName" mode="out-in">

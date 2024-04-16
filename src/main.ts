@@ -14,6 +14,7 @@ import stores from "@/store/index";
 import "@/auth";
 import { Lazyload } from "vant";
 
+
 createApp(App)
   .use(router)
   .use(stores)

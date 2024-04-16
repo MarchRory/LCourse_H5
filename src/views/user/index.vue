@@ -2,13 +2,13 @@
   <div class="info" v-if="showParent">
     <van-pull-refresh v-model="reLoad" @refresh="refresh">
       <van-nav-bar>
-        <template #title><span style="color: #e1562a">个人中心</span></template>
+        <template #title><span style="color: black">个人中心</span></template>
         <template #right>
-          <span style="color: #e1562a" @click="logOut">登出</span>
+          <span style="color: #409EFF" @click="logOut">登出</span>
         </template>
       </van-nav-bar>
       <div class="mainBox" @touchmove.stop>
-        <van-cell-group>
+        <van-cell-group inset>
           <van-cell
             title="用户名"
             :value="userInfo.name"
@@ -17,6 +17,7 @@
               align-items: center;
               justify-content: flex-start;
             "
+            
           >
             <template #title>
               <van-image
@@ -34,13 +35,14 @@
           <van-cell title="学院" :value="userInfo.department" />
           <van-cell title="专业" :value="userInfo.major" />
 
-          <van-cell title="信息修改" is-link value="去修改" @click="open" />
+          <van-cell title="信息修改" is-link value="去修改" @click="open" icon="edit"/>
         </van-cell-group>
-        <van-cell-group title="我的易班">
+        <van-cell-group title="我的易班" inset>
           <van-cell
             v-if="userStore.hasBind"
             title="易班账号绑定"
             value="已绑定"
+            icon="link-o"
           />
           <van-cell
             v-else
@@ -48,20 +50,25 @@
             value="去绑定"
             is-link
             @click="bindYiban"
+            icon="link-o"
           />
           <van-cell
             title="劳动二课年度报告"
             value="查看"
             is-link
             @click="openAnnulReport"
+            icon="newspaper-o"
           />
         </van-cell-group>
-        <van-cell-group title="课程信息">
+        <van-cell-group title="课程信息" inset>
+          
           <van-cell
             title="历史规划"
             value=""
             is-link
             @click="toUserObjectives"
+            icon="todo-list-o"
+            size="normal"
           />
         </van-cell-group>
         <!--         <van-cell-group title="登录相关">
@@ -195,6 +202,7 @@ const openAnnulReport = () => {
   router.push({ name: "annulReportList" });
 };
 </script>
+
 <style scoped lang="less">
 .info {
   height: calc(100vh - var(--van-tabbar-height));
@@ -203,7 +211,9 @@ const openAnnulReport = () => {
 }
 
 .mainBox {
+  margin-top: 30px;
   width: 100vw;
   height: calc(100vh - var(--van-tabbar-height) - var(--van-nav-bar-height));
 }
+
 </style>
