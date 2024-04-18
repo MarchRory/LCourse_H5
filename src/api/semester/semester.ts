@@ -1,12 +1,14 @@
-import request from '@/utils/http/request'
-export default {
-    async getSemesterNow() {
-        return await request({
-            url: '/curriculum/now',
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-    }
+import { request } from "@/utils/http/request";
+enum API {
+  semesterNow = "/curriculum/semester/now",
 }
+export default {
+  async getSemesterNow() {
+    return await request.get({
+      url: API.semesterNow,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+  },
+};

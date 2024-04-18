@@ -6,8 +6,18 @@
           <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
         </div>
         <div class="search-box">
-          <input v-model="searchVal" class="search-ipt" type="text" placeholder="输入课程名关键词查询课程" />
-          <img @click="searchBtn" class="search-icon" src="../../assets/imgs/Search-Icon.png" alt="" />
+          <input
+            v-model="searchVal"
+            class="search-ipt"
+            type="text"
+            placeholder="输入课程关键词或课程地点查询"
+          />
+          <img
+            @click="searchBtn"
+            class="search-icon"
+            src="../../assets/imgs/Search-Icon.png"
+            alt=""
+          />
         </div>
       </div>
     </van-sticky>
@@ -17,24 +27,19 @@
         <span>{{ resultsArr.length }}</span>
         <span>个搜索结果</span>
       </div>
-      <ul class="results-list">
-        <li @click="toDetailsBnt(v.id, v.isSignUp)" class="list-item" v-for="(v, i) in resultsArr" :key="i">
-          <div class="item-top">
-            <img class="item-img" :src="v.cover || defaultCover" alt="课程首页" />
-            <div class="item-top-label">{{ v.pointsRules }}</div>
-          </div>
-          <div class="item-bottom">
-            <p class="time">
-              <span>{{ v.hostingStart }}</span>到<span>{{ v.hostingEnd }}</span>
-            </p>
-            <h3>{{ v.title }}</h3>
-            <p class="text">{{ v.courseCategory }}</p>
-          </div>
-        </li>
-      </ul>
+      <div class="results-list">
+        <course-list :prop-list="resultsArr"></course-list>
+        <!--         <div @click="toDetailsBnt(v.id, v.isSignUp)" class="list-item" v-for="(v, i) in resultsArr" :key="i">
+          <course-preview :course="v" @find-state="findState"></course-preview>
+        </div> -->
+      </div>
     </div>
     <div v-else class="not-found">
-      <img class="not-found-img" src="../../assets/imgs/Cool-Kids-Standing.png" alt="" />
+      <img
+        class="not-found-img"
+        src="../../assets/imgs/Cool-Kids-Standing.png"
+        alt=""
+      />
       <div v-show="isSearch">
         <h3>课程没有找到呢</h3>
         <p>尝试一下别的关键词吧</p>
@@ -44,14 +49,18 @@
   </div>
 </template>
 
-<script setup lang='ts'>
-import { ref } from "vue";
-import rq from "@/api/courses/courses";
+<script setup lang="ts">
+import { ref, defineAsyncComponent } from "vue";
+import { throttle } from "@/utils/freqCtrl/freqCtrl";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
-import defaultCover from '@/assets/imgs/Cool-Kids-Discussion.png'
-var pageNum = ref(0)
-const userStore = useUserStore()
+import { getCourses } from "@/api/courses/courses";
+const courseList = defineAsyncComponent(
+  () => import("@/components/courseList/courseList.vue")
+);
+
+var pageNum = ref(0);
+const userStore = useUserStore();
 const searchVal = ref(""); //搜索框绑定值
 const isFound = ref(false); //是否搜索到状态
 const isSearch = ref(false); //是否搜索
@@ -61,26 +70,17 @@ const router = useRouter();
 const backBtn = () => {
   router.go(-1);
 };
-//跳转详情
-const toDetailsBnt = (courseId: number, isSignUp: number) => {
-  if (typeof courseId == 'number') {
-    router.push({
-      path: "/detail",
-      query: { courseId, isSignUp },
-    });
-  }
-};
-
 //搜索函数
-const searchBtn = () => {
+const searchBtn = throttle(() => {
+  console.log(searchVal.value != "");
   if (searchVal.value != "") {
-    rq.getCourses({
+    getCourses({
       title: searchVal.value,
       pageNum: pageNum.value,
       semesterId: userStore.semesterId,
       pageSize: 15,
       state: 0,
-      reviewed: 0
+      reviewed: 0,
     }).then((res: any) => {
       if (res.code === 200) {
         if (res.data.list.length < 1) {
@@ -89,17 +89,17 @@ const searchBtn = () => {
           searchVal.value = "";
         } else {
           res.data.list.forEach((item: any) => {
-            resultsArr.value.push(item)
-          })
+            resultsArr.value.push(item);
+          });
           if (res.data.total != resultsArr.length) {
-            pageNum.value++
+            pageNum.value++;
           }
           isFound.value = true;
         }
       }
     });
   }
-};
+}, 500);
 </script>
 
 <style lang="less" scoped>
@@ -171,8 +171,11 @@ const searchBtn = () => {
   }
 
   .results-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
     .list-item {
-      border: 0.0625rem solid #ccc;
       border-radius: 0.5rem;
       margin-bottom: 1rem;
 

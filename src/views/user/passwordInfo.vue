@@ -33,8 +33,13 @@
   </van-config-provider>
 </template>
 
+<script>
+export default {
+  name: "updatePwd",
+};
+</script>
 <script setup>
-import userApi from "@/api/user/user.ts";
+import { resetPassword } from "@/api/user/user";
 import { showToast } from "vant";
 const router = useRouter();
 const oldPassword = ref("");
@@ -44,14 +49,12 @@ const themeVars = reactive({
   navBarIconColor: "#e1562a",
 });
 const onSubmit = () => {
-  userApi
-    .resetPassword({
-      newPassword: newPassword.value,
-      oldPassword: oldPassword.value,
-    })
-    .then((res) => {
-      showToast(res.message);
-    });
+  resetPassword({
+    newPassword: newPassword.value,
+    oldPassword: oldPassword.value,
+  }).then((res) => {
+    showToast(res.message);
+  });
 };
 const onClickLeft = () => {
   router.back();

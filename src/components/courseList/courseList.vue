@@ -1,17 +1,22 @@
 <script lang="ts">
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
-import CoursePreview from "@/components/coursePreview/coursePreview.vue";
-import { toRefs } from "vue";
-import rqCourse from "../../api/courses/courses";
+import { toRefs, defineAsyncComponent } from "vue";
 import router from "@/router";
 import { useUserStore } from "@/store/modules/user";
+import { getCourses } from "@/api/courses/courses";
+const coursePreview = defineAsyncComponent(
+  () => import("@/components/coursePreview/coursePreview.vue")
+);
 export default {
-  components: { CoursePageSkeleton, CoursePreview },
+  components: { CoursePageSkeleton, coursePreview },
   props: {
+    propList: {
+      type: Array as any,
+      default: null,
+    },
     category: {
       tyep: String,
-      default: null,
-      required: true,
+      default: "",
     },
     keywords: {
       type: String,
@@ -25,9 +30,13 @@ export default {
       type: Number,
       default: 0,
     },
+    isRefresh: {
+      type: Boolean,
+      defatult: false,
+    },
   },
   setup(props) {
-    const { category } = toRefs(props);
+    const { category, propList, isRefresh } = toRefs(props);
     const userStore = useUserStore();
     const defaultCover = ref("");
     (async () => {
@@ -39,6 +48,8 @@ export default {
       category,
       userStore,
       defaultCover,
+      propList,
+      isRefresh,
     };
   },
   data() {
@@ -56,6 +67,7 @@ export default {
       },
       total: 0,
       categorycopy: "" as any,
+      transtionName: ["list-right-in"],
     };
   },
   methods: {
@@ -69,17 +81,20 @@ export default {
           usertype: this.userType,
           reviewed: 0,
         },
-        this.selectParams,
+        this.selectParams
       );
       this.loadStatus.loading = true;
       this.loadStatus.finished = false;
-      rqCourse
-        .getCourses(params)
+      getCourses(params)
         .then((res: any) => {
           if (res.code == 200) {
+            console.log('课程');
+            
+            console.log(res);
+            
             const { data } = res;
             this.total = data.total;
-            this.skeleton=false;
+            this.skeleton = false;
             if (this.categorycopy == this.category) {
               data.list.forEach((element: any) => {
                 this.coursesList.push(element);
@@ -88,7 +103,7 @@ export default {
               this.coursesList = data.list;
               this.categorycopy = this.category;
             }
-            if (this.coursesList.length === this.total) {
+            if (this.coursesList.length >= this.total) {
               this.loadStatus.finished = true;
             } else {
               this.selectParams.pageNum++;
@@ -99,6 +114,9 @@ export default {
         })
         .finally(() => {
           this.loadStatus.loading = false;
+          if (this.isRefresh) {
+            this.$emit("onRefreshEnd");
+          }
         });
     },
     openDetail(courseId: number | string) {
@@ -116,18 +134,51 @@ export default {
       },
       immediate: true,
     },
+    keywords: {
+      handler(newVal) {
+        if (newVal || newVal == "") {
+          this.coursesList = [];
+          this.selectParams.pageNum = 1;
+          this.loadList();
+        }
+      },
+    },
+    isRefresh: {
+      handler(newVal) {
+        if (newVal) {
+          this.selectParams.pageNum = 1;
+          this.total = 0;
+          this.coursesList = [];
+          this.loadStatus.finished = false;
+          this.loadList();
+        }
+      },
+    },
   },
+  onMounted() {},
 };
-
-// 组件对外发送事件
-/* type Emits = {
-} */
 </script>
 
 <template>
   <div>
-    <div class="list">
+    <div class="list" @touchmove.stop>
+      <!-- 暂定, 后面用gsap加一个列表加载动画 -->
+      <TransitionGroup
+        tag="van-list"
+        v-if="propList && propList.length"
+        name="list-right-in"
+      >
+        <van-cell
+          v-for="(course, index) in propList"
+          :key="index"
+          :data-index="index"
+          @click="openDetail(course.id)"
+        >
+          <course-preview :course="course"></course-preview>
+        </van-cell>
+      </TransitionGroup>
       <van-list
+        v-else
         v-model:loading="loadStatus.loading"
         :finished="loadStatus.finished"
         v-model:error="loadStatus.error"
@@ -135,58 +186,23 @@ export default {
         finished-text="没有更多了"
         @load="loadList"
       >
-        <van-cell
-          v-for="(course, index) in coursesList"
-          :key="index"
-          @click="openDetail(course.id)"
-        >
-          <coursePreview :course="course"></coursePreview>
-        </van-cell>
+        <TransitionGroup name="list-right-in">
+          <van-cell
+            v-for="(course, index) in coursesList"
+            :key="index"
+            :data-index="index"
+            @click="openDetail(course.id)"
+          >
+            <course-preview :course="course"></course-preview>
+          </van-cell>
+        </TransitionGroup>
       </van-list>
     </div>
   </div>
 </template>
 
 <style scoped lang="less">
-.course {
-  width: 690px;
-  height: 600px;
-  border-radius: 10px;
-  margin-top: 18px;
-  border: 1px solid black;
-  overflow: hidden;
-
-  .category {
-    position: absolute;
-    padding: 3px 20px;
-    border-radius: 27px;
-    background-color: #65aaea;
-    color: white;
-    left: 61%;
-    top: 60%;
-  }
-
-  .timeRange,
-  .title,
-  .introduce {
-    text-align: left;
-    margin-left: 20px;
-    margin-bottom: 13px;
-  }
-
-  .timeRange {
-    color: #5ba092;
-  }
-
-  .title {
-    font-size: 48px;
-    font-family: Gen Jyuu Gothic;
-    line-height: 32px;
-    color: rgb(121, 121, 121);
-  }
-
-  .introduce {
-    font-weight: 300;
-  }
+:deep(.van-ceil) {
+  display: block;
 }
 </style>

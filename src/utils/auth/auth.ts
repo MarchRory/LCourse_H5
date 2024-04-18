@@ -1,16 +1,13 @@
-import Cookies from 'js-cookie'
-
-const tokenKey = 'swpu_token'
+export const tokenKey = import.meta.env.VITE_APP_TOKEN_KEY
 
 export function getToken() {
-    return localStorage.getItem(tokenKey) || Cookies.get(tokenKey)
+    return localStorage.getItem(tokenKey)
 }
 
 export function setToken(token: string) {
-    return Cookies.set(tokenKey, token) && localStorage.setItem(tokenKey, token)
+    return localStorage.setItem(tokenKey, token)
 }
 
-export function removeToken() {
-    localStorage.removeItem(tokenKey)
-    return Cookies.remove(tokenKey)
+export function removeToken(): void {
+    return localStorage.removeItem(tokenKey)
 }

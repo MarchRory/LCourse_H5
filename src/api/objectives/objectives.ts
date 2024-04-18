@@ -1,48 +1,59 @@
-import request from "@/utils/http/request";
+import { request } from "@/utils/http/request";
 import { useUserStore } from "@/store/modules/user";
+import { Response } from "@/utils/http/types";
+import { courseObjectivesResultModel } from "../types/courseObjectives";
+enum API {
+  objectiveDetail = "/curriculum/objectives/",
+  semesterObjectiveList = "/curriculum/objectives/front/page",
+  itemPage = "/curriculum/objectives/item/page",
+}
 const userStore = useUserStore();
 
-export default {
-  async getUserObjects() {
-    return await request({
-      url: `/curriculum/front/page?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
-      method: "GET",
-    });
-  },
+/**
+ * 获取学生本学期课程目标列表
+ * @returns
+ */
+export async function getUserObjects() {
+  return await request.get<Response<courseObjectivesResultModel>>({
+    url: `${API.semesterObjectiveList}?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
+  });
+}
 
-  /**
-   *
-   * @param objId 选定的课程目标Id
-   * @returns data.
-   */
-  async getObjDetail(objId: number) {
-    return await request({
-      url: `/curriculum/objectivesDetails/${objId}`,
-      method: "GET",
-    });
-  },
+/**
+ * 获取课程规划详情
+ * @param objId 选定的课程目标Id
+ * @returns data.
+ */
+export async function getObjDetail(objId: number) {
+  return await request.get({
+    url: API.objectiveDetail + objId,
+  });
+}
 
-  /**
-   *
-   * @param objId
-   * @returns data.list -> 选定目标下的课程列表, data.total -> 选定课程目标下课程的总数
-   */
-  async getObjCourses(objId: number) {
-    return await request({
-      url: `/curriculum/item/page/${objId}?pageNum=1&pageSize=50`,
-      method: "GET",
-    });
-  },
-  async getObjects(data: {
-    pageNum: number;
-    pageSize: number;
-    semesterId?: number | string;
-    userType: number;
-  }) {
-    return await request({
-      url: `/curriculum/front/page`,
-      method: "GET",
-      data,
-    });
-  },
-};
+/**
+ *获取目标下绑定的课程列表
+ * @param objId
+ * @returns data.list -> 选定目标下的课程列表, data.total -> 选定课程目标下课程的总数
+ */
+export async function getObjCourses(objId: number) {
+  return await request.get({
+    url: `${API.itemPage}/${objId}?pageNum=1&pageSize=50`,
+  });
+}
+
+/**
+ * 获取学生指定学期的课程目标列表
+ * @param params
+ * @returns
+ */
+export async function getObjects(params: {
+  pageNum: number;
+  pageSize: number;
+  semesterId?: number | string;
+  userType: number;
+}) {
+  return await request.get({
+    url: API.semesterObjectiveList,
+    params,
+  });
+}

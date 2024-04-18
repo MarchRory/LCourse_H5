@@ -9,11 +9,12 @@
     ></course-page-skeleton>
     <div class="container" v-else>
       <van-list
+        v-if="objectList.length"
         class="list"
         v-model:loading="loading"
         :finished="finished"
         finished-text="没有更多了"
-        @load="onLoad"
+        @load="loadList"
       >
         <div>
           <van-cell
@@ -22,7 +23,15 @@
             @click="openObject(obj.id)"
           >
             <div class="object">
-              <div class="seat"></div>
+              <div class="seat">
+                <van-image
+                  width="80%"
+                  height="80%"
+                  fit="contain"
+                  :lazy-load="true"
+                  :src="swpuLogo"
+                />
+              </div>
               <div class="ObjInfo">
                 <div class="name">
                   {{ obj.objectivesName }}
@@ -45,34 +54,50 @@
           </van-cell>
         </div>
       </van-list>
+      <van-empty v-else description="暂无历史目标数据" />
     </div>
   </van-config-provider>
 </template>
 
 <script setup>
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
-import OjjectsApi from "@/api/objectives/objectives.ts";
+import { getObjects } from "@/api/objectives/objectives";
+import swpuLogo from "@/assets/logo_D.png";
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",
 });
 const objectList = ref([]);
+const objectivesTotal = ref(0);
 const router = useRouter();
 const listLoading = ref(false);
-
+const pageParams = ref({
+  pageNum: 1,
+  pageSize: 10,
+});
 const loading = ref(false);
 const finished = ref(false);
 
-const onLoad = () => {
+const loadList = () => {
   listLoading.value = true;
-  OjjectsApi.getObjects({ pageSize: 5, pageNum: 1, userType: 1 }).then(
-    (res) => {
-      objectList.value = res.data.list;
-      loading.value = true;
-      finished.value = true;
+  if (finished.value) return;
+  getObjects({ ...pageParams.value, userType: 1 })
+    .then((res) => {
+      const { list, total } = res.data;
+      list.forEach((item) => {
+        objectList.value.push(item);
+      });
+      objectivesTotal.value = total;
       listLoading.value = false;
-    },
-  );
+      if (objectList.value.length >= objectivesTotal.value) {
+        finished.value = true;
+      } else {
+        pageParams.value.pageNum++;
+      }
+    })
+    .finally(() => {
+      loading.value = true;
+    });
 };
 const onClickLeft = () => {
   router.back();
@@ -80,6 +105,7 @@ const onClickLeft = () => {
 const openObject = (id) => {
   router.push({ path: "/coursesPlanDetail", query: { id: id } });
 };
+loadList();
 </script>
 
 <style scoped lang="less">
@@ -89,6 +115,7 @@ const openObject = (id) => {
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+
   .list {
     overflow-y: auto;
     padding: 20px 20px 50px;
@@ -108,6 +135,9 @@ const openObject = (id) => {
       .seat {
         height: 100%;
         width: calc(690px - @objInfoWidth);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .ObjInfo {

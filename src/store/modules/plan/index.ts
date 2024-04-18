@@ -1,5 +1,5 @@
+import { getUserObjects } from "@/api/objectives/objectives";
 import { defineStore } from "pinia";
-import rq from "@/api/objectives/objectives";
 import { showFailToast } from "vant";
 
 /* function planObj<T>(arg: Array<T>):Array<T> {
@@ -20,7 +20,7 @@ export const usePlanStore = defineStore("usePlanStore", {
   },
   actions: {
     getObjectives() {
-      rq.getUserObjects().then((res: any) => {
+      getUserObjects().then((res: any) => {
         if (res.code == 200) {
           const { list, total } = res.data;
           this.total = total;
@@ -32,5 +32,4 @@ export const usePlanStore = defineStore("usePlanStore", {
     },
   },
   getters: {},
-  persist: true, // 持久化
 });
