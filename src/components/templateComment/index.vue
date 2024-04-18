@@ -99,6 +99,7 @@ const beginComment = async () => {
 function handleChooseTemplate(templateIndex: number) {
   templateTextCopy.value =
     selfCommentTemplateList.value[templateIndex].templateText;
+  emits("onChange", templateTextCopy.value);
   isOpenTemplateList.value = false;
 }
 watch(

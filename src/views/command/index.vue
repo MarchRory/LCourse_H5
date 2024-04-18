@@ -6,6 +6,7 @@ import { commentToCourse, commentToSelf } from "@/api/courses/courses";
 import { filterHTMLInCommand } from "@/utils/regUtils/course";
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
 import resPic from "@/assets/imgs/commentRes.gif";
+
 const backBtn = defineAsyncComponent(
   () => import("@/components/backButton/backButton.vue")
 );
@@ -24,7 +25,8 @@ const handleSwitchChange = (value: boolean) => {
 };
 const isCommentSuccess = ref(false);
 
-const submit = debounce(async () => {
+const submit = debounce(() => {
+  const fetchs = [];
   if (!score.value) {
     showFailToast("先给课程打个分吧");
     return;
@@ -32,8 +34,9 @@ const submit = debounce(async () => {
     showFailToast("你还没有填写自我评价哦");
     return;
   }
-  const fetchs = [];
+
   if (selfComment.value.includes("<input")) {
+    console.log("if");
     showLoadingToast({
       duration: 500,
       overlay: true,
@@ -44,7 +47,8 @@ const submit = debounce(async () => {
     });
     selfComment.value = filterHTMLInCommand(selfComment.value);
   }
-  if (evaluateText.value) {
+
+  if (evaluateText.value != null) {
     fetchs.push(
       commentToCourse({
         score: score.value,
@@ -54,6 +58,8 @@ const submit = debounce(async () => {
       })
     );
   }
+  console.log(selfComment.value);
+
   fetchs.push(
     commentToSelf({
       score: score.value,
@@ -61,6 +67,7 @@ const submit = debounce(async () => {
       evaluateText: selfComment.value,
     })
   );
+
   Promise.all([...fetchs]).then((res: any) => {
     if (res[0].code == 200 && res[1].code == 200) {
       showSuccessToast("课程评价成功");
@@ -71,8 +78,12 @@ const submit = debounce(async () => {
     }
   });
 }, 500);
-const handleSelfCommentChange = (selfCommentTextObj: any) => {
-  selfComment.value = selfCommentTextObj.evaluateText;
+
+
+const handleSelfCommentChange = (selfCommentText: any) => {
+  console.log(selfCommentText);
+
+  selfComment.value = selfCommentText;
 };
 </script>
 

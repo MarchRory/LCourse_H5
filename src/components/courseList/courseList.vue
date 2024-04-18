@@ -88,6 +88,10 @@ export default {
       getCourses(params)
         .then((res: any) => {
           if (res.code == 200) {
+            console.log('课程');
+            
+            console.log(res);
+            
             const { data } = res;
             this.total = data.total;
             this.skeleton = false;
