@@ -56,7 +56,7 @@ const cache = computed(() => routerCache.cache);
         >
           <span>{{ item.title }}</span>
           <template #icon>
-            <s-icon class="tabbar-icon" :icon="item.icon" />
+            <t-icon class="tabbar-icon" :icon="item.icon" />
           </template>
         </van-tabbar-item>
       </van-tabbar>

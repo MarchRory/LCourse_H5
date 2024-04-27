@@ -35,15 +35,15 @@ import { Icon } from '@iconify/vue'
 
 // 然后全局挂载
 createApp(App)
-  .component('s-icon', Icon)
+  .component('t-icon', Icon)
   .mount("#app")
-// 因为我们使用的是tabler图标集, 所以将组件重命名为 s-icon 以便区分
+// 因为我们使用的是tabler图标集, 所以将组件重命名为 t-icon 以便区分
 ```
 
 `component.vue`
 ```html
 <!-- 然后在iconify/tabler中找到想要引入的图标， 复制name, 传入icon prop -->
-<s-icon icon="tabler:4k-bold" />
+<t-icon icon="tabler:4k-bold" />
 ```
 
 ## props

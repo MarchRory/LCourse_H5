@@ -12,7 +12,7 @@ const jumpToSetting = () => {
 
 <template>
     <div class="user-header">
-        <s-icon icon="tabler:settings" :width="25" color="gray" @click="jumpToSetting" />
+        <t-icon icon="tabler:settings" :width="25" color="gray" @click="jumpToSetting" />
     </div>
 </template>
 

@@ -32,7 +32,7 @@ const clickTab = (kingkongTab: KingkongTabItem) => {
                 }"
                 @click="clickTab(tab)"
             >
-                <s-icon class="tab-icon" :icon="tab.icon" />
+                <t-icon class="tab-icon" :icon="tab.icon" />
                 <div class="tab-label">{{ tab.label }}</div>
             </div>
         </div>

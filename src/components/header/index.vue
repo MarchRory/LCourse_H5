@@ -30,7 +30,7 @@ const handleAction = debounce((action: HeaderDefaultAction) => {
         <section class="left-area">
             <slot name="left">
                 <!--默认内容为一个返回按钮-->
-                <s-icon class="header-icon" icon="tabler:chevron-left" @click="$router.back()" />
+                <t-icon class="header-icon" icon="tabler:chevron-left" @click="$router.back()" />
             </slot>
         </section>
         <!--中央区域, 目前只是title, 如果设置了左插槽, 那么title不显示-->
@@ -49,7 +49,7 @@ const handleAction = debounce((action: HeaderDefaultAction) => {
                             :key="index"
                             @click="handleAction(action)"
                         >
-                            <s-icon class="action-icon" :icon="action.icon" />
+                            <t-icon class="action-icon" :icon="action.icon" />
                         </li>
                     </ul>
                 </template>
@@ -86,7 +86,7 @@ header {
     .right-area {
         justify-content: flex-end;
         font-weight: bold;
-        font-size: 45px !important;
+        font-size: 30px;
     }
     .default-header-actions {
         display: flex;
