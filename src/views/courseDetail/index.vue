@@ -1,25 +1,17 @@
 <template>
   <div>
     <course-ske :ske-load="skeLoad"></course-ske>
+    <XdHeader title="详情">
+      <template #right>
+          <s-icon
+            v-if="detailsObj.signUpstate == 2"
+            @click="showCenter = true"
+            icon="tabler:clock-edit"
+            class="sign-icon" 
+          />
+      </template>
+    </XdHeader>
     <div class="details" v-if="!skeLoad">
-      <div class="details-top">
-        <div class="back-btn">
-          <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
-        </div>
-        <h1>详情信息</h1>
-
-        <div
-          v-if="detailsObj.signUpstate == 2"
-          class="tools"
-          @click="showCenter = true"
-        >
-          <div class="tools" @click="showCenter = true">
-            <van-icon name="edit" size="30" />
-          </div>
-          <span>签到</span>
-        </div>
-      </div>
-
       <div class="mainInfo">
         <div class="img-box">
           <van-image
@@ -177,6 +169,7 @@ const detailsObj: any = ref({});
 const courseSke = defineAsyncComponent(
   () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
 );
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const checkStaus = () => {
   // 按钮状态
   if (
@@ -248,9 +241,6 @@ const RegisterNowBtn = debounce(() => {
     }
   });
 }, 500);
-const backBtn = () => {
-  router.go(-1);
-};
 const toComment = () => {
   router.push({ path: "/command", query: { courseId: detailsObj.value.id } });
 };
@@ -281,6 +271,9 @@ onActivated(() => {
 </script>
 
 <style lang="less" scoped>
+.sign-icon  {
+  font-size: 45px;
+}
 .details {
   padding: 10px 4vw;
 

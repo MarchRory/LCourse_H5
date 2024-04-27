@@ -20,6 +20,7 @@ export const routes: Array<RouteRecordRaw> = [
     },
     component: () => import("@/views/welcome/index.vue"),
   },
+  // 别乱改, 下面这个路由的子路由会自动生成首页底部tabbar
   {
     path: '/mainPage:',
     name: 'layOut',
@@ -32,6 +33,7 @@ export const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/home/index.vue"),
         meta: {
           title: '首页',
+          icon: 'tabler:brand-google-home',
           index: 1
         },
       },
@@ -39,25 +41,18 @@ export const routes: Array<RouteRecordRaw> = [
         path: '/plan',
         name: 'plan',
         meta: {
-          title: '课程规划',
+          title: '二课进度',
+          icon: 'tabler:brand-linktree',
           index: 1
         },
         component: () => import("@/views/plan/index.vue"),
-      },
-      {
-        path: "/userCourse",
-        name: "userCourse",
-        meta: {
-          title: '我的课程',
-          index: 1
-        },
-        component: () => import("@/views/userCourse/userCourse.vue"),
       },
       {
         path: "/user",
         name: "user",
         meta: {
           title: '个人中心',
+          icon: "tabler:user-hexagon",
           index: 1
         },
         component: () => import("@/views/user/index.vue"),
@@ -65,22 +60,41 @@ export const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/accountSetting',
+    name: 'accountSetting',
+    meta: {
+      title: '账户设置',
+      index: 2
+    },
+    component: () => import('@/views/user/children/accountSetting.vue')
+  },
+  {
     path: "/userInfo",
     name: "UserInfo",
     meta: {
       title: '个人信息',
+      index: 3
+    },
+    component: () => import("@/views/user/children/baseInfo.vue"),
+  },
+  {
+    path: "/userCourse",
+    name: "userCourse",
+    meta: {
+      title: '我的课程',
+      icon: 'orders-o',
       index: 2
     },
-    component: () => import("@/views/user/baseInfo.vue"),
+    component: () => import("@/views/userCourse/userCourse.vue"),
   },
   {
     path: "/password",
     name: "Password",
     meta: {
       title: '密码更新',
-      index: 2
+      index: 3
     },
-    component: () => import("@/views/user/passwordInfo.vue"),
+    component: () => import("@/views/user/children/passwordInfo.vue"),
   },
   {
     path: "/userObjectives",
@@ -169,6 +183,33 @@ export const routes: Array<RouteRecordRaw> = [
       index: 2
     },
     component: () => import("@/views/command/index.vue"),
+  },
+  {
+    path: '/flag',
+    name: 'flag',
+    meta: {
+      title: '我的flag',
+      index: 2
+    },
+    component: () => import('@/views/Flag/index.vue')
+  },
+  {
+    path: '/personalPlan',
+    name: 'personalPlan',
+    meta: {
+      title: '个人计划',
+      index: 2
+    },
+    component: () => import('@/views/personalPlan/index.vue')
+  },
+  {
+    path: '/honoraryTitle',
+    name: 'honoraryTitle',
+    meta: {
+      title: '荣誉称号',
+      index: 2
+    },
+    component: () => import('@/views/honoraryTitle/index.vue')
   },
   /*   {
       path: "/scan",

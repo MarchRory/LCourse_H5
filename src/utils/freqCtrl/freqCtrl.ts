@@ -1,28 +1,60 @@
-import { ref } from 'vue'
-// 防抖, 短时间高频触发只会生效最后一次触发
-export const debounce = (fn: Function, delay: number = 500) => {
-    let timer: NodeJS.Timeout | null = null
+/**
+ * 防抖
+ * @param fn 被防抖的函数
+ * @param delay 防抖间隔
+ * @param immediate 是否立即执行
+ */
+export function debounce(callback: (...args: any[]) => any, delay = 300, immediate = false) {
+    let timer: NodeJS.Timeout | null = null;
     return (...args: any[]) => {
         if (timer) {
-            clearTimeout(timer)
+            clearInterval(timer);
+            timer = null;
         }
-        timer = setTimeout(() => {
-            fn(...args)
-        }, delay)
-    }
+        if (!immediate) {
+            timer = setTimeout(() => {
+                /* eslint-disable-next-line */
+                // @ts-ignore
+                callback && callback.apply(this, args);
+            }, delay);
+        } else {
+            /* eslint-disable-next-line */
+            // @ts-ignore
+            !timer && callback.apply(this, args);
+            timer = setTimeout(() => {
+                timer = null;
+            }, delay);
+        }
+    };
 }
 
-// 节流, 短时间高频触发, 只生效第一次触发
-export const throttle = (fn: Function, delay: number = 500) => {
-    let flag = ref(true)
-
+/**
+ * 节流
+ * @param fn 被节流函数
+ * @param delay 节流时间
+ */
+export function throttle(callback: (...args: any[]) => any, delay = 3 * 1000) {
+    let start = Date.now();
+    /* eslint-disable-next-line */
     return (...args: any[]) => {
-        if (!flag.value) { return; }
-        flag.value = false
-        setTimeout(() => {
-            fn(...args)
-            flag.value = true
-        }, delay)
-    }
+        const now = Date.now();
+        if (now - start >= delay) {
+            start = now;
+            // @ts-ignore
+            return callback.apply(this, args);
+        }
+    };
 }
 
+/**
+ * 阻塞指定时间
+ * @param delay 睡眠时间, 单位是毫秒, 默认2000
+ * @returns
+ */
+export function sleep(wait = 2000) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(true);
+        }, wait);
+    });
+}

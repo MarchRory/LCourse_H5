@@ -9,7 +9,7 @@ interface badge {
   hasEvaluateUnRead: boolean
 }
 
-interface userInfo extends badge {
+export interface userInfo extends badge {
   token: string | null;
   realName: String | null;  // 真名
   name: string | null;      // 网名
@@ -23,8 +23,9 @@ interface userInfo extends badge {
   semesterId: number | null;     // 当前学期的ID
   semesterName: string | null;    // 当前学期名
   department: string | null,
-  major: string | null,           // 专业
-  campus: string | null            // 校区地点, 例如成都
+  major: string | null;          // 专业
+  campus: string | null;            // 校区地点, 例如成都
+  EvaluationsCnt: number;
 }
 
 export const useUserStore = defineStore("userInfo", {
@@ -45,7 +46,8 @@ export const useUserStore = defineStore("userInfo", {
       semesterName: null,
       department: null,
       major: null,
-      campus: null
+      campus: null,
+      EvaluationsCnt: 0
     };
   },
   actions: {

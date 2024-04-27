@@ -3,44 +3,36 @@ export default {
   name: "layOut",
 };
 </script>
-<script setup lang="ts" name="layOut">
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
 import { useUserStore } from "@/store/modules/user/index";
+import { routes } from '@/router/index'
 const userStore = useUserStore();
 const routerCache = useRouterCacheStore();
-const tabbar = ref([
-  {
-    path: "/home",
-    name: "home",
-    icon: "column",
-    title: "首页",
-  },
-  {
-    path: "/plan",
-    name: "plan",
-    icon: "cluster",
-    title: "课程规划",
-  },
-  {
-    path: "/userCourse",
-    name: "userCourse",
-    icon: "orders-o",
-    title: "我的课程",
-  },
-  {
-    path: "/user",
-    name: "user",
-    icon: "setting",
-    title: "个人中心",
-  },
-]);
+const tabbar = ref();
+
+// 自动生成tabbar
+const generaterTabbar = () => {
+  const tabbarRoutes = routes.filter((route) => route.name === 'layOut')[0].children
+  tabbar.value = tabbarRoutes.map((route) => {
+    const {path, name, meta} = route
+    return {
+      path,
+      name,
+      icon: meta.icon,
+      title: meta.title
+    }
+  })
+}
+generaterTabbar()
+
 const cache = computed(() => routerCache.cache);
 </script>
 
 <template>
   <div class="container">
-    <div class="main">
+    <div class="page-main">
       <router-view v-slot="{ Component }">
         <keep-alive :include="cache">
           <component :is="Component" />
@@ -64,11 +56,7 @@ const cache = computed(() => routerCache.cache);
         >
           <span>{{ item.title }}</span>
           <template #icon>
-            <van-icon
-              v-if="item.path != '/userCourse' || !userStore.hasEvaluateUnRead"
-              :name="item.icon"
-            />
-            <van-icon v-else :name="item.icon" dot />
+            <s-icon class="tabbar-icon" :icon="item.icon" />
           </template>
         </van-tabbar-item>
       </van-tabbar>
@@ -78,14 +66,19 @@ const cache = computed(() => routerCache.cache);
 
 <style lang="less" scoped>
 :deep(.van-tabbar) {
-  border-radius: 18px 18px 0px 0px;
   overflow: hidden;
   box-sizing: border-box;
-  border: 2px solid #bebab3;
-  height: calc(var(--van-tabbar-height) + 8px);
+  height: var(--van-tabbar-height);
+}
+:deep(.van-tabbar-item) {
+  font-size: 18px;
+  font-weight: bold;
+}
+.tabbar-icon {
+  font-size: 35px;
 }
 
-.main {
+.page-main {
   width: 100vw;
   height: calc(100vh - var(--van-tabbar-height));
   margin-bottom: var(--van-tabbar-height);

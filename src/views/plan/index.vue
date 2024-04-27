@@ -46,10 +46,7 @@ const openObject = (id: number) => {
     <header>
       <div class="temp" style="width: 12vw"></div>
       <div class="title">
-        课<span style="color: #8e8e8e; font-weight: 300">程</span>规<span
-          style="color: #8e8e8e; font-weight: 300"
-          >划</span
-        >
+        二课进度
       </div>
       <div class="tools">
         <van-icon name="apps-o" size="32" style="opacity: 0" />
@@ -115,7 +112,7 @@ header {
   .title {
     font-family: Gen Jyuu Gothic;
     font-size: 42px;
-    font-weight: 500;
+    font-weight: 800;
     line-height: 32px;
     text-align: center;
     letter-spacing: 5px;

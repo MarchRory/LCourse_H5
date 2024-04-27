@@ -1,4 +1,4 @@
-import { request } from "@/utils/http/request";
+import request from "@/utils/http/request";
 import { useUserStore } from "@/store/modules/user";
 import { Response } from "@/utils/http/types";
 import { courseObjectivesResultModel } from "../types/courseObjectives";
@@ -13,10 +13,10 @@ const userStore = useUserStore();
  * 获取学生本学期课程目标列表
  * @returns
  */
-export async function getUserObjects() {
-  return await request.get<Response<courseObjectivesResultModel>>({
-    url: `${API.semesterObjectiveList}?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
-  });
+export function getUserObjects() {
+  return request.get<Response<courseObjectivesResultModel>>(
+    `${API.semesterObjectiveList}?pageNum=1&pageSize=100&semesterId=${userStore.semesterId}&userType=0`,
+  );
 }
 
 /**
@@ -24,10 +24,10 @@ export async function getUserObjects() {
  * @param objId 选定的课程目标Id
  * @returns data.
  */
-export async function getObjDetail(objId: number) {
-  return await request.get({
-    url: API.objectiveDetail + objId,
-  });
+export function getObjDetail(objId: number) {
+  return request.get(
+    API.objectiveDetail + objId,
+  );
 }
 
 /**
@@ -35,10 +35,10 @@ export async function getObjDetail(objId: number) {
  * @param objId
  * @returns data.list -> 选定目标下的课程列表, data.total -> 选定课程目标下课程的总数
  */
-export async function getObjCourses(objId: number) {
-  return await request.get({
-    url: `${API.itemPage}/${objId}?pageNum=1&pageSize=50`,
-  });
+export function getObjCourses(objId: number) {
+  return request.get(
+    `${API.itemPage}/${objId}?pageNum=1&pageSize=50`,
+  );
 }
 
 /**
@@ -46,14 +46,14 @@ export async function getObjCourses(objId: number) {
  * @param params
  * @returns
  */
-export async function getObjects(params: {
+export function getObjects(params: {
   pageNum: number;
   pageSize: number;
   semesterId?: number | string;
   userType: number;
 }) {
-  return await request.get({
-    url: API.semesterObjectiveList,
+  return request.get(
+    API.semesterObjectiveList,
     params,
-  });
+  );
 }

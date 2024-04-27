@@ -1,90 +1,76 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { showFailToast, showLoadingToast, showSuccessToast } from "vant";
+import { showFailToast, showNotify, showSuccessToast } from "vant";
 import { defineAsyncComponent } from "vue";
-import { commentToCourse, commentToSelf } from "@/api/courses/courses";
-import { filterHTMLInCommand } from "@/utils/regUtils/course";
+import {addFlagApi} from '@/api/user/user'
+import { commentToCourse  } from "@/api/courses/courses";
+import type {commentToCourseObj} from '@/api/types/courses/index'
+import {deepClone} from '@/utils/dataUtil/common'
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
+import {starScoreTextMap} from './config'
 import resPic from "@/assets/imgs/commentRes.gif";
-
+const DimensionCommand = defineAsyncComponent(() => import('./components/dimensionCommand.vue'))
 const backBtn = defineAsyncComponent(
   () => import("@/components/backButton/backButton.vue")
 );
-const selfCommentArea = defineAsyncComponent(
-  () => import("@/components/templateComment/index.vue")
-);
 const route = useRoute();
-const title = ref(route.query.title);
 const courseId = ref(Number(route.query.courseId));
-const evaluateText = ref("");
-const selfComment = ref("");
-const score = ref(0);
-const anonymous = ref(false);
-const handleSwitchChange = (value: boolean) => {
-  anonymous.value = value;
-};
 const isCommentSuccess = ref(false);
 
+const form = ref<commentToCourseObj>({
+  score: 0,
+  courseId: courseId.value,
+  evaluateText: '',
+  anonymous: false,
+  detailCommand: [],
+})
+const flag_content = ref('')
+// 同步维度评价结果
+const handleDimensionCommandChange = (detail: commentToCourseObj['detailCommand']) => {
+  const data = deepClone<typeof detail>(detail)
+  data.forEach((item) => {
+    if (Object.hasOwnProperty.call(data, 'description')) {
+      delete item.description
+    }
+  })
+  form.value.detailCommand = data
+}
 const submit = debounce(() => {
-  const fetchs = [];
-  if (!score.value) {
+  if (!form.value.score) {
     showFailToast("先给课程打个分吧");
     return;
-  } else if (!selfComment.value) {
-    showFailToast("你还没有填写自我评价哦");
-    return;
   }
 
-  if (selfComment.value.includes("<input")) {
-    console.log("if");
-    showLoadingToast({
-      duration: 500,
-      overlay: true,
-      forbidClick: true,
-      closeOnClick: false,
-      closeOnClickOverlay: false,
-      message: "请稍后",
-    });
-    selfComment.value = filterHTMLInCommand(selfComment.value);
-  }
-
-  if (evaluateText.value != null) {
-    fetchs.push(
-      commentToCourse({
-        score: score.value,
-        courseId: courseId.value,
-        evaluateText: evaluateText.value,
-        anonymous: anonymous.value,
-      })
-    );
-  }
-  console.log(selfComment.value);
-
-  fetchs.push(
-    commentToSelf({
-      score: score.value,
-      courseId: courseId.value,
-      evaluateText: selfComment.value,
-    })
-  );
-
-  Promise.all([...fetchs]).then((res: any) => {
-    if (res[0].code == 200 && res[1].code == 200) {
-      showSuccessToast("课程评价成功");
-      isCommentSuccess.value = true;
-    } else {
-      let message = res[0].code != 200 ? "课程" : "自我";
-      showFailToast("遇到错误, " + message + "评价失败");
+  commentToCourse(form.value)
+  .then(({success}) => {
+    if (success) {
+      showSuccessToast('评价成功')
+      isCommentSuccess.value = true
+    }else {
+      showFailToast('请稍后重试')
     }
-  });
+  }).catch((e) => {
+    showFailToast(e)
+  })
+  
+  flag_content.value && addFlagApi(flag_content.value)
+  .then(({success}) => {
+    if(!success) {
+      showNotify({
+        type: 'danger',
+        message: '服务器异常, 立Flag失败',
+        duration: 2 * 1000
+      })
+    }
+  }).catch(() => {
+    showNotify({
+      type: 'danger',
+      message: '网络异常, 立Flag失败, 请稍后再试',
+      duration: 2 * 1000
+    })
+  })
 }, 500);
 
-
-const handleSelfCommentChange = (selfCommentText: any) => {
-  console.log(selfCommentText);
-
-  selfComment.value = selfCommentText;
-};
 </script>
 
 <template>
@@ -93,75 +79,70 @@ const handleSelfCommentChange = (selfCommentText: any) => {
       <header>
         <back-btn />
         <div class="title">评价</div>
-        <div class="seat"></div>
+        <div class="seat">
+          <van-switch v-model="form.anonymous" :size="20" active-color="#ffac40"/>
+          <span>匿名</span>
+        </div>
       </header>
     </van-sticky>
 
     <div class="main" v-if="!isCommentSuccess">
-      <div class="commentevaluateText">
-        <div class="commmentToSelf">
-          <div
-            style="
-              text-align: left;
-              margin-left: 20px;
-              font-size: 20px;
-              font-weight: bold;
-            "
-          >
-            自我评价
+      <section class="score firstSection">
+        <span class="form-title">课程评分</span>
+        <div class="scoreArea">
+          <div>
+            <van-rate
+              v-model="form.score"
+              :size="35"
+              color="#ffae0d"
+              void-color="#eee"
+            />
           </div>
-          <van-rate
-            style="margin-bottom: 50px"
-            v-model="score"
-            :size="25"
-            color="#ffd21e"
-            void-icon="star"
-            void-color="#eee"
-            allow-half
-          />
+          <div class="scoreText">{{ starScoreTextMap[form.score].text }}</div>
         </div>
-        <van-cell-group inset style="margin-bottom: 20px">
-          <self-comment-area
-            @onChange="handleSelfCommentChange"
-            :level="score"
-          />
-        </van-cell-group>
-        <div
-          style="
-            text-align: left;
-            margin-left: 20px;
-            font-size: 20px;
-            font-weight: bold;
-          "
-        >
-          课程评价
+      </section>
+      <section class="dimensionCommand">
+        <span class="form-title">详细评价</span>
+        <div class="content-area">
+          <!--@vue-ignore-->
+          <DimensionCommand :course-id="courseId" @on-change="handleDimensionCommandChange" />
         </div>
-        <van-cell-group inset>
+      </section>
+      <section class="suggestion">
+        <span class="form-title">吐槽与建议</span>
+        <div class="content-area">
           <van-field
-            v-model="evaluateText"
-            rows="4"
+            v-model="form.evaluateText"
+            rows="1"
             autosize
-            maxlength="200"
             type="textarea"
-            show-word-limit
-            placeholder="我觉得这个课程..."
+            placeholder="说说你对这门课程有哪些想吐槽的地方? 这门课程还需要怎么改进?"
+            label-align="top"
           />
-        </van-cell-group>
-        <div class="anonymous">
-          <van-switch
-            v-model="anonymous"
-            @change="handleSwitchChange"
-            size="22px"
-            active-color="#E3562A"
-            inactive-color="#dcdee0"
-          />
-          <div style="margin-left: 10px">匿名评价</div>
         </div>
-      </div>
-
-      <van-button type="warning" size="large" @click="submit"
-        >发布评价</van-button
+      </section>
+      <section class="flag">
+        <span class="form-title">立个Flag</span>
+        <div class="content-area">
+          <van-field
+            v-model="flag_content"
+            rows="1"
+            autosize
+            type="textarea"
+            placeholder="给自己立个Flag, 可以获得少量积分, 完成Flag后可获得更多积分"
+            label-align="top"
+          />
+        </div>
+      </section>
+      <div
+        :style="{
+          backgroundColor: form.score !== 0 ? '#ffac40' : '#ffd9a9'
+        }"
+         class="submitBtn" 
+        @click="submit"
       >
+        发布评价
+      </div>
     </div>
 
     <div class="res" v-else>
@@ -194,11 +175,7 @@ const handleSelfCommentChange = (selfCommentText: any) => {
   justify-content: flex-start;
   overflow-y: auto;
   overflow-x: hidden;
-
-  div {
-    margin-bottom: 20px;
-  }
-
+  background-color: #F4F5F5;
   header {
     height: 120px;
     width: calc(100vw - 40px);
@@ -208,6 +185,7 @@ const handleSelfCommentChange = (selfCommentText: any) => {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    background-color: #ffff;
 
     .title {
       width: calc((100vw - 40px) / 2);
@@ -217,16 +195,107 @@ const handleSelfCommentChange = (selfCommentText: any) => {
       line-height: 32px;
       text-align: center;
       letter-spacing: 5px;
+      background-color: #ffff;
     }
 
     .seat {
       height: 100%;
       width: 100px;
+      background-color: #ffff;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      span {
+        margin-top: 5px;
+        font-size: 0.8em;
+        font-weight: 700;
+        color: gray;
+      }
     }
   }
 
   .main {
-    width: 90%;
+    width: 100%;
+    flex: 1;
+    height: max-content;
+    overflow-y: auto;
+    section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 6px;
+      padding: 40px 30px ;
+      background-color: #ffff;
+      .content-area {
+        width: 100%;
+        :deep(textarea) {
+          display: flex;
+          align-items: flex-start;
+          width: 94%;
+          text-indent: 2.2em;
+          margin: 0 auto;
+          min-height: 200px;
+          height: auto;
+          word-wrap: break-word;
+          word-break: break-word;
+        }
+      }
+      .form-title {
+        font-size: 1.1em;
+        font-weight: 500;
+        color: #242A33;
+        font-family: PingFangSC-Medium;
+      }
+      div {
+        padding: 10px 0;
+      }
+    }
+    .firstSection {
+      padding-top: 30px;
+    }
+    .score {
+      .scoreArea {
+        padding: 25px 0;
+        margin: 0 auto;
+        .scoreText {
+          height: 1.1em;;
+          color: #B8B8B8;
+          margin-top: 20px;
+          font-size: 1.1em;
+          font-weight: 400;
+        }
+      }
+    }
+    .dimensionCommand {
+
+    }
+    .suggestion {
+
+    }
+    .flag {
+      &::after {
+        display: block;
+        content: '';
+        position: relative;
+        width: 100%;
+        height: 200px;
+      }
+    }
+
+    .submitBtn {
+      display: block;
+      position: fixed;
+      width: fit-content;
+      padding: 20px 120px;
+      border-radius: 20px;
+      font-weight: 600;
+      color: rgb(255, 255, 255);
+      font-size: 1em;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%)
+    }
 
     :deep(.van-image__img) {
       display: block;
@@ -261,10 +330,6 @@ const handleSelfCommentChange = (selfCommentText: any) => {
         height: 30px;
         border: 6px solid #f8f2ee;
       }
-    }
-
-    .commentsevaluateText {
-      margin-bottom: 10px;
     }
 
     .anonymous {

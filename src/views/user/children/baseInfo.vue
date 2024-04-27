@@ -1,14 +1,11 @@
 <template>
   <div>
     <van-config-provider :theme-vars="themeVars">
-      <van-nav-bar left-text="返回" left-arrow @click-left="onClickLeft">
-        <template #title
-          ><span style="color: #e1562a">个人信息修改</span></template
-        >
+      <XdHeader title="设置">
         <template #right>
-          <span style="color: #e1562a" @click="onSubmit">保存</span>
+          <span @click="onSubmit">保存</span>
         </template>
-      </van-nav-bar>
+      </XdHeader>
       <van-form>
         <van-cell-group inset>
           <van-field name="uploader" label="头像">
@@ -136,29 +133,23 @@
             @cancel="showMajorPicker = false"
           />
         </van-popup>
-
-        <!--         <div style="margin: 16px">
-          <van-button round block type="warning" native-type="submit">
-            保存
-          </van-button>
-        </div> -->
       </van-form>
     </van-config-provider>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "UserInfo",
 };
 </script>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from "@/store/modules/user";
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
 import upload from "@/api/upload/upload";
 import { updateUser } from "@/api/user/user";
-import { watch } from "vue";
+import { watch, defineAsyncComponent } from "vue";
 import { getDepartments, getMajorList } from "@/api/department/department";
 import {
   listProps,
@@ -167,6 +158,9 @@ import {
   showToast,
   Toast,
 } from "vant";
+
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",
@@ -265,7 +259,7 @@ const onDepartmentConfirm = ({ selectedOptions }) => {
 };
 const loadDepartmentColumns = () => {
   departmentLoading.value = true;
-  getDepartments()
+  getDepartments({page: 1, pageSize: 100})
     .then((res) => {
       if (res.code == 200) {
         const { list } = res.data;
@@ -325,15 +319,14 @@ const onSubmit = debounce(() => {
       (userStore.campus = campus.value), (userStore.major = major.value);
       userStore.contact = contact.value;
       showSuccessToast("信息已更新");
-      router.go(-1);
+      setTimeout(() => {
+        router.back();
+      }, 1500)
     } else {
       showFailToast(res.message);
     }
   });
 }, 300);
-const onClickLeft = () => {
-  router.back();
-};
 loadDepartmentColumns();
 watch(
   () => showMajorPicker.value,

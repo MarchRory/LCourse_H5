@@ -1,4 +1,4 @@
-import { request } from "@/utils/http/request";
+import request from "@/utils/http/request";
 import { departmentResultModel, majorPageParmas, majorResultModel } from "../types/department";
 import { Response } from "@/utils/http/types";
 import { pageParams } from "../types/public";
@@ -12,11 +12,11 @@ enum API {
  * @returns
  * @param params
  */
-export async function getDepartments(params: pageParams) {
-  return await request.get<Response<departmentResultModel>>({
-    url: API.departmentList,
+export function getDepartments(params: pageParams) {
+  return request.get<Response<departmentResultModel>>(
+    API.departmentList,
     params,
-  });
+  );
 }
 
 /**
@@ -24,10 +24,10 @@ export async function getDepartments(params: pageParams) {
  * @param params 
  * @returns 
  */
-export async function getMajorList(params: majorPageParmas, data = []) {
-  return await request.post<Response<majorResultModel>>({
-    url: API.majorList,
-    params,
-    data
-  })
+export function getMajorList(params: majorPageParmas, data = []) {
+  return request.post<Response<majorResultModel>>(
+    API.majorList,
+    data,
+    { params }
+  )
 }

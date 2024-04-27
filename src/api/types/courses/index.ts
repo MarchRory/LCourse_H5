@@ -1,3 +1,4 @@
+import { DimensionCommandContentItem } from "@/api/dimension";
 import { TombstoneGeneratedFields } from "../public";
 /**
  * 获取课程列表
@@ -45,11 +46,20 @@ export interface coursesListResultModel {
     total: number
 }
 
+// 评语维度
+export interface commandDimensionItem {
+    id: number;
+    title: string;
+    content: string;
+    icon?: string
+}
+
 export interface commentToCourseObj {
     score: number; // 自嗨的打分
     courseId: number;
-    evaluateText: string;
-    anonymous: boolean;
+    evaluateText: string;  // 课程建议
+    anonymous: boolean; // 是否匿名
+    detailCommand: DimensionCommandContentItem[]
 }
 
 export interface commentToSelfObj {

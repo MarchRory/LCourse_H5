@@ -18,9 +18,9 @@ const back = () => {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 2px solid #BEBAB3;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: transparent
 }
 </style>

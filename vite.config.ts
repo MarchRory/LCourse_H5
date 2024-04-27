@@ -46,10 +46,12 @@ export default ({ command, mode }) => {
     plugins: [
       vue(),
       //basicSsl(),
+      // HTML插件, 用于配置app的图标和名字， H5上用的多
       createHtmlPlugin(),
       Components({
         resolvers: [VantResolver()],
       }),
+      // 自动引入vue和vue-router的API, 不需要自己在手动import
       AutoImport({
         imports: ["vue", "vue-router"],
         // 设置为在'src/'目录下生成解决ts报错，默认是当前目录('./'，即根目录)
@@ -60,6 +62,7 @@ export default ({ command, mode }) => {
           enabled: true,
         },
       }),
+      // 移动端调试控制台
       viteVConsole({
         entry: path.resolve("src/main.ts"),
         localEnabled: true,
