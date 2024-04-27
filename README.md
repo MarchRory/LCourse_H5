@@ -16,6 +16,58 @@
 - Echarts
 - GSAP3
 
+# 图标集
+
+除了Vant4组件提供的图标集外, 项目还使用了 [iconify/tabler](https://icon-sets.iconify.design/tabler/?category=General) 作为另一套图标集, 并使用iconify官方提供的 [iconify/vue](https://iconify.design/docs/icon-components/vue/) 组件进行引入
+
+## 使用示例
+
+
+```bash
+# 首先安装图标组件和图标集
+npm i @iconify/vue @iconify/icons-tabler
+```
+
+`main.ts`
+```ts
+// 在入口文件中全局引入 Icon 组件
+import { Icon } from '@iconify/vue'
+
+// 然后全局挂载
+createApp(App)
+  .component('s-icon', Icon)
+  .mount("#app")
+// 因为我们使用的是tabler图标集, 所以将组件重命名为 s-icon 以便区分
+```
+
+`component.vue`
+```html
+<!-- 然后在iconify/tabler中找到想要引入的图标， 复制name, 传入icon prop -->
+<s-icon icon="tabler:4k-bold" />
+```
+
+## props
+> 详情请见 [官方文档](https://iconify.design/docs/icon-components/vue/#properties), 这里提供中文版
+
+**必填项**
+- icon: `iconifyIcon|string`，所选icon的名字, 格式为 `iconset-name:icon-name`，即`图标集名:图标名`, 例如, 本项目中使用的是`tabler`图标集, 我需要使用其中名为`4k-bold`的图标。那么传给组件的icon的值就是`tabler:4k-bold`
+
+> icon值的详细组成详见[官方文档](https://iconify.design/docs/icon-components/vue/#properties)
+
+**常用可选项**
+- inline: `boolean`，设置垂直对齐方式为`inline`
+- width：`string|number`，图标的宽
+- height: `string|number`, 图标的高
+- horizontalFlip: `boolean` 水平翻转图标
+- verticalFlip: `boolean`，垂直翻转图标
+- filp: `string`, 自定义翻转模式，值参考css对应属性
+- rotate: `string`, 渲染角度
+- color: `string`, 图标颜色
+- onLoad: `Functon`, 图标完成加载时触发的回调方法
+
+> 除此之外，图标组件还接收常见的其他属性和原生事件, 例如`onClick (vue中为click)`等。所有传入的属性和事件, 都会被传入给渲染出的`Svg`元素
+
+
 # 未来计划
 1、由于暂时没有给我们提供https，所以不可以扫码和调用浏览器原生Notification， 这些将在后续版本中补全
 

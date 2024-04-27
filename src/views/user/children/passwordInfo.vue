@@ -1,9 +1,7 @@
 <template>
   <van-config-provider :theme-vars="themeVars">
     <div>
-      <van-nav-bar left-text="返回" left-arrow @click-left="onClickLeft">
-        <template #title><span style="color: #e1562a">密码修改</span></template>
-      </van-nav-bar>
+      <XdHeader title="密码修改" />
       <van-form @submit="onSubmit">
         <van-cell-group inset>
           <van-field
@@ -23,8 +21,8 @@
             :rules="[{ required: true, message: '请填写密码' }]"
           />
         </van-cell-group>
-        <div style="margin: 16px">
-          <van-button round block type="warning" native-type="submit">
+        <div style="margin: 40px">
+          <van-button block type="warning" native-type="submit">
             提交
           </van-button>
         </div>
@@ -33,14 +31,17 @@
   </van-config-provider>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "updatePwd",
 };
 </script>
-<script setup>
+<script setup lang="ts">
 import { resetPassword } from "@/api/user/user";
 import { showToast } from "vant";
+
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+
 const router = useRouter();
 const oldPassword = ref("");
 const newPassword = ref("");
@@ -54,11 +55,15 @@ const onSubmit = () => {
     oldPassword: oldPassword.value,
   }).then((res) => {
     showToast(res.message);
-  });
+  }).catch((e) => {
+    showFailToast(res.message)
+  })
 };
 const onClickLeft = () => {
   router.back();
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+
+</style>

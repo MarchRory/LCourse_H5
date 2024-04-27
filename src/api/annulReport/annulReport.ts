@@ -1,4 +1,4 @@
-import { request } from "@/utils/http/request";
+import request from "@/utils/http/request";
 import * as annualReportTypes from '../types/annualReport/index'
 import { AxiosRequestConfig } from "axios";
 
@@ -11,11 +11,11 @@ enum API {
  * 获取年度报告列表, state是3，拿到可访问报告
  * @returns 
  */
-export async function getAnnualReportListAPI(params: annualReportTypes.annualReportParamsType) {
-    return await request.get<annualReportTypes.annualReportListResult>({
-        url: API.annualReportList,
+export function getAnnualReportListAPI(params: annualReportTypes.annualReportParamsType) {
+    return request.get<annualReportTypes.annualReportListResult>(
+        API.annualReportList,
         params
-    })
+    )
 }
 
 /**
@@ -23,9 +23,10 @@ export async function getAnnualReportListAPI(params: annualReportTypes.annualRep
  * @param annualReportId 
  * @returns 
  */
-export async function getAnnualReportDetailAPI(batchId: number | string, options: AxiosRequestConfig) {
-    return await request.get<annualReportTypes.annulReportItem>({
-        url: API.annualReportDetail + `/${batchId}`,
-        ...options
-    })
+export function getAnnualReportDetailAPI(batchId: number | string, options: AxiosRequestConfig) {
+    return request.get<annualReportTypes.annulReportItem>(
+        API.annualReportDetail + `/${batchId}`,
+        null,
+        { ...options }
+    )
 }

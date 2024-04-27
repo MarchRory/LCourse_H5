@@ -13,6 +13,7 @@ import router from "./router";
 import stores from "@/store/index";
 import "@/auth";
 import { Lazyload } from "vant";
+import { Icon } from '@iconify/vue'
 
 
 createApp(App)
@@ -21,4 +22,5 @@ createApp(App)
   .use(Toast)
   .use(Notify)
   .use(Lazyload)
+  .component('s-icon', Icon)
   .mount("#app")

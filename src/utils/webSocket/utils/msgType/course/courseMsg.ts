@@ -6,11 +6,11 @@ import { useUserStore } from "@/store/modules/user";
 const notifyStore = useNotifyStore()
 let userStore: any
 export enum courseTypeMap {
-    courseStateChange = -1,
-    beAdmitted = 2,
-    courseBegin = 3,
-    signBegin = 4,
-    unReadEvaluate = 6
+    courseStateChange = -1,  // 课程状态改变
+    beAdmitted = 2,          // 报名课程被通过
+    courseBegin = 3,         // 参与的课程开始
+    signBegin = 4,           // 开始签到
+    unReadEvaluate = 6       // 新增未读考评信息
 }
 
 export const courseStateChangeType = [courseTypeMap.beAdmitted, courseTypeMap.courseBegin, courseTypeMap.signBegin, courseTypeMap.unReadEvaluate]

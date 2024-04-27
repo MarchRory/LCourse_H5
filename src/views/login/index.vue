@@ -27,8 +27,7 @@ const onSubmit = (values) => {
           router.replace({ path: "/wait" });
         });
       } else {
-        showFailToast("网络异常, 请稍后重试");
-        console.log(res);
+        showFailToast(res.message);
       }
     });
   }

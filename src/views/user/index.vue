@@ -1,5 +1,5 @@
 <template>
-  <div class="info" v-if="showParent">
+  <!-- <div class="info" v-if="showParent">
     <van-pull-refresh v-model="reLoad" @refresh="refresh">
       <van-nav-bar>
         <template #title><span style="color: black">个人中心</span></template>
@@ -71,9 +71,6 @@
             size="normal"
           />
         </van-cell-group>
-        <!--         <van-cell-group title="登录相关">
-          <van-cell title="退出登录" value="" is-link @click="logOut" />
-        </van-cell-group> -->
         <van-action-sheet
           v-model:show="show"
           cancel-text="取消"
@@ -87,29 +84,63 @@
         </van-action-sheet>
       </div>
     </van-pull-refresh>
+  </div> -->
+  <div class="user-center-container">
+    <header>
+      <UserCenterHeader />
+    </header>
+    <main>
+      <UserCard />
+      <section>
+        <KingkongTabCard title="我的" :tabs="courseTabs" />
+        <!--  暂时没别的拓展功能 -->
+        <KingkongTabCard v-if="false" title="更多功能" :tabs="extraFnTabs" />
+      </section>
+    </main>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "user",
 };
 </script>
 
-<script setup>
+<script setup lang="ts">
 import "vant/es/cell/style";
 import "vant/es/cell-group/style";
 import "vant/es/nav-bar/style";
+import { defineAsyncComponent } from 'vue'
 import { useUserStore } from "@/store/modules/user";
 import { showConfirmDialog } from "vant";
 import { yibanBind, getInfo } from "@/api/user/user";
 import { showFailToast, showSuccessToast } from "vant";
-const userStore = useUserStore();
+import type { KingkongTabItem } from './components/type'
+
+const UserCenterHeader = defineAsyncComponent(() => import('./components/header.vue'))
+const UserCard = defineAsyncComponent(() => import('./components/user-card.vue'))
+const KingkongTabCard = defineAsyncComponent(() => import('./components/kingkong-tab-card.vue'))
+const userStore = useUserStore()
 const showParent = ref(true);
 const route = useRoute();
 const router = useRouter();
 const show = ref(false);
-{
+
+const courseTabs = ref<KingkongTabItem[]>([
+  { label: '历史课程', icon: 'tabler:books', path: '/userCourse', dot: false },
+  { label: '考评信息', icon: 'tabler:checks', path: '/evalutions', dot: userStore.EvaluationsCnt > 0 },
+  { label: '年度报告', icon: 'tabler:chart-area-line', path: '/annulReportList', dot: false },
+  { label: '荣誉称号', icon: 'tabler:trophy', path: '/honoraryTitle', dot: false },
+  { label: '个人计划', icon: 'tabler:list-numbers', path: '/personalPlan', dot: false },
+  { label: 'Flag', icon: 'tabler:flag-star', path: '/flag', dot: false },
+])
+
+
+// 拓展功能的KingkongTabs
+const extraFnTabs = ref<KingkongTabItem[]>([])
+
+// 初始化, 获取个人信息
+const init = () => {
   let query = Object.values(route.query);
   if (query.length && query.includes(true)) {
     userStore.init(userStore.token).then(() => {
@@ -144,7 +175,6 @@ onBeforeRouteUpdate((to, from, next) => {
   next();
 });
 const reLoad = ref(false);
-const userInfo = ref(userStore);
 const open = () => {
   show.value = true;
 };
@@ -201,6 +231,8 @@ const bindYiban = () => {
 const openAnnulReport = () => {
   router.push({ name: "annulReportList" });
 };
+
+init()
 </script>
 
 <style scoped lang="less">
@@ -216,4 +248,23 @@ const openAnnulReport = () => {
   height: calc(100vh - var(--van-tabbar-height) - var(--van-nav-bar-height));
 }
 
+.user-center-container {
+  overflow-x: hidden;
+  padding: 0 20px;
+  height: calc(100vh - var(--van-tabbar-height));
+  background: linear-gradient(to bottom, white 40%, rgb(245, 246, 248));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  header, main{
+    width: 100%;
+    height: auto;
+  }
+  main {
+    section {
+      margin-top: 40px;
+    }
+  }
+}
 </style>
