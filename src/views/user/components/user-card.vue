@@ -23,7 +23,7 @@ const userData = ref([
             />
             <div class="info">
                 <span  class="username">
-                    <s-icon
+                    <t-icon
                         :icon="`${userStore.sex === 0 ? 'tabler:gender-female' : 'tabler:gender-male'}`"
                         :color="`${userStore.sex === 0 ? '#e720a6' : '#288eca'}`"
                         :size="20"
@@ -33,9 +33,9 @@ const userData = ref([
                 <div class="list-container">
                     <div class="tag-list">
                         <ul>
-                            <li class="info-tag campus-tag"> <s-icon class="icon" icon="tabler:current-location" :size="5" /> <span>{{ userStore.campus }}校区</span> </li>
-                            <li class="info-tag department-tag"> <s-icon class="icon" icon="tabler:building-community" :size="5" /> <span>{{ userStore.department }}</span> </li>
-                            <li class="info-tag major-tag"> <s-icon class="icon" icon="tabler:notebook" :size="5" /> <span>{{ userStore.major }}</span> </li>
+                            <li class="info-tag campus-tag"> <t-icon class="icon" icon="tabler:current-location" :size="5" /> <span>{{ userStore.campus }}校区</span> </li>
+                            <li class="info-tag department-tag"> <t-icon class="icon" icon="tabler:building-community" :size="5" /> <span>{{ userStore.department }}</span> </li>
+                            <li class="info-tag major-tag"> <t-icon class="icon" icon="tabler:notebook" :size="5" /> <span>{{ userStore.major }}</span> </li>
                         </ul>
                     </div>
                 </div>

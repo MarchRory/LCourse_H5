@@ -3,7 +3,7 @@
     <course-ske :ske-load="skeLoad"></course-ske>
     <XdHeader title="详情">
       <template #right>
-          <s-icon
+          <t-icon
             v-if="detailsObj.signUpstate == 2"
             @click="showCenter = true"
             icon="tabler:clock-edit"

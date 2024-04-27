@@ -31,12 +31,12 @@ const jumpTo = (settingItem: UserSettingItem) => {
                 :key="index"
             >
                 <div class="li-main">
-                    <div class="setting-info"><s-icon class="icon" :icon="setting.icon" /><span>{{ setting.label }}</span></div>
+                    <div class="setting-info"><t-icon class="icon" :icon="setting.icon" /><span>{{ setting.label }}</span></div>
                     <div class="right">
                         <slot name="before-action" :item="setting"></slot>
                         <slot name="action" :item="setting">
                             <div v-if="!setting.forbidJump"  class="default-action" @click="jumpTo(setting)">
-                                <s-icon class="icon" icon="tabler:chevron-right" />
+                                <t-icon class="icon" icon="tabler:chevron-right" />
                             </div>
                         </slot>
                     </div>
