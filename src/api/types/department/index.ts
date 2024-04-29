@@ -1,4 +1,4 @@
-import { TombstoneGeneratedFields, pageParams } from '../public/index'
+import { ListResponseModel, TombstoneGeneratedFields, pageParams } from '../public/index'
 
 export interface departmentItem extends TombstoneGeneratedFields {
     departmentName: string
@@ -6,10 +6,7 @@ export interface departmentItem extends TombstoneGeneratedFields {
     alias: string[]
 }
 
-export interface departmentResultModel {
-    list: departmentItem[]
-    total: number
-}
+export type departmentResultModel = ListResponseModel<departmentItem>
 
 export interface majorItem extends TombstoneGeneratedFields {
     majorName: string
@@ -17,10 +14,7 @@ export interface majorItem extends TombstoneGeneratedFields {
     department: string
 }
 
-export interface majorResultModel {
-    list: majorItem[]
-    total: number
-}
+export type majorResultModel = ListResponseModel<majorItem>
 
 export interface majorPageParmas extends pageParams {
     departmentId: string | number

@@ -16,7 +16,7 @@ export interface userInfo extends badge {
   sex: number | null;
   studentId: string | null; // 学号
   hasBind: boolean,         // 是否绑定易班
-  uid: number | null;       // 报名时候用的这个id
+  uid: string | null;       // 报名时候用的这个id
   avatar: string | null;
   enrollmentYear: string | null; // 入学年份
   contact: object | null;       // 联系方式

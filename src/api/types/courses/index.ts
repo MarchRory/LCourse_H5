@@ -1,5 +1,5 @@
 import { DimensionCommandContentItem } from "@/api/dimension";
-import { TombstoneGeneratedFields } from "../public";
+import { ListResponseModel, TombstoneGeneratedFields } from "../public";
 /**
  * 获取课程列表
  */
@@ -41,10 +41,7 @@ export interface coursesItem {
     objectivesType: number | null
     signUpState?: number
 }
-export interface coursesListResultModel {
-    list: coursesItem[]
-    total: number
-}
+export type coursesListResultModel = ListResponseModel<coursesItem>
 
 // 评语维度
 export interface commandDimensionItem {
@@ -91,7 +88,4 @@ export interface evalutionType extends TombstoneGeneratedFields {
     score: number
 }
 
-export interface evalutionListResultModel {
-    list: evalutionType[]
-    total: number
-}
+export type evalutionListResultModel = ListResponseModel<evalutionType>

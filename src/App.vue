@@ -38,9 +38,11 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import { useNotifyStore } from "@/store/modules/notify/index";
 import { storeToRefs } from "pinia";
+import useKeyBoardMonitor from '@/hooks/useKeyBoardMonitor'
+
 let transitionName = ref("");
 const router = useRouter();
 const notifyStore = useNotifyStore();
@@ -53,6 +55,11 @@ function closeNotice() {
     notifyStore.close();
   }
 }
+
+// 顶层监听软键盘弹起, 注入所有组件
+// const {keyboardVisible} = useKeyBoardMonitor()
+// provide('keyboardState', keyboardVisible)
+
 router.beforeEach((to: any, from: any) => {
   // 一级页面进入二级页面
   if (from.meta.index <= to.meta.index) {

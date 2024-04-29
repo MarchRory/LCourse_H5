@@ -1,32 +1,13 @@
 <template>
-  <van-config-provider :theme-vars="themeVars">
-    <van-pull-refresh v-model="reLoad" @refresh="refresh">
-      <div ref="header">
-        <van-nav-bar @click-right="openEvaluations">
-          <template #title
-            ><span style="color: #e1562a">我的课程</span></template
-          >
-          <template #right>
-            <van-icon
-              v-if="!userStore.hasEvaluateUnRead"
-              name="chat-o"
-              size="28"
-            />
-            <van-icon v-else name="chat-o" size="28" dot />
-          </template>
-        </van-nav-bar>
-        <van-dropdown-menu active-color="#e1562a">
-          <van-dropdown-item v-model="state" :options="option" />
-        </van-dropdown-menu>
-      </div>
-      <course-page-skeleton :skeLoad="listLoading" v-if="listLoading" />
-      <div class="container" v-else>
-        <div
-          class="list"
-          :style="{
-            height: `calc(100vh - ${headerHeight}px - var(--van-tabbar-height))`,
-          }"
-        >
+  <div class="my-courses-container">
+    <XdHeader title="我的课程" />
+    <van-dropdown-menu active-color="#e1562a">
+      <van-dropdown-item v-model="state" :options="option" />
+    </van-dropdown-menu>
+    <div class="list-container">
+      <van-pull-refresh v-model="reLoad" @refresh="refresh">
+        <course-page-skeleton :skeLoad="listLoading" v-if="listLoading" />
+        <div class="list" v-else>
           <van-empty v-if="!hasTotal" description="暂无课程信息" />
           <van-list
             v-else
@@ -43,36 +24,28 @@
             </TransitionGroup>
           </van-list>
         </div>
-      </div>
-    </van-pull-refresh>
-  </van-config-provider>
+      </van-pull-refresh>
+    </div>
+  </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "userCourse",
 };
 </script>
-<script setup>
+<script setup lang="ts">
 import { getCourses } from "@/api/courses/courses";
 import CoursePreview from "@/components/coursePreview/coursePreview.vue";
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
 import { useUserStore } from "@/store/modules/user/index";
-import { ref, reactive, onMounted, onActivated } from "vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { ref, reactive } from "vue";
 import { listProps } from "vant";
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const userStore = useUserStore();
-const scrollTop = ref(0);
-const themeVars = reactive({
-  navBarTextColor: "#e1562a",
-  navBarIconColor: "#e1562a",
-});
 const courseList = ref([]);
-const header = ref();
-const headerHeight = ref(0);
 const router = useRouter();
 const state = ref(null);
-const pageNUm = ref(1);
 const passType = ref(null);
 const listLoading = ref(false);
 const hasTotal = ref(0);
@@ -127,47 +100,28 @@ const onLoad = () => {
     });
 };
 onLoad();
-const onClickLeft = () => {
-  router.back();
-};
-const openEvaluations = () => {
-  router.push({ path: "/evalutions" });
-};
-onMounted(() => {
-  headerHeight.value = header.value.offsetHeight;
-});
-onActivated(() => {
-  if (scrollTop.value) {
-    document.querySelector(".list").scrollTop = scrollTop.value;
-  }
-});
-onBeforeRouteLeave((to, from, next) => {
-  if (courseList.value.length) {
-    scrollTop.value = document.querySelector(".list").scrollTop;
-  } else {
-    scrollTop.value = 0;
-  }
-  next();
-});
 </script>
 
 <style scoped lang="less">
-.course-list {
-  overflow-y: auto;
-}
-
-.container {
-  padding: 10px 20px 20px 20px;
-  background-color: #f5f6f8;
-
-  .list {
-    overflow-y: auto;
-  }
-
-  overflow-x: hidden;
+.my-courses-container {
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  .list-container {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+:deep(.van-dropdown-menu__bar) {
+  width: 100vw;
+  height: calc(var(--van-dropdown-menu-height) * 0.7);
+  background-color: white;
+}
+:deep(.van-dropdown-item__option) {
+  padding: 15px 30px;
 }
 </style>

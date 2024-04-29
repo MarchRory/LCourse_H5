@@ -9,7 +9,7 @@ class HttpRequest {
     constructor() {
         this.service = axios.create({
             baseURL: import.meta.env.VITE_APP_API_BASE_URL,
-            timeout: 5 * 1000 // 默认超时时间5秒
+            timeout: 10 * 1000 // 默认超时时间10秒
         })
         this.service.interceptors.request.use(
             (config: AxiosRequestConfig) => {

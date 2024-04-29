@@ -8,6 +8,7 @@ import {
 } from "@/api/types/annualReport/index";
 import { Response } from "@/utils/http/types";
 import swpuLogo from "@/assets/logo_D.png";
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",
@@ -18,9 +19,7 @@ const finished = ref(true);
 const annulReportList = ref<annualReportListItemType[]>(
   [] as annualReportListItemType[]
 );
-function onClickLeft() {
-  router.back();
-}
+
 function openAnnulReport(id: string | number) {
   router.push({
     path: "/reportPage",
@@ -46,9 +45,7 @@ loadList();
 <template>
   <div>
     <van-config-provider :theme-vars="themeVars">
-      <van-nav-bar left-text="返回" left-arrow @click-left="onClickLeft">
-        <template #title><span style="color: #e1562a">年度报告</span></template>
-      </van-nav-bar>
+      <XdHeader title="年度报告" />
       <div class="container">
         <van-list
           class="list"

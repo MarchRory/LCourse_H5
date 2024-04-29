@@ -83,7 +83,7 @@ export const routes: Array<RouteRecordRaw> = [
     meta: {
       title: '我的课程',
       icon: 'orders-o',
-      index: 2
+      index: 3
     },
     component: () => import("@/views/userCourse/userCourse.vue"),
   },
@@ -191,7 +191,16 @@ export const routes: Array<RouteRecordRaw> = [
       title: '我的flag',
       index: 2
     },
-    component: () => import('@/views/Flag/index.vue')
+    component: () => import('@/views/Flag/index.vue'),
+  },
+  {
+    path: '/createFlag',
+    name: 'createFlag',
+    meta: {
+      title: '立个Flag',
+      index: 3,
+    },
+    component: () => import('@/views/Flag/children/createFlag.vue')
   },
   {
     path: '/personalPlan',

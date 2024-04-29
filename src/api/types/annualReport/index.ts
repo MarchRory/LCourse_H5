@@ -1,4 +1,4 @@
-import { TombstoneGeneratedFields } from "../public";
+import { ListResponseModel, TombstoneGeneratedFields } from "../public";
 import { coursesItem, evalutionType } from "../courses";
 export interface scoreDetailType {
     '公益服务劳动'?: number
@@ -42,10 +42,7 @@ export interface annualReportListItemType extends TombstoneGeneratedFields {
     cover?: string | null
 }
 
-export interface annualReportListResult {
-    list: annualReportListItemType[]
-    total: number;
-}
+export type annualReportListResult = ListResponseModel<annualReportListItemType>
 
 export interface annualReportParamsType {
     page: number

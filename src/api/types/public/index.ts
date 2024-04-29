@@ -20,3 +20,10 @@ export interface pageParams {
     pageNum?: number
     pageSize: number
 }
+
+
+
+export interface ListResponseModel<T> {
+    list: T[]
+    total: number
+}

@@ -36,10 +36,13 @@
   "include": [
     "src/**/*.ts",
     "src/**/**/*.ts",
+    "src/**/**/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
     "src/*.vue",
+    "src/**/*.vue",
+    "src/**/**/*.vue",
+    "src/**/**/**/*.vue",
     "src/auth.js"
   ],
   "references": [

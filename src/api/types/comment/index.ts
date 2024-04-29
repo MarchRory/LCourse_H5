@@ -1,4 +1,4 @@
-import { TombstoneGeneratedFields } from "../public";
+import { ListResponseModel, TombstoneGeneratedFields } from "../public";
 
 /**
  * 词汇种类的type
@@ -21,14 +21,8 @@ export interface vocabularyType extends TombstoneGeneratedFields {
 /**
  * 某分类词汇的API请求数据data type
  */
-export interface vocabularyResultModel {
-    list: vocabularyType[]
-    total: number
-}
-export interface vocabularyCategoryResultModel {
-    list: vocabularyCategoryType[]
-    total: number
-}
+export type vocabularyResultModel = ListResponseModel<vocabularyType>
+export type vocabularyCategoryResultModel = ListResponseModel<vocabularyCategoryType>
 /**
  * 获取模板列表、词汇的请求参数
  */
@@ -49,7 +43,4 @@ export interface commentTemplate extends TombstoneGeneratedFields {
     level: number         // 模板内容对应的分值
     type: number
 }
-export interface commentTemplateResultModel {
-    list: commentTemplate[]
-    total: number
-}
+export type commentTemplateResultModel = ListResponseModel<commentTemplate>

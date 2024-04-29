@@ -76,9 +76,9 @@ export default {
         {
           category: this.category,
           title: this.keywords,
-          semesterId: this.userStore.semesterId,
+          semesterId: null,
           state: this.state,
-          usertype: this.userType,
+          userType: this.userType,
           reviewed: 0,
         },
         this.selectParams
@@ -86,7 +86,7 @@ export default {
       this.loadStatus.loading = true;
       this.loadStatus.finished = false;
       getCourses(params)
-        .then((res: any) => {
+        .then((res) => {
           if (res.code == 200) {
             const { data } = res;
             this.total = data.total;
@@ -107,6 +107,9 @@ export default {
           } else {
             this.loadStatus.error = true;
           }
+        })
+        .catch(() => {
+          this.loadStatus.finished = true;
         })
         .finally(() => {
           this.loadStatus.loading = false;

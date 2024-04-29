@@ -1,3 +1,4 @@
+import { FlagStateEnum } from '@/api/user/user';
 import { TombstoneGeneratedFields } from '../public/index'
 
 /**

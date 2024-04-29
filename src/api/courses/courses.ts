@@ -2,6 +2,8 @@ import request from "@/utils/http/request";
 import * as coursesApiType from "../types/courses";
 import * as templateType from "../types/comment";
 import { vocabularyPagination } from '@/components/templateComment/types'
+import { ListResponseModel, pageParams } from "../types/public";
+import { DimensionCommandItem } from "../dimension";
 enum API {
   coursePage = "/curriculum/course/front/page",
   courseDetail = "/curriculum/course/detail/front",
@@ -15,6 +17,7 @@ enum API {
   commonTemplateList = "/curriculum/template/page",
   vocabularyCategory = "/curriculum/wordType/page",
   vocabulary = "/curriculum/word/page",
+  topics = "/curriculum/courseEvaluate/topic/"
 }
 
 /**
@@ -178,4 +181,13 @@ export function getVocabularyListAPI(
     API.vocabulary,
     { ...params, levelMax, levelMin }
   );
+}
+
+/**
+ * 获取课程评价主题列表
+ * @param departmentId 
+ * @returns 
+ */
+export function getCommentTopics(departmentId: number) {
+  return request.get<ListResponseModel<DimensionCommandItem>>(API.topics, { page: 1, pageSize: 50, key: '', departmentId })
 }

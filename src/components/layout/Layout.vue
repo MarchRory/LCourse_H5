@@ -6,22 +6,21 @@ export default {
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
-import { useUserStore } from "@/store/modules/user/index";
 import { routes } from '@/router/index'
-const userStore = useUserStore();
+import { RouteRecordRaw } from "vue-router";
 const routerCache = useRouterCacheStore();
 const tabbar = ref();
 
 // 自动生成tabbar
 const generaterTabbar = () => {
-  const tabbarRoutes = routes.filter((route) => route.name === 'layOut')[0].children
+  const tabbarRoutes = routes.filter((route) => route.name === 'layOut')[0].children as RouteRecordRaw[]
   tabbar.value = tabbarRoutes.map((route) => {
     const {path, name, meta} = route
     return {
       path,
       name,
-      icon: meta.icon,
-      title: meta.title
+      icon: meta?.icon,
+      title: meta?.title
     }
   })
 }
