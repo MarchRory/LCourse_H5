@@ -61,7 +61,7 @@ const handleAction = debounce((action: HeaderDefaultAction) => {
 <style scoped lang="less">
 header {
     margin: 0 auto;
-    width: 94%;
+    width: 100%;
     height: 80px;
     display: flex;
     align-items: center;

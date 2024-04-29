@@ -37,7 +37,6 @@ router.beforeEach((to: any, from, next: Function) => {
             NProgress.done()
         }
     } else {  // 初次登录无 token 或者 退出登录
-        console.log(from)
         if (whiteList.indexOf(to.path) != -1 && !to.query.isLogOut) {
             let path = window.location.href
             if (path.includes('?')) {

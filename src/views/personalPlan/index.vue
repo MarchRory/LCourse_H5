@@ -1,4 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+</script>
 
 <template>
     <div></div>

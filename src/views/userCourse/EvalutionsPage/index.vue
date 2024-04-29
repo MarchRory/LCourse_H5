@@ -6,6 +6,7 @@ import { showNotify } from "vant";
 import { evaluationsCheckAll, getEvalutionsList } from "@/api/courses/courses";
 import { Response } from "@/utils/http/types";
 import { evalutionType, evalutionListResultModel } from "@/api/types/courses";
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const defaultCover = ref("");
 (async () => {
   let dc = await import("@/assets/imgs/Cool-Kids-Discussion.png");
@@ -113,17 +114,11 @@ const refreshList = () => {
 <template>
   <div class="container">
     <van-config-provider :theme-vars="themeVars">
-      <van-nav-bar
-        @click-right="readAll"
-        left-text="返回"
-        left-arrow
-        @click-left="back"
-      >
-        <template #title><span style="color: #e1562a">考评信息</span></template>
-        <template #right v-if="hasTotal">
-          <span style="color: #e1562a">全部已读</span>
+      <XdHeader title="考评信息">
+        <template #right>
+          <span v-if="userStore.EvaluationsCnt" @click="readAll">全部已读</span>
         </template>
-      </van-nav-bar>
+      </XdHeader>
       <van-skeleton v-if="listLoading" id="reFreashSke">
         <template #template>
           <div

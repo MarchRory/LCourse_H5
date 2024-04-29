@@ -6,6 +6,7 @@ import { waterBall } from "@/assets/base64Img";
 import "echarts-liquidfill/src/liquidFill"; // echarts 水晶球 type
 import * as echarts from "echarts";
 import { getObjCourses, getObjDetail } from "@/api/objectives/objectives";
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const route = useRoute();
 const hasPass = ref(0);
 const list = ref([] as any);
@@ -14,9 +15,6 @@ const objInfo = ref({} as any);
 const chartLoad = ref(false);
 var waterBallChart: echarts.ECharts;
 const chart = ref<HTMLElement>();
-const backBtn = defineAsyncComponent(
-  () => import("@/components/backButton/backButton.vue")
-);
 const courseSke = defineAsyncComponent(
   () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
 );
@@ -233,15 +231,13 @@ const refresh = () => {
     <course-ske :ske-load="skeletonLoad"></course-ske>
 
     <div class="container" v-if="!skeletonLoad">
-      <header ref="header">
-        <back-btn />
-        <div class="title">{{ objInfo.objectivesName }}</div>
-        <div class="seat">
+      <XdHeader :title="objInfo.objectivesName">
+        <template #right>
           <div v-if="list && list.length" @click="showStats">
             <van-icon name="bar-chart-o" size="35" />
           </div>
-        </div>
-      </header>
+        </template>
+      </XdHeader>
 
       <div v-if="list && list.length" class="list">
         <van-pull-refresh v-model="reLoad" @refresh="refresh">
@@ -300,15 +296,6 @@ const refresh = () => {
   justify-content: flex-start;
 
   header {
-    height: 140px;
-    width: calc(100vw - 70px);
-    display: flex;
-    padding-left: 25px;
-    padding-right: 25px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-
     .title {
       width: calc((100vw - 40px) / 2);
       font-family: Gen Jyuu Gothic;

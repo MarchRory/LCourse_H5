@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { DimensionCommandContentItem} from '@/api/dimension';
-import {commandDimensionList} from '../config'
+import { DimensionCommandContentItem, DimensionCommandItem} from '@/api/dimension';
+import { getCommentTopics } from '@/api/courses/courses'
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
+import { useUserStore } from '@/store/modules/user';
+
+type topicsItem = DimensionCommandItem & {chosen: boolean}
 
 const props = defineProps<{
     courseId: number;
@@ -11,13 +14,37 @@ const emits = defineEmits<{
     (e: 'onChange', value: DimensionCommandContentItem[]): void
 }>()
 
+
+const userStore = useUserStore()
 // 评价维度tag列表
-const dimensionList = ref(commandDimensionList.map(item => {
-    return {
-        ...item,
-        chosen: item.id === 1,
-    }
-}))
+const dimensionList = ref<topicsItem[]>([])
+const initTopics = () => {
+    return new Promise((resolve, reject) => {
+        const requests = [getCommentTopics(0)]
+        userStore.departmentId && requests.push(getCommentTopics(userStore.departmentId))
+        Promise.allSettled(requests)
+        .then((res) => {
+            const data: topicsItem[] = []
+            res.forEach(item => {
+                // @ts-ignore
+                const {status, value} = item
+                if (status === 'fulfilled') {
+                    const {list} = value.data
+                    list.forEach((tag) => {
+                        data.push({
+                            ...tag,
+                            chosen: data.length === 0
+                        })
+                    })
+                }
+            })
+            dimensionList.value = data
+            resolve(true)
+        }).catch(() => {
+            reject()
+        })
+    })
+}
 
 // 用户评论s列表
 const contentList = ref<DimensionCommandContentItem[]>([])
@@ -55,8 +82,19 @@ const updateContent = debounce(() => {
 })
 
 const init = () => {
-    const fir = dimensionList.value.shift()
-    chooseTag(fir as typeof dimensionList.value[0])
+    initTopics().then(() => {
+        const fir = dimensionList.value.shift()
+        chooseTag(fir as typeof dimensionList.value[0])
+    }).catch(() => {
+        dimensionList.value.push({
+            icon: '',
+            id: '5',
+            departmentId: "0",
+            name: "参与体验",
+            description: "请描述你在这次课程中的参与感受",
+            chosen: true
+        })
+    })
 }
 
 init()

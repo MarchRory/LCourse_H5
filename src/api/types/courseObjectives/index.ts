@@ -1,4 +1,4 @@
-import { TombstoneGeneratedFields } from "../public";
+import { ListResponseModel, TombstoneGeneratedFields } from "../public";
 
 export interface courseObjectiveItem extends TombstoneGeneratedFields {
     objectivesName: string
@@ -7,10 +7,7 @@ export interface courseObjectiveItem extends TombstoneGeneratedFields {
     completed: number
 }
 
-export interface courseObjectivesResultModel {
-    list: courseObjectiveItem[]
-    total: number
-}
+export type courseObjectivesResultModel = ListResponseModel<courseObjectiveItem>
 
 export interface courseObjectivesDetail {
 

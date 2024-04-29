@@ -1,6 +1,7 @@
 import request from "@/utils/http/request";
 import * as userApiTypes from "../types/user";
-import { TombstoneGeneratedFields, pageParams } from "../types/public";
+import { ListResponseModel, TombstoneGeneratedFields, pageParams } from "../types/public";
+import { FlagStateEnum } from "@/views/Flag/config";
 enum API {
   login = "/user/login",
   logOut = "/user/logout",
@@ -117,20 +118,11 @@ export function updateUser(data: {
   );
 }
 
-/**
- * flag 状态枚举
- */
-export enum FlagStateEnum {
-  beforeStart = 1,
-  ing = 2,
-  complete = 3,
-  fail = 4
-}
-
 export interface FlagItem extends TombstoneGeneratedFields {
-  state: number;
-  content: string;
-  comments: string
+  uid: string
+  content: string
+  state: FlagStateEnum
+  comment: string
 }
 /**
  * 创建flag
@@ -141,9 +133,9 @@ export function addFlagApi(content: string) {
   return request.post(
     API.flag,
     {
-      state: FlagStateEnum.beforeStart,
+      state: FlagStateEnum.ing,
       content,
-      comments: ''
+      comment: ''
     }
   )
 }
@@ -154,8 +146,26 @@ export function addFlagApi(content: string) {
  * @returns 
  */
 export function getFLagListApi(params: Omit<pageParams, 'page'>) {
-  return request.get(
+  return request.get<ListResponseModel<FlagItem>>(
     API.flag + '/page',
     params
   )
+}
+
+/**
+ * 删除flag
+ * @param id 
+ * @returns 
+ */
+export function deleteFlagApi(id: number | string) {
+  return request.delete(API.flag, { id })
+}
+
+/**
+ * 修改flag
+ * @param newFlagInfo 
+ * @returns 
+ */
+export function updateFlagApi(newFlagInfo: FlagItem) {
+  return request.put(API.flag, newFlagInfo)
 }

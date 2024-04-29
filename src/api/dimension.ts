@@ -1,4 +1,3 @@
-import { request } from "@/utils/http/request";
 import { TombstoneGeneratedFields } from "./types/public";
 
 /**
@@ -6,9 +5,9 @@ import { TombstoneGeneratedFields } from "./types/public";
  */
 export interface DimensionCommandItem extends TombstoneGeneratedFields {
     name: string;
-    department_id: number;
     description: string;
-    icon: string
+    icon: string;
+    departmentId?: number | string;
 }
 
 /**
