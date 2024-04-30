@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AxiosProgressBar: typeof import('./src/components/axiosProgressBar/index.vue')['default']
     BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
+    Carousel: typeof import('./src/components/Carousel/index.vue')['default']
     CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
     CoursePageSkeleton: typeof import('./src/components/coursePageSkeleton/coursePageSkeleton.vue')['default']
     CoursePreview: typeof import('./src/components/coursePreview/coursePreview.vue')['default']

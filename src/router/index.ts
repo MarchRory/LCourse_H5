@@ -215,7 +215,7 @@ export const routes: Array<RouteRecordRaw> = [
     path: '/honoraryTitle',
     name: 'honoraryTitle',
     meta: {
-      title: '荣誉称号',
+      title: '荣誉墙',
       index: 2
     },
     component: () => import('@/views/honoraryTitle/index.vue')

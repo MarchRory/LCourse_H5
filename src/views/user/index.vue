@@ -130,7 +130,7 @@ const courseTabs = ref<KingkongTabItem[]>([
   { label: '历史课程', icon: 'tabler:books', path: '/userCourse', dot: false },
   { label: '考评信息', icon: 'tabler:checks', path: '/evalutions', dot: userStore.EvaluationsCnt > 0 },
   { label: '年度报告', icon: 'tabler:chart-area-line', path: '/annulReportList', dot: false },
-  { label: '荣誉称号', icon: 'tabler:trophy', path: '/honoraryTitle', dot: false },
+  { label: '荣誉墙', icon: 'tabler:trophy', path: '/honoraryTitle', dot: false },
   { label: '个人计划', icon: 'tabler:list-numbers', path: '/personalPlan', dot: false },
   { label: 'Flag', icon: 'tabler:flag-star', path: '/flag', dot: false },
 ])
