@@ -1,7 +1,6 @@
 import request from "@/utils/http/request";
 import { departmentResultModel, majorPageParmas, majorResultModel } from "../types/department";
-import { Response } from "@/utils/http/types";
-import { pageParams } from "../types/public";
+import { ListResponseModel, pageParams } from "../types/public";
 enum API {
   departmentList = "/user/department/page",
   majorList = '/user/major/page'
@@ -13,7 +12,7 @@ enum API {
  * @param params
  */
 export function getDepartments(params: pageParams) {
-  return request.get<Response<departmentResultModel>>(
+  return request.get<ListResponseModel<departmentResultModel>>(
     API.departmentList,
     params,
   );
@@ -25,7 +24,7 @@ export function getDepartments(params: pageParams) {
  * @returns 
  */
 export function getMajorList(params: majorPageParmas, data = []) {
-  return request.post<Response<majorResultModel>>(
+  return request.post<ListResponseModel<majorResultModel>>(
     API.majorList,
     data,
     { params }

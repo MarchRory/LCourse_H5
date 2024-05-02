@@ -1,4 +1,3 @@
-import { FlagStateEnum } from '@/api/user/user';
 import { TombstoneGeneratedFields } from '../public/index'
 
 /**
@@ -50,4 +49,32 @@ export interface getInfoByStuIdResultModel {
     sex: number | null
     enrollmentYear: string | null
     contact: contactType
+}
+
+export const enum PointTypeEnum {
+    completeSign = 1,
+    writeMailToSelf = 1,
+    completeSelfPlan = 2,
+    goodCommend = 3
+}
+export interface PointItem extends TombstoneGeneratedFields {
+    content: string  // 积分内容
+    point: number    // 积分值
+    departmentId: string  // 学院id
+    type: PointTypeEnum   // 积分来源
+    state: 0 | 1     // 积分是否启用, 0-禁用, 1-启用
+}
+
+export type PointHistoryItem = Pick<PointItem, 'id'> & {
+    name: string
+    integralName: string // 积分项
+}
+
+/**
+ * @description 寄语
+ */
+export interface MailToSelfItem extends TombstoneGeneratedFields {
+    content: string
+    uid: string
+    courseId: string
 }

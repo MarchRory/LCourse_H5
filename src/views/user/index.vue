@@ -100,12 +100,6 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "user",
-};
-</script>
-
 <script setup lang="ts">
 import "vant/es/cell/style";
 import "vant/es/cell-group/style";
@@ -116,6 +110,10 @@ import { showConfirmDialog } from "vant";
 import { yibanBind, getInfo } from "@/api/user/user";
 import { showFailToast, showSuccessToast } from "vant";
 import type { KingkongTabItem } from './components/type'
+
+defineOptions({
+  name:  "user"
+})
 
 const UserCenterHeader = defineAsyncComponent(() => import('./components/header.vue'))
 const UserCard = defineAsyncComponent(() => import('./components/user-card.vue'))
@@ -168,69 +166,13 @@ const init = () => {
 }
 
 // 在路由更新前，检查是否要隐藏父级路由界面
+// @ts-ignore
 onBeforeRouteUpdate((to, from, next) => {
   // 在这里根据需要设置是否隐藏父级路由界面
   // 例如，可以根据子路由的名称或路径来判断是否要隐藏
   showParent.value = false;
   next();
 });
-const reLoad = ref(false);
-const open = () => {
-  show.value = true;
-};
-const toUserObjectives = () => {
-  router.push({ name: "UserObjectives" });
-};
-const toChangeUserInfo = () => {
-  router.push({ name: "UserInfo" });
-  onCancel();
-};
-const toChangePwd = () => {
-  router.push({ name: "Password" });
-  onCancel();
-};
-const refresh = () => {
-  reLoad.value = true;
-  getInfo(userStore.token).then((res) => {
-    const { studentId, name, pass, evaluate, department } = res[1].data;
-    const objUser = {
-      studentId,
-      name,
-      pass,
-      evaluate,
-      department,
-    };
-    const { userInfo, nowSemester } = res[0].data;
-    const info = Object.assign(userInfo, nowSemester, objUser);
-    userStore.initInfo(info).then((res) => {
-      reLoad.value = false;
-    });
-  });
-};
-const onCancel = () => {
-  show.value = false;
-};
-
-const logOut = () => {
-  showConfirmDialog({
-    title: "退出登录",
-    message: "确定要退出当前登录的账号吗? ",
-  })
-    .then(() => {
-      // on confirm
-      userStore.logOut();
-    })
-    .catch(() => {
-      // on cancel
-    });
-};
-
-const bindYiban = () => {
-  yibanBind(userStore.uid);
-};
-const openAnnulReport = () => {
-  router.push({ name: "annulReportList" });
-};
 
 init()
 </script>

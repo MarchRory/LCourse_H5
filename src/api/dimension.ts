@@ -3,7 +3,7 @@ import { TombstoneGeneratedFields } from "./types/public";
 /**
  * @description 接收的维度评论项配置
  */
-export interface DimensionCommandItem extends TombstoneGeneratedFields {
+export interface DimensionCommentItem extends TombstoneGeneratedFields {
     name: string;
     description: string;
     icon: string;
@@ -13,6 +13,6 @@ export interface DimensionCommandItem extends TombstoneGeneratedFields {
 /**
  * @description 发送的维度评论项内容
  */
-export type DimensionCommandContentItem =
-    Pick<DimensionCommandItem, 'name' | 'icon'>
+export type DimensionCommentContentItem =
+    Pick<DimensionCommentItem, 'name' | 'icon'>
     & { text: string, course_evaluate_id: number, course_evaluate_top_id: number, id?: number, description?: string }

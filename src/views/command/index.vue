@@ -2,17 +2,20 @@
 import { useRoute } from "vue-router";
 import { showFailToast, showNotify, showSuccessToast } from "vant";
 import { defineAsyncComponent } from "vue";
-import {addFlagApi} from '@/api/user/user'
+import { useUserStore } from "@/store/modules/user";
+import { addFlagApi, createMailToSelf } from '@/api/user/user'
 import { commentToCourse  } from "@/api/courses/courses";
 import type {commentToCourseObj} from '@/api/types/courses/index'
-import {deepClone} from '@/utils/dataUtil/common'
+import { deepClone } from '@/utils/dataUtil/common'
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
-import {starScoreTextMap} from './config'
+import { starScoreTextMap, tempCommentGoodNodes } from './config'
 import resPic from "@/assets/imgs/commentRes.gif";
-const DimensionCommand = defineAsyncComponent(() => import('./components/dimensionCommand.vue'))
-const backBtn = defineAsyncComponent(
-  () => import("@/components/backButton/backButton.vue")
-);
+import { PointTypeEnum } from "@/api/types/user";
+const DimensionComment = defineAsyncComponent(() => import('./components/dimensionComment.vue'))
+const PointGetProgressBar = defineAsyncComponent(() => import('@/components/progressBar/index.vue'))
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+
+const userStore = useUserStore()
 const route = useRoute();
 const courseId = ref(Number(route.query.courseId));
 const isCommentSuccess = ref(false);
@@ -22,26 +25,71 @@ const form = ref<commentToCourseObj>({
   courseId: courseId.value,
   evaluateText: '',
   anonymous: false,
-  detailCommand: [],
+  detailComment: [],
 })
 const flag_content = ref('')
+
+// 寄语填写逻辑
+const mailToSelf = ref('')
+const mailSelfThreshold = ref(50)
+// 寄语开放填写条件: 完成不少于两个维度的详细评价填写, 且不少于50字
+const isMailToSelfCanWrite = ref(false)
+
 // 同步维度评价结果
-const handleDimensionCommandChange = (detail: commentToCourseObj['detailCommand']) => {
+const handleDimensionCommentChange = (detail: commentToCourseObj['detailComment'], wordsNum: number) => {
+  isMailToSelfCanWrite.value = wordsNum >= mailSelfThreshold.value
   const data = deepClone<typeof detail>(detail)
   data.forEach((item) => {
     if (Object.hasOwnProperty.call(data, 'description')) {
       delete item.description
     }
   })
-  form.value.detailCommand = data
+  form.value.detailComment = data
 }
+
+// 高质量评价认定逻辑, 多给点积分就行了
+// 质量最高时的完成步骤数
+const totalSteps = ref(5)
+// 当前完成步骤数
+const currentStep = computed(() => {
+  let step = 0
+  const {score, detailComment, evaluateText} = form.value
+  // 完成评分 +1
+  if (score) {
+    step += 1
+  }
+
+  // 详细评价填满50个字 +2
+  // 使用reduce导致计算速度有点慢, 这里后人可以想一下怎么优化
+  const detailCommentLength = detailComment.reduce((acc, cur) => acc + cur.text.length, 0)
+  step += (detailCommentLength >= 50 ? 2 : 0)
+
+  // 完成吐槽与建议填写 +1
+  step += (evaluateText.length > 20 ? 1 : 0)
+
+  // 完成寄语填写 +1
+  step += mailToSelf.value ? 1 : 0
+  
+  return step
+})
+
+// 提交逻辑
 const submit = debounce(() => {
   if (!form.value.score) {
     showFailToast("先给课程打个分吧");
     return;
   }
 
-  commentToCourse(form.value)
+  // 认定高质量评价
+  const query = currentStep.value > tempCommentGoodNodes[0].thresholdStep 
+              ? {
+                  departmentId: userStore.departmentId,
+                  type: PointTypeEnum.goodCommend,
+                  point: currentStep.value > tempCommentGoodNodes[1].thresholdStep ? 10 : 5,
+                  origin: currentStep.value > tempCommentGoodNodes[1].thresholdStep ? '高质量评价' : '较高质量评价'
+                }
+              : {}
+  commentToCourse(form.value, query)
   .then(({success}) => {
     if (success) {
       showSuccessToast('评价成功')
@@ -69,6 +117,17 @@ const submit = debounce(() => {
       duration: 2 * 1000
     })
   })
+
+  mailToSelf.value && userStore.uid && createMailToSelf({
+    uid: userStore.uid,
+    courseId: courseId.value + '',
+    content: mailToSelf.value
+  }).catch(() => {
+    showFailToast({
+      message: '网络异常, 寄语创建失败, 请稍后再试',
+      duration: 2 * 1000
+    })
+  })
 }, 500);
 
 </script>
@@ -77,18 +136,21 @@ const submit = debounce(() => {
   <div class="container">
     <van-sticky :offset-top="0">
       <header>
-        <back-btn />
-        <div class="title">评价</div>
-        <div class="seat">
-          <van-switch v-model="form.anonymous" :size="20" active-color="#ffac40"/>
-          <span>匿名</span>
-        </div>
+        <XdHeader title="课程评价" >
+          <template #right>
+          <div class="seat">
+            <van-switch v-model="form.anonymous" :size="20" active-color="#ffac40"/>
+            <span>匿名</span>
+          </div>
+          </template>
+        </XdHeader>
+        <PointGetProgressBar :current-step="currentStep" :total-steps="totalSteps" :nodes="tempCommentGoodNodes" />
       </header>
     </van-sticky>
 
     <div class="main" v-if="!isCommentSuccess">
       <section class="score firstSection">
-        <span class="form-title">课程评分</span>
+        <span class="form-title">课程评分 *</span>
         <div class="scoreArea">
           <div>
             <van-rate
@@ -101,22 +163,22 @@ const submit = debounce(() => {
           <div class="scoreText">{{ starScoreTextMap[form.score].text }}</div>
         </div>
       </section>
-      <section class="dimensionCommand">
-        <span class="form-title">详细评价</span>
+      <section class="dimensionComment">
+        <span class="form-title">详细评价 *</span>
         <div class="content-area">
           <!--@vue-ignore-->
-          <DimensionCommand :course-id="courseId" @on-change="handleDimensionCommandChange" />
+          <DimensionComment :course-id="courseId" :mail-self-threshold="mailSelfThreshold" @on-change="handleDimensionCommentChange" />
         </div>
       </section>
       <section class="suggestion">
-        <span class="form-title">吐槽与建议</span>
+        <span class="form-title">吐槽与建议 *</span>
         <div class="content-area">
           <van-field
             v-model="form.evaluateText"
             rows="1"
             autosize
             type="textarea"
-            placeholder="说说你对这门课程有哪些想吐槽的地方? 这门课程还需要怎么改进?"
+            placeholder="说说你对这门课程有哪些想吐槽的地方? 这门课程还需要怎么改进? 建议不低于20字"
             label-align="top"
           />
         </div>
@@ -129,7 +191,21 @@ const submit = debounce(() => {
             rows="1"
             autosize
             type="textarea"
-            placeholder="给自己立个Flag, 可以获得少量积分, 完成Flag后可获得更多积分"
+            placeholder="先立一个小目标, 比方说, 我..."
+            label-align="top"
+          />
+        </div>
+      </section>
+      <section class="flag">
+        <span class="form-title">寄语未来 *</span>
+        <div class="content-area">
+          <van-field
+            v-model="mailToSelf"
+            :disabled="!isMailToSelfCanWrite"
+            rows="1"
+            autosize
+            type="textarea"
+            placeholder="完成两个维度的详细评价填写, 且总字数不低于50字后, 可填写对未来的寄语, 完成寄语填写可获得 5 额外积分"
             label-align="top"
           />
         </div>
@@ -177,27 +253,9 @@ const submit = debounce(() => {
   overflow-x: hidden;
   background-color: #F4F5F5;
   header {
-    height: 120px;
-    width: calc(100vw - 40px);
-    display: flex;
-    padding-left: 25px;
-    padding-right: 25px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #ffff;
-
-    .title {
-      width: calc((100vw - 40px) / 2);
-      font-family: Gen Jyuu Gothic;
-      font-size: 42px;
-      font-weight: 500;
-      line-height: 32px;
-      text-align: center;
-      letter-spacing: 5px;
-      background-color: #ffff;
-    }
-
+    overflow-x: hidden;
+    width: 100vw;
+    background-color: white;
     .seat {
       height: 100%;
       width: 100px;
@@ -243,7 +301,7 @@ const submit = debounce(() => {
       }
       .form-title {
         font-size: 1.1em;
-        font-weight: 500;
+        font-weight: 600;
         color: #242A33;
         font-family: PingFangSC-Medium;
       }
@@ -267,7 +325,7 @@ const submit = debounce(() => {
         }
       }
     }
-    .dimensionCommand {
+    .dimensionComment {
 
     }
     .suggestion {
@@ -314,24 +372,6 @@ const submit = debounce(() => {
       border: 10px solid #c0e2ff;
     }
 
-    :deep(.van-switch) {
-      display: flex;
-      align-items: center;
-      font-size: 22px;
-      height: 20px;
-      background-color: rgb(91, 160, 146);
-      width: 70px;
-
-      .van-switch__node {
-        top: -12px;
-        left: 0;
-        background: #e3562a;
-        width: 30px;
-        height: 30px;
-        border: 6px solid #f8f2ee;
-      }
-    }
-
     .anonymous {
       display: flex;
       flex-direction: row;
@@ -363,4 +403,21 @@ const submit = debounce(() => {
     width: 92%;
   }
 }
+    :deep(.van-switch) {
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      height: 20px;
+      background-color: rgb(247, 237, 232);
+      width: 70px;
+
+      .van-switch__node {
+        top: -12px;
+        left: 0;
+        background: #e3562a;
+        width: 30px;
+        height: 30px;
+        border: 6px solid #f8f2ee;
+      }
+    }
 </style>

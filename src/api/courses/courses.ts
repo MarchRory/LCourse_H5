@@ -3,7 +3,8 @@ import * as coursesApiType from "../types/courses";
 import * as templateType from "../types/comment";
 import { vocabularyPagination } from '@/components/templateComment/types'
 import { ListResponseModel, pageParams } from "../types/public";
-import { DimensionCommandItem } from "../dimension";
+import { DimensionCommentItem } from "../dimension";
+import { PointItem } from "../types/user";
 enum API {
   coursePage = "/curriculum/course/front/page",
   courseDetail = "/curriculum/course/detail/front",
@@ -77,11 +78,15 @@ export function joinCourse(curriculumId: number) {
  * @param data
  * @returns
  */
-export function commentToCourse(data: coursesApiType.commentToCourseObj) {
+export function commentToCourse(
+  data: coursesApiType.commentToCourseObj,
+  params: {} | Pick<PointItem, 'point' | 'type'> & { departmentId: string, origin: string }
+) {
   data.score *= 2;
   return request.post(
     API.commentCourse,
     data,
+    { params: { ...params } }
   );
 }
 /**
@@ -188,6 +193,6 @@ export function getVocabularyListAPI(
  * @param departmentId 
  * @returns 
  */
-export function getCommentTopics(departmentId: number) {
-  return request.get<ListResponseModel<DimensionCommandItem>>(API.topics, { page: 1, pageSize: 50, key: '', departmentId })
+export function getCommentTopics(departmentId: number | string) {
+  return request.get<ListResponseModel<DimensionCommentItem>>(API.topics, { page: 1, pageSize: 50, key: '', departmentId })
 }

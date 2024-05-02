@@ -22,7 +22,8 @@ export interface userInfo extends badge {
   contact: object | null;       // 联系方式
   semesterId: number | null;     // 当前学期的ID
   semesterName: string | null;    // 当前学期名
-  department: string | null,
+  departmentId: string | null;
+  department: string | null;
   major: string | null;          // 专业
   campus: string | null;            // 校区地点, 例如成都
   EvaluationsCnt: number;
@@ -44,6 +45,7 @@ export const useUserStore = defineStore("userInfo", {
       semesterId: null,
       hasEvaluateUnRead: false,
       semesterName: null,
+      departmentId: null,
       department: null,
       major: null,
       campus: null,
@@ -90,6 +92,7 @@ export const useUserStore = defineStore("userInfo", {
         this.contact = data.contact;
         this.semesterName = data.semesterName;
         this.semesterId = data.id
+        this.departmentId = data.departmentId
         this.department = data.department
         this.enrollmentYear = data.enrollmentYear
         this.major = data.major

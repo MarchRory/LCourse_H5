@@ -18,6 +18,8 @@ declare module 'vue' {
     InputTrigger: typeof import('./src/components/commentCore/input-trigger.vue')['default']
     Layout: typeof import('./src/components/layout/Layout.vue')['default']
     Loading: typeof import('./src/components/loading/index.vue')['default']
+    PointGetProgress: typeof import('./src/components/progressBar/point-get-progress.vue')['default']
+    ProgressBar: typeof import('./src/components/progressBar/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./src/components/searchBar/searchBar.vue')['default']

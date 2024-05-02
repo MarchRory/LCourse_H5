@@ -2,6 +2,7 @@ import request from "@/utils/http/request";
 import * as userApiTypes from "../types/user";
 import { ListResponseModel, TombstoneGeneratedFields, pageParams } from "../types/public";
 import { FlagStateEnum } from "@/views/Flag/config";
+import { PointItem, PointTypeEnum } from "../types/user";
 enum API {
   login = "/user/login",
   logOut = "/user/logout",
@@ -9,7 +10,9 @@ enum API {
   getStuInfoBySysToken = "/user/student/user",
   resetPassword = "/user/password",
   updateUserInfo = "/user/student/by/student",
-  flag = '/user/flag'
+  flag = '/user/flag',  // flag
+  point = '/user/integral',  // 积分
+  mailToSelf = '/user/wishes'
 }
 /**
  * @param 一个对象，{ username, password }
@@ -118,6 +121,10 @@ export function updateUser(data: {
   );
 }
 
+
+/** --------------
+ * @description Flag相关
+ *-----------------*/
 export interface FlagItem extends TombstoneGeneratedFields {
   uid: string
   content: string
@@ -168,4 +175,53 @@ export function deleteFlagApi(id: number | string) {
  */
 export function updateFlagApi(newFlagInfo: FlagItem) {
   return request.put(API.flag, newFlagInfo)
+}
+
+
+
+/** --------------
+ * @description 积分相关
+ *-----------------*/
+
+/**
+ * 新增积分
+ * @param point 积分值
+ * @param type 积分类型
+ * @param departmentId 学院id
+ * @returns 
+ */
+export function addPointApi(point: number, type: PointTypeEnum, departmentId: string | number) {
+  return request.post(API.point, {
+    point,
+    type,
+    departmentId,
+    state: 1
+  } as PointItem)
+}
+
+export function getPointHistoryApi(params: pageParams) {
+  return request.get<ListResponseModel<userApiTypes.PointHistoryItem>>(API.point + '/log/page/front', params)
+}
+
+
+/** --------------
+ * @description 寄语相关
+ *-----------------*/
+
+/**
+ * 创建寄语
+ * @param data 
+ * @returns 
+ */
+export function createMailToSelf(data: Omit<userApiTypes.MailToSelfItem, 'id'>) {
+  return request.post(API.mailToSelf, data)
+}
+
+/**
+ * 分页获取寄语列表
+ * @param params 
+ * @returns 
+ */
+export function getMailToSelfList(params: pageParams) {
+  return request.get<ListResponseModel<userApiTypes.MailToSelfItem>>(API.mailToSelf + '/page/front', params)
 }

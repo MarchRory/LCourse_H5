@@ -2,7 +2,7 @@
 import {badgeItem, tempBadgeList} from '../config'
 interface Props {
     title: string
-    badges: badgeItem[]
+    badges?: badgeItem[]
 }
 const props = withDefaults(defineProps<Props>(), {
     title: '荣誉列表',
