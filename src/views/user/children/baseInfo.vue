@@ -138,12 +138,6 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "UserInfo",
-};
-</script>
-
 <script setup lang="ts">
 import { useUserStore } from "@/store/modules/user";
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
@@ -152,12 +146,14 @@ import { updateUser } from "@/api/user/user";
 import { watch, defineAsyncComponent } from "vue";
 import { getDepartments, getMajorList } from "@/api/department/department";
 import {
-  listProps,
   showFailToast,
   showSuccessToast,
-  showToast,
   Toast,
 } from "vant";
+
+defineOptions({
+  name: 'UserInfo'
+})
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 
@@ -285,7 +281,7 @@ const loadMajorColumns = () => {
   );
   getMajorList({ page: 1, pageSize: 20, departmentId: departmentId.value })
     .then(({ data }) => {
-      const { list, total } = data;
+      const { list } = data;
       majorColumns.value = list.map((major) => {
         return {
           text: major.majorName,
@@ -299,7 +295,7 @@ const loadMajorColumns = () => {
 };
 const onSubmit = debounce(() => {
   updateUser({
-    id: userStore.uid,
+    id: userStore.userId,
     nickname: nickname.value,
     avatar: avatar.value,
     enrollmentYear: enrollmentYear.value,
@@ -338,7 +334,7 @@ watch(
 );
 watch(
   () => myDepartmentId.value,
-  (newVal) => {
+  () => {
     majorColumns.value = [];
   }
 );

@@ -29,22 +29,17 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: "userCourse",
-};
-</script>
 <script setup lang="ts">
 import { getCourses } from "@/api/courses/courses";
 import CoursePreview from "@/components/coursePreview/coursePreview.vue";
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
-import { useUserStore } from "@/store/modules/user/index";
-import { ref, reactive } from "vue";
-import { listProps } from "vant";
+
+defineOptions({
+  name: 'userCourse'
+})
+
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
-const userStore = useUserStore();
 const courseList = ref([]);
-const router = useRouter();
 const state = ref(null);
 const passType = ref(null);
 const listLoading = ref(false);
@@ -79,7 +74,8 @@ const onLoad = () => {
   listLoading.value = true;
   getCourses({
     userType: 1,
-    pageSize: 45,
+    pageNum: 1,
+    pageSize: 90,
     state: state.value,
     passType: passType.value,
   })

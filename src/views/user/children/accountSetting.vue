@@ -13,9 +13,9 @@ const SettingPart = defineAsyncComponent(() => import('../components/setting-par
 
 const userStore = useUserStore()
 const handleBindYiban = () => {
-    if (userStore.uid) {
+    if (userStore.userId) {
         if (!userStore.hasBind) {
-            yibanBind(userStore.uid)
+            yibanBind(+userStore.userId)
         }
     }else {
         showFailToast('账号异常, 请联系负责老师处理')

@@ -1,13 +1,13 @@
-<script lang="ts">
-export default {
-  name: "layOut",
-};
-</script>
-<script setup lang="ts">
+s<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
 import { routes } from '@/router/index'
 import { RouteRecordRaw } from "vue-router";
+
+defineOptions({
+  name:  "layOut"
+})
+
 const routerCache = useRouterCacheStore();
 const tabbar = ref();
 

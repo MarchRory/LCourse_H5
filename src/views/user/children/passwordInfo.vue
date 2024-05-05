@@ -31,14 +31,13 @@
   </van-config-provider>
 </template>
 
-<script lang="ts">
-export default {
-  name: "updatePwd",
-};
-</script>
 <script setup lang="ts">
 import { resetPassword } from "@/api/user/user";
 import { showToast } from "vant";
+
+defineOptions({
+  name: 'updatePwd'
+})
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 

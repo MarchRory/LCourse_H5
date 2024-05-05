@@ -13,7 +13,12 @@ export enum courseTypeMap {
     unReadEvaluate = 6       // 新增未读考评信息
 }
 
-export const courseStateChangeType = [courseTypeMap.beAdmitted, courseTypeMap.courseBegin, courseTypeMap.signBegin, courseTypeMap.unReadEvaluate]
+export const courseStateChangeType = [
+    courseTypeMap.beAdmitted,
+    courseTypeMap.courseBegin,
+    courseTypeMap.signBegin,
+    courseTypeMap.unReadEvaluate
+]
 
 export function subscribeCourseType(wsInstance: mySocket): Map<string | number, Function> {
     const courseMsgMap = new Map()

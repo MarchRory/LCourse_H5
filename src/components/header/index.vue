@@ -5,16 +5,32 @@
  */
 import {HeaderDefaultAction} from './types'
 import {debounce} from '@/utils/freqCtrl/freqCtrl'
+import { useRouter } from 'vue-router';
 const props = defineProps<{
     title?: string
     actions?: HeaderDefaultAction[] // 建议最多三个
     bgColor?: string
     fontColor?: string
+    backPath?: string  // 预防页面中存在较多子路由跳转
+    customBack?: (...args: any[]) => any
 }>()
 
 const handleAction = debounce((action: HeaderDefaultAction) => {
     action.trigger && action.trigger()  
 })
+
+const router = useRouter()
+const handleDefaultBack = () => {
+    if (props.customBack) {
+        props.customBack()
+        return;
+    }
+    if (props.backPath) {
+        router.push({path: props.backPath})
+    }else {
+        router.back()
+    }
+}
 
 </script>
 
@@ -30,7 +46,7 @@ const handleAction = debounce((action: HeaderDefaultAction) => {
         <section class="left-area">
             <slot name="left">
                 <!--默认内容为一个返回按钮-->
-                <t-icon class="header-icon" icon="tabler:chevron-left" @click="$router.back()" />
+                <t-icon class="header-icon" icon="tabler:chevron-left" @click="handleDefaultBack" />
             </slot>
         </section>
         <!--中央区域, 目前只是title, 如果设置了左插槽, 那么title不显示-->

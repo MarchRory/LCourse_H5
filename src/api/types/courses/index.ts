@@ -1,4 +1,4 @@
-import { DimensionCommandContentItem } from "@/api/dimension";
+import { DimensionCommentContentItem } from "@/api/dimension";
 import { ListResponseModel, TombstoneGeneratedFields } from "../public";
 /**
  * 获取课程列表
@@ -9,7 +9,7 @@ export interface selectCourseParams {
     pageNum: number;
     pageSize: number;
     semesterId: number | null; // 学期id
-    userType?: number; // userId
+    userType?: number;
     state: number; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
     passType?: number; // 查询全部
     reviewed?: number | null
@@ -44,7 +44,7 @@ export interface coursesItem {
 export type coursesListResultModel = ListResponseModel<coursesItem>
 
 // 评语维度
-export interface commandDimensionItem {
+export interface CommentDimensionItem {
     id: number;
     title: string;
     content: string;
@@ -56,7 +56,7 @@ export interface commentToCourseObj {
     courseId: number;
     evaluateText: string;  // 课程建议
     anonymous: boolean; // 是否匿名
-    detailCommand: DimensionCommandContentItem[]
+    detailComment: DimensionCommentContentItem[]
 }
 
 export interface commentToSelfObj {

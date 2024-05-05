@@ -209,13 +209,41 @@ export const routes: Array<RouteRecordRaw> = [
       title: '个人计划',
       index: 2
     },
-    component: () => import('@/views/personalPlan/index.vue')
+    component: () => import('@/views/personalPlan/index.vue'),
+    redirect: '/personalPlan/userPlanList',
+    children: [
+      {
+        path: 'userPlanList',
+        name: 'userPlanList',
+        meta: {
+          title: '我的计划',
+        },
+        component: () => import('@/views/personalPlan/children/my-plan-list.vue')
+      },
+      {
+        path: 'createPlan',
+        name: 'createPlan',
+        meta: {
+          title: '待创建',
+        },
+        component: () => import('@/views/personalPlan/children/create-plan-list.vue')
+      }
+    ]
+  },
+  {
+    path: '/createPlanForm',
+    name: 'createPlanForm',
+    meta: {
+      title: '创建计划',
+      index: 3,
+    },
+    component: () => import('@/views/personalPlan/children/create-plan-form.vue')
   },
   {
     path: '/honoraryTitle',
     name: 'honoraryTitle',
     meta: {
-      title: '荣誉称号',
+      title: '荣誉墙',
       index: 2
     },
     component: () => import('@/views/honoraryTitle/index.vue')

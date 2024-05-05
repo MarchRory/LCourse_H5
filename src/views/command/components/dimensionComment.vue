@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { DimensionCommandContentItem, DimensionCommandItem} from '@/api/dimension';
+import { DimensionCommentContentItem, DimensionCommentItem} from '@/api/dimension';
 import { getCommentTopics } from '@/api/courses/courses'
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import { useUserStore } from '@/store/modules/user';
 
-type topicsItem = DimensionCommandItem & {chosen: boolean}
+type topicsItem = DimensionCommentItem & {chosen: boolean}
 
 const props = defineProps<{
     courseId: number;
+    mailSelfThreshold: number
 }>()
 
 const emits = defineEmits<{
-    (e: 'onChange', value: DimensionCommandContentItem[]): void
+    (e: 'onChange', value: DimensionCommentContentItem[], wordsNum: number): void
 }>()
 
 
@@ -46,8 +47,8 @@ const initTopics = () => {
     })
 }
 
-// 用户评论s列表
-const contentList = ref<DimensionCommandContentItem[]>([])
+// 用户评论列表
+const contentList = ref<DimensionCommentContentItem[]>([])
 
 // 选择tag进行评价
 const chooseTag = (chosenTag: typeof dimensionList.value[0]) => {
@@ -63,7 +64,7 @@ const chooseTag = (chosenTag: typeof dimensionList.value[0]) => {
 }
 
 // 删除已经选择的tag
-const delEditedDimension = (deleteItem: DimensionCommandContentItem, index: number) => {
+const delEditedDimension = (deleteItem: DimensionCommentContentItem, index: number) => {
     const {course_evaluate_top_id} = deleteItem
 
     // 删除编辑框里的维度
@@ -73,12 +74,16 @@ const delEditedDimension = (deleteItem: DimensionCommandContentItem, index: numb
     const dimensionIndex = dimensionList.value.findIndex(item => item.id === course_evaluate_top_id)
     dimensionList.value[dimensionIndex].chosen = false
 
-    emits('onChange', contentList.value)
+    const wordNum = contentList.value.reduce((acc, cur) => acc + cur.text.length, 0)
+    emits('onChange', contentList.value, wordNum)
 }
 
-// 
+const contentWordsNum = computed(() => {
+    return contentList.value.reduce((acc, cur) => acc + cur.text.length, 0)
+})
+
 const updateContent = debounce(() => {
-    emits('onChange', contentList.value)
+    emits('onChange', contentList.value, contentWordsNum.value)
 })
 
 const init = () => {
@@ -102,7 +107,7 @@ init()
 
 <template>
     <div class="dimension-container">
-        <section class="command-list">
+        <section class="Comment-list">
             <div v-for="(item, index) in contentList" :key="index">
                 <van-field
                     v-model="item.text"
@@ -122,6 +127,10 @@ init()
                     </template>
                 </van-field>
             </div>
+        </section>
+        <section  class="words-length-tip">
+            <span v-show="contentWordsNum < props.mailSelfThreshold">还差{{ props.mailSelfThreshold - contentWordsNum }}字可填写未来寄语</span>
+            <span v-show="contentWordsNum >= props.mailSelfThreshold">快去给未来的自己写一点寄语吧</span>
         </section>
         <section class="dimension-area">
             <span class="tip">评价维度</span>
@@ -155,11 +164,18 @@ init()
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
-    .command-list {
+    .Comment-list {
         .dimention-tag {
             font-size: 1.1em;
             font-weight: 600;
         }
+    }
+    .words-length-tip {
+        margin-bottom: 15px;
+        font-size: 25px;
+        width: 100%;
+        text-align: right;
+        color: rgb(168, 168, 168);
     }
     .dimension-area {
         width: 100%;
@@ -197,7 +213,7 @@ init()
 :deep(.van-field__body) {
     height: auto;
     .van-field__control {
-        font-size: 1.1em;
+        font-size: 1.2em;
         font-weight: 400;
     }
 }
@@ -205,7 +221,7 @@ init()
     display: flex;
     align-items: flex-start;
     width: 94%;
-    text-indent: 2.2em;
+    text-indent: 2.4em;
     margin: 0 auto;
     min-height: 200px;
     height: auto;
