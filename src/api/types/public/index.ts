@@ -9,6 +9,7 @@ export interface TombstoneGeneratedFields {
     updateBy?: number,
     isDeleted?: number,
     id: string | number
+    [key: string]: any
 }
 
 /**
@@ -22,8 +23,33 @@ export interface pageParams {
 }
 
 
-
+/**
+ * @description 基础分页请求返回的数据结构
+ */
 export interface ListResponseModel<T> {
     list: T[]
     total: number
+}
+
+/**
+ * @description 课程分类
+ */
+export const CourseCategory = {
+    '全部': "",
+    "日常劳动": "日常生活劳动",
+    "生产顶岗": "生产顶岗劳动",
+    "劳动理论": "劳动理论学习",
+    "公益服务": "公益服务劳动",
+    "其他劳动": "其他方式劳动",
+    "三下乡": "“三下乡”社会实践"
+} as const
+
+/**
+ * @description 课程类别, 传空串查全部
+ */
+export type CourseCategoryType = typeof CourseCategory[keyof typeof CourseCategory]
+
+export interface CateGoryScore {
+    name: CourseCategoryType     // 劳动二课的类别
+    value: number                    // 学生大学期间修读的总学分
 }

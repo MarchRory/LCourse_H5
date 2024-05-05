@@ -74,7 +74,8 @@ const onLoad = () => {
   listLoading.value = true;
   getCourses({
     userType: 1,
-    pageSize: 45,
+    pageNum: 1,
+    pageSize: 90,
     state: state.value,
     passType: passType.value,
   })

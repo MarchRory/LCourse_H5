@@ -1,6 +1,5 @@
 <template>
   <div>
-    <course-ske :ske-load="skeLoad"></course-ske>
     <XdHeader title="详情">
       <template #right>
           <t-icon
@@ -11,8 +10,9 @@
           />
       </template>
     </XdHeader>
-    <div class="details" v-if="!skeLoad">
-      <div class="mainInfo">
+    <div class="details">
+      <course-ske :ske-load="skeLoad"></course-ske>
+      <div v-if="!skeLoad" class="mainInfo">
         <div class="img-box">
           <van-image
             width="100%"
@@ -156,6 +156,10 @@ import { debounce, throttle } from "@/utils/freqCtrl/freqCtrl";
 import { showFailToast, showSuccessToast } from "vant/es";
 import defaultCover from "@/assets/imgs/Illustration.png";
 import { getCourseDetail, joinCourse, sign } from "@/api/courses/courses";
+import { useUserStore } from "@/store/modules/user";
+import { PointTypeEnum } from "@/api/types/user";
+
+const userStore = useUserStore()
 const router = useRouter();
 const route = useRoute();
 const showCenter = ref(false);
@@ -252,6 +256,12 @@ const courseSign = throttle(() => {
   sign({
     courseId: Number(route.query.courseId),
     code: signCode.value,
+  }, {
+    origin: '课程签到',
+    point: 5,
+    departmentId: userStore.departmentId as string,
+    type: PointTypeEnum.completeSign,
+    state: 1
   }).then((res: any) => {
     if (res.code == 200) {
       showSuccessToast("签到成功");

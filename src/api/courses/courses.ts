@@ -4,7 +4,7 @@ import * as templateType from "../types/comment";
 import { vocabularyPagination } from '@/components/templateComment/types'
 import { ListResponseModel, pageParams } from "../types/public";
 import { DimensionCommentItem } from "../dimension";
-import { PointItem } from "../types/user";
+import { AddPointData, PointItem } from "../types/user";
 enum API {
   coursePage = "/curriculum/course/front/page",
   courseDetail = "/curriculum/course/detail/front",
@@ -103,15 +103,16 @@ export function commentToSelf(data: coursesApiType.commentToSelfObj) {
     data,
   );
 }
+
 /**
  * 签到 { courseId: 课程id, code: 签到码 }
  * @param sign
  * @returns
  */
-export function sign(sign: coursesApiType.signInfo) {
+export function sign(sign: coursesApiType.signInfo, data: AddPointData) {
   return request.post(
     API.sign + `/${parseInt(sign.courseId as string)}/${sign.code}`,
-    null
+    data
   );
 }
 

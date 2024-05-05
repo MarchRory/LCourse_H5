@@ -100,6 +100,7 @@ const props = withDefaults(defineProps<Props>(), {
             }
         }
         .base-progress-track {
+            margin-top: 15px;
             width: 100%;
             height: 10px;
             border-radius: 15px;

@@ -10,6 +10,6 @@ export const starScoreTextMap = [
 ]
 
 export const tempCommentGoodNodes: BaseProgressNode[] = [
-    { thresholdStep: 3, icon: 'tabler:coins', tip: '5积分' },
-    { thresholdStep: 5, icon: 'tabler:coins', tip: '10积分' }
+    { thresholdStep: 3, icon: 'tabler:coins', tip: '5' },
+    { thresholdStep: 5, icon: 'tabler:coins', tip: '10' }
 ]

@@ -1,4 +1,4 @@
-import { TombstoneGeneratedFields } from '../public/index'
+import { CourseCategoryType, TombstoneGeneratedFields } from '../public/index'
 
 /**
  * 账号密码的参数类型
@@ -22,6 +22,7 @@ interface nowSemesterType extends TombstoneGeneratedFields {
     start: string
     end: string
 }
+
 export interface getInfoByTokenResultModel {
     userInfo: tokenUserInfoType
     permissions?: any
@@ -53,9 +54,9 @@ export interface getInfoByStuIdResultModel {
 
 export const enum PointTypeEnum {
     completeSign = 1,
-    writeMailToSelf = 1,
-    completeSelfPlan = 2,
-    goodCommend = 3
+    writeMailToSelf = 2,
+    completeSelfPlan = 3,
+    goodCommend = 4
 }
 export interface PointItem extends TombstoneGeneratedFields {
     content: string  // 积分内容
@@ -64,6 +65,11 @@ export interface PointItem extends TombstoneGeneratedFields {
     type: PointTypeEnum   // 积分来源
     state: 0 | 1     // 积分是否启用, 0-禁用, 1-启用
 }
+
+/**
+ * @description 添加积分的数据结构, 用于query或者body, origin是积分来源, 传文字
+ */
+export type AddPointData = Pick<PointItem, 'point' | 'state' | 'type' | 'departmentId'> & { origin: string }
 
 export type PointHistoryItem = Pick<PointItem, 'id'> & {
     name: string
@@ -77,4 +83,58 @@ export interface MailToSelfItem extends TombstoneGeneratedFields {
     content: string
     uid: string
     courseId: string
+}
+
+/**
+ * @description 计划状态
+ */
+export const enum PlanState {
+    // 计划未开始, 后端不存在这个状态, 由前端根据时间计算
+    beforeStart = 3,
+    // 计划进行中
+    ing = 2,
+    // 计划已完成
+    complete = 1,
+    // 计划未达成
+    fail = 0
+}
+
+/**
+ * @description 创建计划的表单
+ */
+export type PlanForm = Pick<PlanItem, 'objectivesId' | 'targetScore'> & { state: PlanState, uid: string }
+
+/**
+ * @description 完成计划的表单
+ */
+export type CompletePlanForm = TombstoneGeneratedFields & AddPointData
+
+/**
+ * @description 待创建计划
+ */
+export interface ToCreatePlanItem extends TombstoneGeneratedFields {
+    objectivesName: string        // 目标名
+    semesterId?: string | number  // 暂无意义
+    fixRestrictions: number       // 最低修读分数要求
+    departmentId: number          // 学院id
+    departmentName: string
+    majorId: number               // 专业id
+    majorName: string
+    grade: string                 // 年级
+    type: CourseCategoryType      // 课程类别
+}
+
+/**
+ * @description 个人计划
+ */
+export interface PlanItem extends ToCreatePlanItem {
+    id: number  // 计划Id
+    objectivesId: number  // 对应后台的教师创建的目标id
+    affiliationGrade: string // 所属学年
+    minRequirement: number // 最低修读分数要求
+    targetScore: number // 学生规划的个人目标学分
+    progressScore: number // 当前完成的学分
+    state: PlanState      // 计划状态
+    start: Date | String
+    end: Date | String
 }

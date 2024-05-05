@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AxiosProgressBar: typeof import('./src/components/axiosProgressBar/index.vue')['default']
     BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
+    CardItem: typeof import('./src/components/waterFull/components/CardItem.vue')['default']
     Carousel: typeof import('./src/components/Carousel/index.vue')['default']
     CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
     CoursePageSkeleton: typeof import('./src/components/coursePageSkeleton/coursePageSkeleton.vue')['default']
@@ -24,6 +25,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./src/components/searchBar/searchBar.vue')['default']
     SvgIcon: typeof import('./src/components/Icon/src/SvgIcon.vue')['default']
+    SwitchTab: typeof import('./src/components/switchTab/index.vue')['default']
     TemplateComment: typeof import('./src/components/templateComment/index.vue')['default']
     TemplateItemInList: typeof import('./src/components/templateComment/components/templateItemInList.vue')['default']
     VanActionSheet: typeof import('vant/es')['ActionSheet']
@@ -56,11 +58,14 @@ declare module 'vue' {
     VanSticky: typeof import('vant/es')['Sticky']
     VanSwipeCell: typeof import('vant/es')['SwipeCell']
     VanSwitch: typeof import('vant/es')['Switch']
+    VanTab: typeof import('vant/es')['Tab']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
+    VanTabs: typeof import('vant/es')['Tabs']
     VanTag: typeof import('vant/es')['Tag']
     VanToast: typeof import('vant/es')['Toast']
     VanUploader: typeof import('vant/es')['Uploader']
     VocabularyList: typeof import('./src/components/templateComment/components/vocabularyList.vue')['default']
+    WaterFull: typeof import('./src/components/waterFull/index.vue')['default']
   }
 }

@@ -9,7 +9,7 @@ export interface selectCourseParams {
     pageNum: number;
     pageSize: number;
     semesterId: number | null; // 学期id
-    userType?: number; // userId
+    userType?: number;
     state: number; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
     passType?: number; // 查询全部
     reviewed?: number | null

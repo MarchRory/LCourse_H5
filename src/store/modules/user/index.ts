@@ -4,6 +4,8 @@ import { useWsStore } from "../ws";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
 import { logOut } from "@/api/user/user";
 import router from "@/router";
+import { CateGoryScore } from "@/api/types/public";
+import { getUserCateGoryScore } from "@/api/plan";
 
 interface badge {
   hasEvaluateUnRead: boolean
@@ -16,7 +18,7 @@ export interface userInfo extends badge {
   sex: number | null;
   studentId: string | null; // 学号
   hasBind: boolean,         // 是否绑定易班
-  uid: string | null;       // 报名时候用的这个id
+  userId: string | null;       // 报名时候用的这个id
   avatar: string | null;
   enrollmentYear: string | null; // 入学年份
   contact: object | null;       // 联系方式
@@ -27,6 +29,7 @@ export interface userInfo extends badge {
   major: string | null;          // 专业
   campus: string | null;            // 校区地点, 例如成都
   EvaluationsCnt: number;
+  cateGoryScore: CateGoryScore[]
 }
 
 export const useUserStore = defineStore("userInfo", {
@@ -38,7 +41,7 @@ export const useUserStore = defineStore("userInfo", {
       studentId: null, //学号
       avatar: null,
       hasBind: false,
-      uid: null,
+      userId: null,
       enrollmentYear: null,
       sex: null,
       contact: null,
@@ -49,7 +52,8 @@ export const useUserStore = defineStore("userInfo", {
       department: null,
       major: null,
       campus: null,
-      EvaluationsCnt: 0
+      EvaluationsCnt: 0,
+      cateGoryScore: []
     };
   },
   actions: {
@@ -67,7 +71,7 @@ export const useUserStore = defineStore("userInfo", {
         resolve(true)
       })
     },
-    initInfo(data: any) {
+    async initInfo(data: any) {
       if (!data.contact) {
         data.contact = {
           '电话': null,
@@ -81,13 +85,14 @@ export const useUserStore = defineStore("userInfo", {
           data.contact[item] = data.contact[item] ?? ''
         })
       }
+      this.updateCateGoryScore()
       return new Promise((resolve) => {
         this.realName = data.name;
         this.name = data.nickname;
         this.studentId = data.studentId;
         this.avatar = data.avatar;
         this.hasBind = data.hasBind;
-        this.uid = data.userId;
+        this.userId = data.userId;
         this.sex = data.sex;
         this.contact = data.contact;
         this.semesterName = data.semesterName;
@@ -102,6 +107,12 @@ export const useUserStore = defineStore("userInfo", {
     },
     getEvaluationsCnt(data: number) {
       this.EvaluationsCnt = Number(data)
+    },
+    updateCateGoryScore() {
+      getUserCateGoryScore()
+        .then(({ data }) => {
+          this.cateGoryScore = data
+        })
     },
     logOut() {
       logOut()

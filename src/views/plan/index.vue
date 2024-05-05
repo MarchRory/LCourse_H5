@@ -1,123 +1,85 @@
-<script lang="ts">
-export default {
-  name: "plan",
-};
-</script>
-
 <script setup lang="ts">
-import { onMounted, defineAsyncComponent } from "vue";
-import { useRouter } from "vue-router";
+import { defineAsyncComponent } from "vue";
 import { storeToRefs } from "pinia";
-import { usePlanStore } from "@/store/modules/plan/index";
 import swpuLogo from "@/assets/logo_D.png";
-const route = useRouter();
+import { useUserStore } from "@/store/modules/user";
+import { CourseCategory } from "@/api/types/public";
+
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+
+defineOptions({
+  name: "plan"
+})
+
 const isLoad = ref(false);
 const skeletonLoad = ref(false);
 const courseSke = defineAsyncComponent(
   () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
 );
 const reLoad = ref(false);
-const planStore = usePlanStore();
-const { list } = storeToRefs(planStore);
 
-onMounted(() => {
-  skeletonLoad.value = true;
-  planStore.getObjectives();
-  skeletonLoad.value = false;
-});
-
+const userStore = useUserStore()
+const {cateGoryScore} = storeToRefs(userStore)
 const refresh = () => {
   reLoad.value = true;
   (async () => {
-    planStore.getObjectives();
+    userStore.updateCateGoryScore();
   })().finally(() => {
     reLoad.value = false;
   });
-};
-
-const openObject = (id: number) => {
-  route.push({ path: "/coursesPlanDetail", query: { id: id } });
 };
 </script>
 
 <template>
   <course-ske :ske-load="skeletonLoad"></course-ske>
-  <van-pull-refresh v-model="reLoad" @refresh="refresh">
-    <header>
-      <div class="temp" style="width: 12vw"></div>
-      <div class="title">
-        二课进度
-      </div>
-      <div class="tools">
-        <van-icon name="apps-o" size="32" style="opacity: 0" />
-      </div>
-    </header>
-    <div v-if="!skeletonLoad" class="container" @touchmove.stop>
-      <van-loading color="#1989fa" v-if="isLoad" />
-      <div class="list" v-if="!isLoad && list && list.length">
-        <div
-          class="object"
-          v-for="(obj, index) in list"
-          :key="index"
-          @click="openObject(obj.id)"
-        >
-          <div class="seat">
-            <van-image
-              width="80%"
-              height="80%"
-              fit="contain"
-              :lazy-load="true"
-              :src="swpuLogo"
-            />
-          </div>
-          <div class="ObjInfo">
-            <div class="name">
-              {{ obj.objectivesName }}
-            </div>
-            <div>
-              <van-progress
-                v-if="obj.fixRestrictions"
-                :pivot-text="`${
-                  ((obj.completed / obj.fixRestrictions) as number).toFixed(2) *
-                  100
-                }%`"
-                color="#E3562A"
-                :percentage="(obj.completed / obj.fixRestrictions) * 100"
+  <div class="container">
+    <XdHeader title="学分进度" />
+    <van-pull-refresh v-model="reLoad" @refresh="refresh">
+      <div v-if="!skeletonLoad" class="container" @touchmove.stop>
+        <van-loading color="#1989fa" v-if="isLoad" />
+        <div class="list" v-if="!isLoad && cateGoryScore && cateGoryScore.length">
+          <div
+            class="object"
+            v-for="(obj, index) in cateGoryScore"
+            :key="index"
+          >
+            <div class="seat">
+              <van-image
+                width="80%"
+                height="80%"
+                fit="contain"
+                :lazy-load="true"
+                :src="swpuLogo"
               />
-              <div v-else style="color: #bbbbba">
-                该目标暂时没有设置修读要求
+            </div>
+            <div class="ObjInfo">
+              <div class="name">
+                {{ obj.name }}
+              </div>
+              <div>
+                <van-progress
+                  v-if="obj.name !== CourseCategory['三下乡']"
+                  :pivot-text="`${obj.value}分`"
+                  color="#E3562A"
+                  :percentage="(obj.value / 20) * 100"
+                />
+                <van-progress
+                  v-else
+                  color="#E3562A"
+                  :percentage="obj.value ? 100 : 0"
+                />
               </div>
             </div>
           </div>
         </div>
+        <van-empty v-else description="数据暂未生成" />
       </div>
-      <van-empty v-else description="当前学期暂无规划安排" />
-    </div>
-  </van-pull-refresh>
+    </van-pull-refresh>
+  </div>
 </template>
 
 <style scoped lang="less">
 @objInfoWidth: 430px;
-
-header {
-  height: 140px;
-  width: calc(100vw - 40px);
-  display: flex;
-  padding-left: 20px;
-  padding-right: 20px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-
-  .title {
-    font-family: Gen Jyuu Gothic;
-    font-size: 42px;
-    font-weight: 800;
-    line-height: 32px;
-    text-align: center;
-    letter-spacing: 5px;
-  }
-}
 
 .container {
   width: 100%;
@@ -128,7 +90,7 @@ header {
   align-items: center;
   justify-content: flex-start;
   background-color: rgb(245, 246, 248);
-  height: calc(100vh - 140px - var(--van-tabbar-height));
+  flex: 1;
 
   .list {
     padding: 20px;

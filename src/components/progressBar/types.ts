@@ -17,5 +17,5 @@ export interface BaseProgressBarProps {
     totalSteps: number, // 进度条100%时对应的实际数值
     nodes: BaseProgressNode[], // 进度条上每个节点的配置对象数组
     trackColor?: string // 进度条轨道的颜色
-    barColor: string // 进度条激活部分的颜色
+    barColor?: string // 进度条激活部分的颜色
 }

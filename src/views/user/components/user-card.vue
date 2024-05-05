@@ -4,9 +4,9 @@ import { useUserStore } from '@/store/modules/user';
 const userStore = useUserStore()
 
 const userData = ref([
-    { label: '年级', value: 2021 },
+    { label: '年级', value: 2023 },
     { label: '课程', value: 30 },
-    { label: '积分', value: 264 }
+    { label: '积分', value: 20 }
 ])
 
 </script>

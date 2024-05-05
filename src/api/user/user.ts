@@ -1,6 +1,6 @@
 import request from "@/utils/http/request";
 import * as userApiTypes from "../types/user";
-import { ListResponseModel, TombstoneGeneratedFields, pageParams } from "../types/public";
+import { CateGoryScore, ListResponseModel, TombstoneGeneratedFields, pageParams } from "../types/public";
 import { FlagStateEnum } from "@/views/Flag/config";
 import { PointItem, PointTypeEnum } from "../types/user";
 enum API {
@@ -12,7 +12,8 @@ enum API {
   updateUserInfo = "/user/student/by/student",
   flag = '/user/flag',  // flag
   point = '/user/integral',  // 积分
-  mailToSelf = '/user/wishes'
+  mailToSelf = '/user/wishes',
+  CateGoryScore = '/user/course/total'
 }
 /**
  * @param 一个对象，{ username, password }

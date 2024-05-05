@@ -118,8 +118,8 @@ const submit = debounce(() => {
     })
   })
 
-  mailToSelf.value && userStore.uid && createMailToSelf({
-    uid: userStore.uid,
+  mailToSelf.value && userStore.userId && createMailToSelf({
+    uid: userStore.userId,
     courseId: courseId.value + '',
     content: mailToSelf.value
   }).catch(() => {

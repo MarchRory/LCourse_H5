@@ -295,7 +295,7 @@ const loadMajorColumns = () => {
 };
 const onSubmit = debounce(() => {
   updateUser({
-    id: userStore.uid,
+    id: userStore.userId,
     nickname: nickname.value,
     avatar: avatar.value,
     enrollmentYear: enrollmentYear.value,
