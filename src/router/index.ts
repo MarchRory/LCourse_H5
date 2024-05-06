@@ -30,7 +30,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "/home",
         name: "home",
-        component: () => import("@/views/home/index.vue"),
+        component: () => import("@/views/home/test.vue"),
         meta: {
           title: '首页',
           icon: 'tabler:brand-google-home',

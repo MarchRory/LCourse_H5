@@ -32,6 +32,31 @@ export interface ListResponseModel<T> {
 }
 
 /**
+ * @description 后端课程状态
+ */
+export const enum CourseStateEnum {
+    all = 0,
+    prepare = 1,
+    joining = 2,
+    ing = 3,
+    finished = 4,
+    examining = 5
+}
+
+type CourseStateMapType = {
+    [state in CourseStateEnum]: string
+}
+
+export const courseStateMap: CourseStateMapType = {
+    [CourseStateEnum.all]: '全部',
+    [CourseStateEnum.prepare]: '筹备中',
+    [CourseStateEnum.joining]: '报名中',
+    [CourseStateEnum.ing]: '进行中',
+    [CourseStateEnum.finished]: '已结束',
+    [CourseStateEnum.examining]: '审核中'
+}
+
+/**
  * @description 课程分类
  */
 export const CourseCategory = {

@@ -26,33 +26,9 @@ const getUserInfo = (token) => {
   userStore.init(token).then(() => {
     getInfo(token)
       .then((res) => {
-        const {
-          studentId,
-          name,
-          pass,
-          evaluate,
-          department,
-          major,
-          campus,
-          sex,
-          enrollmentYear,
-          contact,
-        } = res[1].data;
-        const objUser = {
-          studentId,
-          name,
-          pass,
-          evaluate,
-          department,
-          sex,
-          enrollmentYear,
-          contact,
-          major,
-          campus,
-        };
-        const { userInfo, nowSemester } = res[0].data;
-        const info = Object.assign(userInfo, nowSemester, objUser);
-        userStore.initInfo(info).then((res) => {
+        const {userInfo, nowSemester} = res[0].data
+        const info = Object.assign(userInfo, res[1].data)
+        userStore.initInfo(userInfo, nowSemester).then((res) => {
           setTimeout(() => {
             useRouterCacheStore().initRouterCache();
             router.replace({ path: "/home" });
@@ -60,13 +36,8 @@ const getUserInfo = (token) => {
         });
       })
       .catch((err) => {
-        const { code } = err;
-        if (errCode.includes(code)) {
-          userStore.clearToken().then(() => {
-            window.localStorage.clear();
-            router.replace({ path: "/", query: { isLogOut: 1 } });
-          });
-        }
+        console.log('err: ', err)
+        userStore.logOut()
       });
   });
 };

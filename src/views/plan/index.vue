@@ -33,7 +33,7 @@ const refresh = () => {
 <template>
   <course-ske :ske-load="skeletonLoad"></course-ske>
   <div class="container">
-    <XdHeader title="学分进度" />
+    <XdHeader title="学分进度" hiden-back />
     <van-pull-refresh v-model="reLoad" @refresh="refresh">
       <div v-if="!skeletonLoad" class="container" @touchmove.stop>
         <van-loading color="#1989fa" v-if="isLoad" />

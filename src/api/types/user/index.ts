@@ -17,7 +17,7 @@ interface tokenUserInfoType {
     avatar: string | undefined | null
     nickname: string
 }
-interface nowSemesterType extends TombstoneGeneratedFields {
+export interface nowSemesterType extends TombstoneGeneratedFields {
     semesterName: string
     start: string
     end: string

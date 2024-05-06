@@ -1,23 +1,26 @@
 import { DimensionCommentContentItem } from "@/api/dimension";
-import { ListResponseModel, TombstoneGeneratedFields } from "../public";
+import { CourseCategoryType, CourseStateEnum, ListResponseModel, TombstoneGeneratedFields } from "../public";
+import { WaterFallCard } from "@/components/waterFall/types";
+
 /**
  * 获取课程列表
  */
 export interface selectCourseParams {
     title: string | null; // 课程名关键字, 用于输入框搜索
-    category?: string | null; // 课程标签关键字, 用于首页按照标签查找
+    category: CourseCategoryType; // 课程标签关键字, 用于首页按照标签查找
     pageNum: number;
     pageSize: number;
-    semesterId: number | null; // 学期id
+    semesterId: string; // 学期id, 废弃
+    departmentLimit: string[]
+    gradeLimit: string[]
     userType?: number;
-    state: number; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
+    state: CourseStateEnum; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
     passType?: number; // 查询全部
     reviewed?: number | null
 } // 后面还要补一个semsesterId
-export interface coursesItem {
+export interface coursesItem extends WaterFallCard {
     state: number
     id: number | string
-    cover: string | null
     title: string
     semester: string | null
     numberlimit: number | null

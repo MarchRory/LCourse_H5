@@ -1,7 +1,7 @@
 <script lang="ts">
-export default {
-  name: "home",
-};
+// export default {
+//   name: "home",
+// };
 </script>
 <script setup lang="ts">
 import { onMounted, onActivated, ref, defineAsyncComponent } from "vue";
@@ -72,7 +72,7 @@ onActivated(() => {
       scrollTop.value;
   }
 });
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave((_, __, next) => {
   scrollTop.value = (
     listContainer.value as unknown as HTMLDivElement
   ).scrollTop;

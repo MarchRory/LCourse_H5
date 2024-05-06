@@ -6,6 +6,7 @@ import { logOut } from "@/api/user/user";
 import router from "@/router";
 import { CateGoryScore } from "@/api/types/public";
 import { getUserCateGoryScore } from "@/api/plan";
+import { nowSemesterType } from "@/api/types/user";
 
 interface badge {
   hasEvaluateUnRead: boolean
@@ -22,10 +23,11 @@ export interface userInfo extends badge {
   avatar: string | null;
   enrollmentYear: string | null; // 入学年份
   contact: object | null;       // 联系方式
-  semesterId: number | null;     // 当前学期的ID
+  semesterId: string;     // 当前学期的ID
   semesterName: string | null;    // 当前学期名
-  departmentId: string | null;
-  department: string | null;
+  departmentId: string;
+  department: string;
+  currentGrade: string            // 年级
   major: string | null;          // 专业
   campus: string | null;            // 校区地点, 例如成都
   EvaluationsCnt: number;
@@ -45,11 +47,12 @@ export const useUserStore = defineStore("userInfo", {
       enrollmentYear: null,
       sex: null,
       contact: null,
-      semesterId: null,
+      semesterId: '',
       hasEvaluateUnRead: false,
       semesterName: null,
-      departmentId: null,
-      department: null,
+      departmentId: "",
+      department: "",
+      currentGrade: "",
       major: null,
       campus: null,
       EvaluationsCnt: 0,
@@ -71,7 +74,7 @@ export const useUserStore = defineStore("userInfo", {
         resolve(true)
       })
     },
-    async initInfo(data: any) {
+    async initInfo(data: any, nowSemester: nowSemesterType) {
       if (!data.contact) {
         data.contact = {
           '电话': null,
@@ -96,12 +99,13 @@ export const useUserStore = defineStore("userInfo", {
         this.sex = data.sex;
         this.contact = data.contact;
         this.semesterName = data.semesterName;
-        this.semesterId = data.id
+        this.semesterId = nowSemester.id as string
         this.departmentId = data.departmentId
         this.department = data.department
         this.enrollmentYear = data.enrollmentYear
         this.major = data.major
         this.campus = data.campus
+        this.currentGrade = data.currentGrade
         resolve(true);
       });
     },

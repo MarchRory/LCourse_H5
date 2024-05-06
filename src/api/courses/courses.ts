@@ -5,6 +5,7 @@ import { vocabularyPagination } from '@/components/templateComment/types'
 import { ListResponseModel, pageParams } from "../types/public";
 import { DimensionCommentItem } from "../dimension";
 import { AddPointData, PointItem } from "../types/user";
+import { coursesItem } from "../types/courses";
 enum API {
   coursePage = "/curriculum/course/front/page",
   courseDetail = "/curriculum/course/detail/front",
@@ -23,20 +24,14 @@ enum API {
 
 /**
  *
- * @param params 一个对象, 包含查询关键词, 页数, 页容量( 前端设定死, 暂定为15 ), 还应该有一个学期id, 后面后端改了再用
+ * @param data 一个对象, 包含查询关键词, 页数, 页容量( 前端设定死, 暂定为15 ), 还应该有一个学期id, 后面后端改了再用
  * @returns
  */
-export function getCourses(params: coursesApiType.selectCourseParams) {
-  params.title = params.title == "" ? null : params.title;
-  params.category = params.category == "" ? null : params.category;
-  return request.get<coursesApiType.coursesListResultModel>(
+export function getCourses(data: coursesApiType.selectCourseParams) {
+  data.title = data.title == "" ? null : data.title;
+  return request.post<ListResponseModel<coursesItem>>(
     API.coursePage,
-    params,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      }
-    }
+    data
   );
 }
 
