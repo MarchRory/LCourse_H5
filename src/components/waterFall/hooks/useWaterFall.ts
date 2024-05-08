@@ -97,7 +97,8 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
 
     // 实际渲染在视口的列表数据
     const renderedList = computed<WaterfallRenderItem[]>(() =>
-        cardList.value.filter(item => item._height + item._y > scrollState.start && item._y < end.value)
+        // 在视口外多渲染一层, 减少计算时候的卡顿感, 模拟无缝
+        cardList.value.filter(item => item._height + item._y > scrollState.start * 0.6 && item._y < end.value)
     )
 
     // 动态计算待渲染的的卡片宽高
@@ -105,9 +106,13 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
         return listData.value.reduce<Map<WaterFallCard['id'], WaterfallCardRect>>((pre, cur) => {
             // 计算渲染出来的卡片宽度
             const renderedCardWidth = Math.floor((scrollState.viewWidth - (column - 1) * gap) / column)
+
+            // 计算宽高比, 宽小于高的图片需要增加高度, 否则高度无法容纳下方预览信息
+            const ratio = +(cur.cover.width / cur.cover.height).toFixed(1)
+            const preHeight = Math.floor((renderedCardWidth * cur.cover.height) / cur.cover.width)
             pre.set(cur.id, {
                 width: renderedCardWidth,
-                height: Math.floor((renderedCardWidth * cur.cover.height) / cur.cover.width)
+                height: ratio < 1 ? preHeight : preHeight * 3
             })
             return pre
         }, new Map())
@@ -144,7 +149,7 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
                     width: 0
                 }
 
-                // 兼容没有读取到宽高的旧数据
+                // 兼容无封面图或者没有携带宽高信息的封面数据
                 if (!cover) {
                     coverObj = {
                         url: '',
@@ -201,7 +206,7 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
         // containerDom.value && resizeObserver.observe(containerDom.value)
     }
 
-    // 触底加载逻辑, 这里要使用节流, 并且一次分页尽量多拿点数据, 设置合理可以近似实现无缝效果
+    // 触底加载逻辑, 这里要使用节流, 并且一次分页尽量多拿点数据, 节流的时间后人把控一下, 看什么时间长度效果比较好
     const handleScroll = throttle(() => {
         const { scrollTop, clientHeight } = containerDom.value!
         scrollState.start = scrollTop
@@ -209,10 +214,10 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
             return
         }
 
-        if (scrollTop + clientHeight >= renderListHeight.value.minHeight * 0.8) {
+        if (scrollTop + clientHeight >= renderListHeight.value.minHeight * 0.7) {
             !loading.value && loadList().then((len) => { len && addInQueue(len) })
         }
-    }, 150)
+    }, 50)
 
     onMounted(() => {
         // 因为涉及DOM操作, 所以必须在挂载后进行

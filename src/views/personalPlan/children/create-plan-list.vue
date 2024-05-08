@@ -3,7 +3,7 @@
  * @description 待创建的计划列表
  */
 import { getToCreatePlanList } from '@/api/plan';
-import { CourseCategory } from '@/api/types/public';
+import { CourseCategoryMap } from '@/api/types/public';
 import { ToCreatePlanItem } from '@/api/types/user';
 import useLoading from '@/hooks/useLoading';
 import { useToggle } from '@vant/use';
@@ -12,7 +12,7 @@ const ToCreateBtn = defineAsyncComponent(() => import('../components/create-btn.
 const {loading: initLoading, setLoading: setInitLoading} = useLoading(true)
 const [isInit, setInit] = useToggle(true)
 const [isFinished, setFinish] = useToggle(false)
-const categoryOptions = Object.keys(CourseCategory)
+const categoryOptions = Object.keys(CourseCategoryMap)
 
 const listData = ref<ToCreatePlanItem[]>([])
 const {loading, setLoading} = useLoading(false)

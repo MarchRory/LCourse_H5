@@ -3,7 +3,7 @@ import { defineAsyncComponent } from "vue";
 import { storeToRefs } from "pinia";
 import swpuLogo from "@/assets/logo_D.png";
 import { useUserStore } from "@/store/modules/user";
-import { CourseCategory } from "@/api/types/public";
+import { CourseCategoryMap } from "@/api/types/public";
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 
@@ -58,10 +58,10 @@ const refresh = () => {
               </div>
               <div>
                 <van-progress
-                  v-if="obj.name !== CourseCategory['三下乡']"
+                  v-if="obj.name !== CourseCategoryMap['三下乡']['value']"
                   :pivot-text="`${obj.value}分`"
                   color="#E3562A"
-                  :percentage="(obj.value / 20) * 100"
+                  :percentage="(obj.value / 122) * 100"
                 />
                 <van-progress
                   v-else

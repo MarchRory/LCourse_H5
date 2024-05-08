@@ -2,7 +2,8 @@
 import { HeaderDefaultAction } from '@/components/header/types';
 import { useToggle } from '@vant/use';
 import { HomeSearchParams } from './types'
-import { CourseCategory, CourseCategoryType, CourseStateEnum, courseStateMap } from '@/api/types/public';
+import { CourseCategoryMap, CourseCategoryType, CourseStateEnum, courseStateMap } from '@/api/types/public';
+import { deepClone } from '@/utils/dataUtil/common';
 /**
  * @description 虚拟列表瀑布流组件, 本项目中默认给课程列表使用
  */
@@ -22,14 +23,14 @@ const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vu
 
 // header actions逻辑
 const actions: HeaderDefaultAction[] = [
-    {icon: 'tabler:search', trigger: () => router.push({path: "/searchRes/index"})}
+    {icon: 'tabler:search', trigger: () => router.push({path: "/searchRes"})}
 ]
 
 // tab切换逻辑
 const activeTab = ref(0)
 const tabs = [
     {title: '全校', value: 0},
-    {title: '学院', value: 1}
+    {title: '本院', value: 1}
 ]
 
 // menu选择逻辑
@@ -68,6 +69,13 @@ const filter = () => {
     emits('onSearchParamsChange', {category, state})
     setVisible(false)
 }
+
+const filterStateMap = computed(() => {
+    const filterTabs = deepClone(courseStateMap)
+    // @ts-ignore
+    delete filterTabs[CourseStateEnum.examining]
+    return filterTabs
+})
 </script>
 
 <template>
@@ -112,12 +120,12 @@ const filter = () => {
                     <div class="menu-card-title"><t-icon icon="tabler:brand-linktree" />课程类别</div>
                     <div class="menu-card-options">
                         <div
-                            v-for="(category, key, index) in CourseCategory"
+                            v-for="(category, key, index) in CourseCategoryMap"
                             :key="index"
                             class="menu-option-item"
-                            @click="chooseCategory(category)"
+                            @click="chooseCategory(category['value'])"
                             :class="{
-                                'menu-active-option': params.category == category
+                                'menu-active-option': params.category == category['value']
                             }"
                         >
                             {{ key }}
@@ -129,7 +137,7 @@ const filter = () => {
                     <div class="menu-card-title"><t-icon icon="tabler:status-change" />课程状态</div>
                     <div class="menu-card-options">
                         <div
-                            v-for="(label, state, index) in courseStateMap"
+                            v-for="(config, state, index) in filterStateMap"
                             :key="index"
                             class="menu-option-item"
                             @click="chooseState(state)"
@@ -137,7 +145,7 @@ const filter = () => {
                                 'menu-active-option': params.state == state
                             }"
                         >
-                            {{ label }}
+                            {{ config.label }}
                         </div>
                     </div>
                 </div>

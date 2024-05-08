@@ -1,5 +1,5 @@
 import { DimensionCommentContentItem } from "@/api/dimension";
-import { CourseCategoryType, CourseStateEnum, ListResponseModel, TombstoneGeneratedFields } from "../public";
+import { CourseCategoryType, CourseSignUpStateEnum, CourseStateEnum, ListResponseModel, TombstoneGeneratedFields } from "../public";
 import { WaterFallCard } from "@/components/waterFall/types";
 
 /**
@@ -19,18 +19,20 @@ export interface selectCourseParams {
     reviewed?: number | null
 } // 后面还要补一个semsesterId
 export interface coursesItem extends WaterFallCard {
-    state: number
+    state: CourseStateEnum
     id: number | string
     title: string
     semester: string | null
     numberlimit: number | null
+    departmentLimits: string[],
+    gradeLimit: string[]
     courseManager: null | string
     courseLocation: string | null
     applicationStart: string
     applicationEnd: string
     hostingEnd: string
     hostingStart: string
-    courseCategory: string
+    courseCategory: CourseCategoryType
     pointsRules: string
     ruleContent: string | null
     scoringStandards: string
@@ -42,7 +44,7 @@ export interface coursesItem extends WaterFallCard {
     signUpCount: number
     signUpstate: number
     objectivesType: number | null
-    signUpState?: number
+    signUpState?: CourseSignUpStateEnum
 }
 export type coursesListResultModel = ListResponseModel<coursesItem>
 

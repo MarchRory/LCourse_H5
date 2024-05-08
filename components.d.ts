@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AxiosProgressBar: typeof import('./src/components/axiosProgressBar/index.vue')['default']
     BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
+    Ball: typeof import('./src/components/suspension/ball.vue')['default']
     CardItem: typeof import('./src/components/waterFall/components/CardItem.vue')['default']
     CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
     CoursePageSkeleton: typeof import('./src/components/coursePageSkeleton/coursePageSkeleton.vue')['default']
@@ -18,6 +19,7 @@ declare module 'vue' {
     Layout: typeof import('./src/components/layout/Layout.vue')['default']
     Loading: typeof import('./src/components/loading/index.vue')['default']
     ProgressBar: typeof import('./src/components/progressBar/index.vue')['default']
+    RefreashBall: typeof import('./src/components/suspension/refreash-ball.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./src/components/searchBar/searchBar.vue')['default']
@@ -42,6 +44,7 @@ declare module 'vue' {
     VanPopup: typeof import('vant/es')['Popup']
     VanProgress: typeof import('vant/es')['Progress']
     VanPullRefresh: typeof import('vant/es')['PullRefresh']
+    VanRate: typeof import('vant/es')['Rate']
     VanSkeleton: typeof import('vant/es')['Skeleton']
     VanSkeletonImage: typeof import('vant/es')['SkeletonImage']
     VanSkeletonParagraph: typeof import('vant/es')['SkeletonParagraph']

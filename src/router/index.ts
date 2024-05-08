@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import aliveIndex from '@/views/searchRes/aliveIndex.vue'
 // import scan from "@/views/scanQR/index.vue";
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -24,13 +23,13 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/mainPage:',
     name: 'layOut',
-    component: () => import('@/components/layout/Layout.vue'),
+    component: () => import('@/layout/Layout.vue'),
     redirect: "/home",
     children: [
       {
         path: "/home",
         name: "home",
-        component: () => import("@/views/home/test.vue"),
+        component: () => import("@/views/home/index.vue"),
         meta: {
           title: '首页',
           icon: 'tabler:brand-google-home',
@@ -134,19 +133,12 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/searchRes',
-    redirect: '/index',
-    component: aliveIndex,
-    children: [
-      {
-        path: 'index',
-        name: 'searchRes',
-        meta: {
-          title: '课程搜索',
-          index: 2
-        },
-        component: () => import('@/views/searchRes/index.vue')
-      }
-    ]
+    name: 'searchRes',
+    meta: {
+      title: '课程搜索',
+      index: 2
+    },
+    component: () => import('@/views/searchRes/index.vue')
   },
   {
     path: "/detail",

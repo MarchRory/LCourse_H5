@@ -1,38 +1,100 @@
 <script setup lang="ts">
 import { coursesItem } from '@/api/types/courses';
+import { getCategoryConfig } from '@/utils/course'
+import { useUserStore } from '@/store/modules/user';
+import { generateCourseStateConfig } from '@/utils/course'
+import { useRouter } from 'vue-router';
 
 /**
- * @description 瀑布流默认卡片
+ * @description 瀑布流默认卡片, 样式在这里调整
  */
 const props = defineProps<{
     course: coursesItem
 }>()
+
+const userStore = useUserStore()
+const {categoryKey, categoryConfig} = getCategoryConfig(props.course.courseCategory)
+const default_img = ''
+const hasPermission = computed(() => {
+    const { gradeLimit = [], departmentLimits = [] } = props.course
+    const { department, currentGrade } = userStore
+    const gradeAllow = !gradeLimit.length || gradeLimit.includes(currentGrade)
+    const departmentAllow = !departmentLimits.length || departmentLimits.includes(department)
+    return gradeAllow && departmentAllow
+})
+const previewConfig = generateCourseStateConfig({ 
+    state: props.course.state, 
+    signUpState: props.course.signUpstate!,
+    allowJoin: hasPermission.value
+})
+
+const router = useRouter()
+const pageToDetail = () => {
+    router.push({
+        path: '/detail',
+        // @ts-ignore
+        query: {
+            courseId: props.course.id,
+            ...previewConfig
+        }
+    })
+}
 </script>
 
 <template>
-    <div class="course-default-card" @click="$router.push({path: '/detail', query: {courseId: course.id}})">
+    <div class="course-default-card" @click="pageToDetail">
         <van-image 
-            :src="course.cover.url"
-            height="75%"
+            :src="course.cover.url || default_img"
+            height="80%"
             fit="cover"
             lazy-load
             class="course-default-cover">
+            <template #loading> 
+                <van-skeleton-image
+                    animate
+                    image-size="40"
+                />
+            </template>
         </van-image>
+        <!--预览卡片的UI就相信后人的智慧了-->
         <div class="course-default-info">
             <div class="course-default-info-title">{{ props.course.title }}</div>
             <div class="course-default-info-category">
-                <div class="">
+                <span
+                    class="course-default-tag category-tag" 
+                    :style="{
+                        color: categoryConfig.tagColor
+                    }"
+                >
                     <t-icon class="category-icon" icon="tabler:brand-planetscale" />
-                    {{ props.course.courseCategory }}
-                </div>
+                    {{ categoryKey }}
+                </span>
                 <div class="">
-                    <t-icon icon="tabler:building-community" />
-                    {{ props.course.departmentLimits ? props.course.departmentLimits[0] : '全校' }}
+                    <t-icon class="category-icon" icon="tabler:building-community" />
+                    {{ props.course.departmentLimits[0] ? props.course.departmentLimits[0] : '全校' }}{{ props.course.departmentLimits.length > 1 ? '...': '' }}
                 </div>
             </div>
             <div class="course-default-info-back">
-                <span><t-icon icon="tabler:tie" />{{ props.course.organizer || '未填写举办方' }}</span>
-                <span>限{{ props.course.numberLimit }}人</span>
+                <span><t-icon class="category-icon" icon="tabler:tie" />{{ props.course.organizer || '未填写举办方' }}</span>
+                <span>名额 {{ props.course.numberLimit }}</span>
+            </div>
+        </div>
+        <!--图片上的遮罩, 用于放置各种tag信息-->
+        <div class="course-default-mask">
+            <div class="mask-header">
+                <span 
+                    class="course-default-tag state-tag"
+                    :style="{
+                        backgroundColor: previewConfig.tagColor
+                    }"
+                >{{ previewConfig.label }}</span>
+                <span class="course-default-tag allow-tag" v-if="hasPermission">
+                    可修读
+                </span>
+            </div>
+            <div class="mask-footer">
+
+                <span></span>
             </div>
         </div>
     </div>
@@ -90,6 +152,48 @@ const props = defineProps<{
             justify-content: space-between;
         }
     }
+    &-mask {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 76%;
+        margin-top: 3%;
+        background-color: transparent;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        .mask-header, .mask-footer {
+            width: 94%;
+            margin: 0 auto;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mask-footer {
+        }
+    }
+    &-tag {
+        font-size: 20px;
+        padding: 2px 10px;
+        border-radius: 5px;
+        color: white;
+    }
+}
+
+.category-tag {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+    font-weight: bold;
+}
+.category-icon {
+    margin-right: 5px;
+}
+.allow-tag {
+    color: rgb(70, 70, 70);
+    background-color: white;
 }
 
 :deep(.van-image__img) {
