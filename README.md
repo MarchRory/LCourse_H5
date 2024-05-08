@@ -16,6 +16,18 @@
 - Echarts
 - GSAP3
 
+# 开发须知
+
+## 如何本地运行?
+- 首先，手机和电脑连接同一个局域网，然后拿到本地局域网的ip。
+- 接着去`vite.config.ts`这个文件, 将`host`修改为当前ip
+- 如果还要走授权登录, 还需要修改`.env.development`中`VITE_APP_REDIRECT_PATH`内ip为当前ip
+- `npm run dev`
+
+## 可以不在手机上运行吗?
+**不可以! 移动端开发必须去真机运行看效果**，PC只是方便看调试数据，很多移动端的问题只有在真机上才会暴露，**一切以真机结果为准**
+
+
 # 图标集
 
 除了Vant4组件提供的图标集外, 项目还使用了 [iconify/tabler](https://icon-sets.iconify.design/tabler/?category=General) 作为另一套图标集, 并使用iconify官方提供的 [iconify/vue](https://iconify.design/docs/icon-components/vue/) 组件进行引入
