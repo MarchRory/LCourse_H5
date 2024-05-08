@@ -8,7 +8,7 @@ import { CSSProperties } from 'vue'
 export interface WaterFallCard extends TombstoneGeneratedFields {
     [key: string]: any
     /**
-     * @description 封面是必要的, 且应该包含图片的宽高信息
+     * @description 封面是必要的, 且应该包含图片的宽高信息, 但是在分页请求里拿到的是一段json, 需要自己手动对其转化
      */
     cover: {
         url: string

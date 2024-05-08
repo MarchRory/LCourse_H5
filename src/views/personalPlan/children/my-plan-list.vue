@@ -60,7 +60,7 @@ init()
     .empty-icon {
         font-size: 120px;
         color: rgb(194, 194, 194);
-        .card-shaow;
+        .card-shadow;
     }
 }
 </style>

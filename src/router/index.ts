@@ -147,7 +147,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: '课程详情',
       index: 3
     },
-    component: () => import("@/views/courseDetail/index.vue"),
+    component: () => import("@/views/courseDetail/test.vue"),
   },
   {
     path: "/annulReportList",

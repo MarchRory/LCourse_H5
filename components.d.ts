@@ -11,6 +11,7 @@ declare module 'vue' {
     BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
     Ball: typeof import('./src/components/suspension/ball.vue')['default']
     CardItem: typeof import('./src/components/waterFall/components/CardItem.vue')['default']
+    Chart: typeof import('./src/components/chart/index.vue')['default']
     CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
     CoursePageSkeleton: typeof import('./src/components/coursePageSkeleton/coursePageSkeleton.vue')['default']
     CoursePreview: typeof import('./src/components/coursePreview/coursePreview.vue')['default']

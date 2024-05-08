@@ -40,7 +40,7 @@ export function getCourses(data: coursesApiType.selectCourseParams) {
  * @param curriculumId 课程id
  * @returns
  */
-export function getCourseDetail(curriculumId: number) {
+export function getCourseDetail(curriculumId: string) {
   return request.get<coursesApiType.coursesItem>(
     API.courseDetail + `/${curriculumId}`,
     null,
@@ -56,7 +56,7 @@ export function getCourseDetail(curriculumId: number) {
  * @param curriculumId
  * @returns
  */
-export function joinCourse(curriculumId: number) {
+export function joinCourse(curriculumId: string) {
   return request.put(
     API.joinCourse + `/${curriculumId}`,
     null,

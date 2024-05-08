@@ -3,8 +3,8 @@
  * @description 全局通用header, 不可用于tabbar页面。图标集目前只支持tabler, 需要其他的可以自行引入, 但要注意大小
  * @link tabler图标集 https://icon-sets.iconify.design/tabler/?category=General
  */
-import {HeaderDefaultAction} from './types'
-import {debounce} from '@/utils/freqCtrl/freqCtrl'
+import { HeaderDefaultAction } from './types'
+import { debounce } from '@/utils/freqCtrl/freqCtrl'
 import { useRouter } from 'vue-router';
 interface Props {
     hidenBack?: boolean
@@ -12,7 +12,7 @@ interface Props {
     actions?: HeaderDefaultAction[] // 建议最多三个
     bgColor?: string
     fontColor?: string
-    backPath?: string  // 预防页面中存在较多子路由跳转
+    backPath?: string  // 预防页面中存在较多子路由跳转, 还有携带query跳转后再回去导致query不搭发生白屏的问题
     customBack?: (...args: any[]) => any
 }
 

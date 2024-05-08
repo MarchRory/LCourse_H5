@@ -50,14 +50,13 @@ const generateJoinConfig = (stateConfig: Pick<RealCourseStateConfig, 'label' | '
 const generateIngConfig = (signUpState: CourseSignUpStateEnum): RealCourseStateConfig => {
     let config = {} as RealCourseStateConfig
     const { signUpLabel, signUpTagColor, btnText } = CourseSignUpStateMap[signUpState]
-
-    const disabled = CourseSignUpStateEnum.completeSign === signUpState
-
+    const stateConfig = courseStateMap[CourseStateEnum.ing]
+    const disabled = [CourseSignUpStateEnum.completeSign, CourseSignUpStateEnum.normal].includes(signUpState)
     config = {
-        label: signUpLabel,
-        tagColor: signUpTagColor,
+        label: signUpState === CourseSignUpStateEnum.normal ? stateConfig.label : signUpLabel,
+        tagColor: signUpState === CourseSignUpStateEnum.normal ? stateConfig.tagColor : signUpTagColor,
         disabled,
-        btnText
+        btnText: signUpState === CourseSignUpStateEnum.normal ? '无法报名' : btnText
     }
 
     return config
@@ -74,7 +73,8 @@ const realConfigCache = new Map<string, RealCourseStateConfig>()
  * @returns 
  */
 export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseStateConfig => {
-    const cache = realConfigCache.get(data.toString())
+    const keyStr = JSON.stringify(data)
+    const cache = realConfigCache.get(keyStr)
     // 取缓存
     if (typeof cache !== 'undefined') {
         return cache
@@ -95,7 +95,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
     }
 
     // 对学院开放时生成实际配置
-    switch (state) {
+    switch (+state) {
         case CourseStateEnum.prepare:
             realConfig = {
                 ...stateConfig,
@@ -104,7 +104,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
             }
             break;
         case CourseStateEnum.joining:
-            realConfig = generateJoinConfig(stateConfig, signUpState)
+            realConfig = generateJoinConfig(stateConfig, +signUpState)
             break;
         case CourseStateEnum.examining:
             realConfig = {
@@ -114,7 +114,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
             }
             break;
         case CourseStateEnum.ing:
-            realConfig = generateIngConfig(signUpState)
+            realConfig = generateIngConfig(+signUpState)
             break;
         case CourseStateEnum.finished:
             realConfig = {
@@ -126,7 +126,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
         default:
             break;
     }
-    realConfigCache.set(data.toString(), realConfig)
+    realConfigCache.set(keyStr, realConfig)
     return realConfig
 }
 

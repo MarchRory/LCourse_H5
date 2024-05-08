@@ -78,7 +78,6 @@ const {
         top: 0;
         left: 0;
         box-sizing: border-box;
-        background-color: rgb(248, 248, 248);
         border-radius: 15px;
         overflow: hidden;
     }

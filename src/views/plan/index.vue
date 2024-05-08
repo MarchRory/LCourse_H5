@@ -61,7 +61,7 @@ const refresh = () => {
                   v-if="obj.name !== CourseCategoryMap['三下乡']['value']"
                   :pivot-text="`${obj.value}分`"
                   color="#E3562A"
-                  :percentage="(obj.value / 122) * 100"
+                  :percentage="(obj.value / 12) * 100"
                 />
                 <van-progress
                   v-else

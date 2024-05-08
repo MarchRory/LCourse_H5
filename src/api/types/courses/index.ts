@@ -1,6 +1,7 @@
 import { DimensionCommentContentItem } from "@/api/dimension";
 import { CourseCategoryType, CourseSignUpStateEnum, CourseStateEnum, ListResponseModel, TombstoneGeneratedFields } from "../public";
 import { WaterFallCard } from "@/components/waterFall/types";
+import { RealCourseStateConfig } from "@/utils/course";
 
 /**
  * 获取课程列表
@@ -10,18 +11,25 @@ export interface selectCourseParams {
     category: CourseCategoryType; // 课程标签关键字, 用于首页按照标签查找
     pageNum: number;
     pageSize: number;
-    semesterId: string; // 学期id, 废弃
+    semesterId: string; // 学年id, 但是因为需求变了的原因, 还是沿用这个key
     departmentLimit: string[]
     gradeLimit: string[]
     userType?: number;
     state: CourseStateEnum; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
     passType?: number; // 查询全部
     reviewed?: number | null
-} // 后面还要补一个semsesterId
+}
+
+export interface CourseDimensionality {
+    id: string
+    name: string
+    scale: number
+}
 export interface coursesItem extends WaterFallCard {
     state: CourseStateEnum
-    id: number | string
-    title: string
+    id: string
+    title: string,
+    score: number,
     semester: string | null
     numberlimit: number | null
     departmentLimits: string[],
@@ -39,12 +47,15 @@ export interface coursesItem extends WaterFallCard {
     organizer: string
     undertaker: string
     introduction: string
-    contact: any
-    attachment: any
+    contact: string
+    attachment: string
     signUpCount: number
-    signUpstate: number
+    signUpstate: CourseSignUpStateEnum
     objectivesType: number | null
-    signUpState?: CourseSignUpStateEnum
+    /**
+     * @description 课程维度评价数据，分页请求里是null, 详情才有数据
+     */
+    dimensionalityInfo: CourseDimensionality[] | null
 }
 export type coursesListResultModel = ListResponseModel<coursesItem>
 
@@ -94,3 +105,5 @@ export interface evalutionType extends TombstoneGeneratedFields {
 }
 
 export type evalutionListResultModel = ListResponseModel<evalutionType>
+
+export type CourseCardQuery = RealCourseStateConfig & { courseId: string }

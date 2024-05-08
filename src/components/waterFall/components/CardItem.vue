@@ -34,8 +34,7 @@ const pageToDetail = () => {
         path: '/detail',
         // @ts-ignore
         query: {
-            courseId: props.course.id,
-            ...previewConfig
+            courseId: props.course.id
         }
     })
 }

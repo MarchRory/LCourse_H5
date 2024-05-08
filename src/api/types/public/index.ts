@@ -159,7 +159,7 @@ type CourseSignUpStateMap = {
 export const CourseSignUpStateMap: CourseSignUpStateMap = {
     [CourseSignUpStateEnum.normal]: {
         btnText: '去报名',
-        signUpLabel: '报名中',
+        signUpLabel: '未报名',
         signUpTagColor: '#f0ad4e'
     },
     [CourseSignUpStateEnum.waitToExamine]: {
