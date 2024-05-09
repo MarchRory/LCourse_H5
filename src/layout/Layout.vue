@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
 import { routes } from '@/router/index'
 import { RouteRecordRaw } from "vue-router";
+import { storeToRefs } from "pinia";
 
 defineOptions({
   name:  "layOut"
@@ -26,7 +27,7 @@ const generaterTabbar = () => {
 }
 generaterTabbar()
 
-const cache = computed(() => routerCache.cache);
+const {cache} = storeToRefs(routerCache);
 </script>
 
 <template>

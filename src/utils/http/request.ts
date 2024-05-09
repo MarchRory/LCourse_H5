@@ -50,7 +50,7 @@ class HttpRequest {
                             }, 800);
                             break;
                         default:
-                            showFailToast('服务器异常')
+                            showFailToast(message || '服务器异常')
                             break;
                     }
                     return Promise.reject(res)

@@ -73,7 +73,7 @@ const filter = () => {
 const filterStateMap = computed(() => {
     const filterTabs = deepClone(courseStateMap)
     // @ts-ignore
-    delete filterTabs[CourseStateEnum.examining]
+    // delete filterTabs[CourseStateEnum.examining]
     return filterTabs
 })
 </script>

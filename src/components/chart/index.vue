@@ -20,6 +20,7 @@ onMounted(() => {
     myChart.value.setOption(props.options)
 })
 
+// 后面有响应式的需求的话, 再补齐监听父div尺寸变化，图表自适应的逻辑
 watch(
     () => props.options,
     (newVal) => {

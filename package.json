@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --mode development",
     "build": " vite build --mode production",
-    "preview": "vite preview",
+    "preview": "npm run build && vite preview",
     "lint": "eslint --ext .js,.vue,.ts src --fix"
   },
   "dependencies": {

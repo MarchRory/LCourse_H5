@@ -18,28 +18,28 @@ interface ConfigCacheKey extends Object {
     allowJoin: boolean
 }
 
-const generateJoinConfig = (stateConfig: Pick<RealCourseStateConfig, 'label' | 'tagColor'>, signUpState: CourseSignUpStateEnum): RealCourseStateConfig => {
+const generateJoinConfig = (stateConfig: Pick<RealCourseStateConfig, 'label' | 'tagColor'>, signUpState: CourseSignUpStateEnum, allowJoin: boolean): RealCourseStateConfig => {
     let config = {} as RealCourseStateConfig
     const { signUpLabel, signUpTagColor, btnText } = CourseSignUpStateMap[signUpState]
 
     if (signUpState === CourseSignUpStateEnum.normal) {
         config = {
             ...stateConfig,
-            disabled: true,
+            disabled: !allowJoin,
             btnText
         }
     } else if (signUpState === CourseSignUpStateEnum.waitToExamine) {
         config = {
             label: courseStateMap[CourseStateEnum.examining].label,
             tagColor: courseStateMap[CourseStateEnum.examining].tagColor,
-            disabled: false,
+            disabled: true,
             btnText
         }
     } else if ([CourseSignUpStateEnum.rejetced, CourseSignUpStateEnum.admitted].includes(signUpState)) {
         config = {
             label: signUpLabel,
             tagColor: signUpTagColor,
-            disabled: false,
+            disabled: true,
             btnText
         }
     }
@@ -60,6 +60,23 @@ const generateIngConfig = (signUpState: CourseSignUpStateEnum): RealCourseStateC
     }
 
     return config
+}
+
+const generateFinishConfig = (signUpState: CourseSignUpStateEnum): RealCourseStateConfig => {
+    const signUpConfig = CourseSignUpStateMap[signUpState]
+    const stateConfig = courseStateMap[CourseStateEnum.finished]
+    const lableConfig = signUpState >= CourseSignUpStateEnum.admitted
+        ? { label: signUpConfig.signUpLabel, tagColor: signUpConfig.signUpTagColor }
+        : stateConfig
+    const btnDisabled = ![CourseSignUpStateEnum.admitted, CourseSignUpStateEnum.completeSign].includes(signUpState)
+    const btnText = signUpState === CourseSignUpStateEnum.admitted ? '去签到' : signUpConfig.btnText
+    const realConfig = {
+        ...lableConfig,
+        disabled: btnDisabled,
+        btnText
+    }
+
+    return realConfig
 }
 
 
@@ -104,12 +121,12 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
             }
             break;
         case CourseStateEnum.joining:
-            realConfig = generateJoinConfig(stateConfig, +signUpState)
+            realConfig = generateJoinConfig(stateConfig, +signUpState, allowJoin)
             break;
         case CourseStateEnum.examining:
             realConfig = {
                 ...stateConfig,
-                disabled: false,
+                disabled: true,
                 btnText: '请等待后台审核结果'
             }
             break;
@@ -117,11 +134,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
             realConfig = generateIngConfig(+signUpState)
             break;
         case CourseStateEnum.finished:
-            realConfig = {
-                ...stateConfig,
-                disabled: true,
-                btnText: '课程已结束'
-            }
+            realConfig = generateFinishConfig(signUpState)
             break;
         default:
             break;

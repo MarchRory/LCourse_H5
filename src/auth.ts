@@ -8,7 +8,7 @@ NProgress.configure({ showSpinner: false })
 
 const whiteList = ['/wait', '/']
 
-router.beforeEach((to: any, from, next: Function) => {
+router.beforeEach((to: any, _, next: Function) => {
     NProgress.start()
     document.title = getPageTitle(to.meta.title)
     const hasToken = getToken()

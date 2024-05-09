@@ -34,16 +34,16 @@
     "noEmitHelpers": false
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/**/*.ts",
-    "src/**/**/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
+    "src/auth.js",
     "src/*.vue",
     "src/**/*.vue",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
     "src/**/**/*.vue",
+    "src/**/**/*.ts",
+    "src/**/**/**/*.ts",
     "src/**/**/**/*.vue",
-    "src/auth.js"
   ],
   "references": [
     {

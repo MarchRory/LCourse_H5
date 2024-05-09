@@ -10,7 +10,7 @@ export const useRouterCacheStore = defineStore("useRouterCacheStore", {
     },
     actions: {
         initRouterCache() {
-            this.cache = ['home', 'user', 'plan', 'userCourse']
+            this.cache = ['home', 'user', 'plan']
         },
         clearRouterCache() {
             this.cache = []

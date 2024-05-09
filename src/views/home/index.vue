@@ -3,6 +3,7 @@ import { getCourses } from '@/api/courses/courses';
 import { HomeSearchParams } from './components/types';
 import { useUserStore } from '@/store/modules/user';
 import { selectCourseParams } from '@/api/types/courses';
+import { debounce } from '@/utils/freqCtrl/freqCtrl';
 const HomeHeader = defineAsyncComponent(() => import('./components/home-header.vue'))
 const CoursewaterFall = defineAsyncComponent(() => import('@/components/waterFall/index.vue'))
 
@@ -29,6 +30,19 @@ const handleFilterParamsChange = (newFilterParams: HomeSearchParams) => {
     pageParams.value.category = category
     pageParams.value.state = +state
 }
+
+const waterfall = ref()
+const scrollTop = ref(0)
+
+const handleScroll = debounce((curScrollTop: number) => {
+    scrollTop.value = curScrollTop
+})
+
+onActivated(() => {
+    nextTick(() => {
+        waterfall.value && waterfall.value.waterFallScrollTo(scrollTop.value)
+    })
+});
 </script>
 
 <template>
@@ -41,9 +55,11 @@ const handleFilterParamsChange = (newFilterParams: HomeSearchParams) => {
         />
         <main>
             <CoursewaterFall
+                ref="waterfall"
                 :request-api="getCourses"
                 :column="2"
                 :other-request-params="pageParams"
+                @on-scroll="handleScroll"
             />
         </main>
     </div>

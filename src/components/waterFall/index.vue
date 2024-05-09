@@ -6,12 +6,16 @@ import { WaterFallListProps } from './types'
 import useWaterFallFeed from './hooks/useWaterFall'
 const DefaultCourseCard = defineAsyncComponent(() => import('./components/CardItem.vue'))
 const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
-const RefreashBall = defineAsyncComponent(() => import('@/components/suspension/ball.vue'))
+const RefreshBall = defineAsyncComponent(() => import('@/components/suspension/ball.vue'))
 const props = withDefaults(defineProps<WaterFallListProps>(), {
     column: 2,
     gap: 10,
     pageSize: 30
 })
+const emits = defineEmits<{
+    (e: 'onScroll', scrollTop: number): void
+}>()
+
 
 const waterfall = ref<HTMLDivElement | null>(null)
 const {
@@ -20,10 +24,30 @@ const {
     listData,
     endIndex,
     renderedListStyle,
+    totalLength,
+    isFinish,
     renderedList,
     handleScroll,
     reload
 } = useWaterFallFeed(waterfall, props)
+
+// 滚动到指定位置
+const waterFallScrollTo = (scrollTop: number) => {
+    waterfall.value?.scrollTo({
+        top: scrollTop
+    })
+}
+
+const scrollTrigger = () => {
+    handleScroll()
+    emits('onScroll', waterfall.value?.scrollTop || 0)
+}
+
+// 外界可以通过拿到组件的DOM, 调用暴露出去的方法
+defineExpose({
+    waterFallScrollTo
+})
+
 </script>
 
 <template>
@@ -31,7 +55,7 @@ const {
         <div
             ref="waterfall" 
             class="virtual-waterfallfeed-container"
-            @scroll.stop="handleScroll"
+            @scroll.stop="scrollTrigger"
         >
             <div class="virtual-waterfallfeed-list">
                 <div
@@ -49,7 +73,7 @@ const {
             </div>
         </div>
         <XdLoading :visible="loading" />
-        <RefreashBall
+        <RefreshBall
             :trigger="reload" 
             need-rotate 
             :loading="loading"

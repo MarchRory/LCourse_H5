@@ -84,7 +84,8 @@ const handleDefaultBack = () => {
 <style scoped lang="less">
 header {
     margin: 0 auto;
-    width: 100%;
+    padding: 0 20px;
+    width: calc(100% - 40px);
     height: @xd-header-height;
     display: flex;
     align-items: center;

@@ -22,7 +22,6 @@ defineOptions({
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const UserCourseWaterFall = defineAsyncComponent(() => import('@/components/waterFall/index.vue'))
-console.log(Object.entries(courseStateMap))
 const option = Object.entries(courseStateMap).map(([value, {label:text}]) => ({text, value: +value}))
 const state = ref(CourseStateEnum.all);
 
