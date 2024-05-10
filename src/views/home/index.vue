@@ -46,7 +46,7 @@ onActivated(() => {
 </script>
 
 <template>
-    <div class="home-container">
+    <div class="pageContainer">
         <HomeHeader
             :category="pageParams.category"
             :state="pageParams.state"
@@ -66,20 +66,4 @@ onActivated(() => {
 </template>
 
 <style scoped lang="less">
-.home-container {
-    padding: 0 20px;
-    width: calc(100% - 40px);
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: flex-start;
-    background-color: @xd-bg;
-    &>main {
-        width: 100%;
-        overflow-y: auto;
-        flex: 1;
-    }
-}
 </style>

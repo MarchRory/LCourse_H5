@@ -1,8 +1,8 @@
 import { WaterFallCard, WaterFallListProps, WaterfallCardRect, WaterfallColumnQueue, WaterfallRenderItem, WaterfallScrollState } from "../types";
 import useLoading from "@/hooks/useLoading";
-import { debounce, sleep, throttle } from "@/utils/freqCtrl/freqCtrl";
+import { formatCover } from "@/utils/course";
+import { sleep, throttle } from "@/utils/freqCtrl/freqCtrl";
 import { useToggle } from '@vant/use';
-import { storeToRefs } from "pinia";
 import { showFailToast } from "vant";
 import { CSSProperties, UnwrapNestedRefs } from "vue";
 
@@ -147,24 +147,7 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
             const { list, total } = (await requestApi({ pageNum: curPage.value, pageSize, ...otherRequestParams })).data
             const hasImgInfoList = list.map(item => {
                 const { cover } = item
-                let coverObj = {
-                    url: "",
-                    height: 0,
-                    width: 0
-                }
-
-                // 兼容无封面图或者没有携带宽高信息的封面数据
-                if (!cover) {
-                    coverObj = {
-                        url: '',
-                        height: 250,
-                        width: 200
-                    }
-                } else {
-                    coverObj = (cover as unknown as string).includes('width')
-                        ? (JSON.parse(cover as unknown as string))
-                        : { url: cover, width: 150, height: 260 }
-                }
+                const coverObj = formatCover(cover as unknown as string)
                 return {
                     ...item,
                     cover: coverObj

@@ -4,9 +4,15 @@ import { reactive } from "vue";
 import router from "@/router";
 import { showNotify } from "vant";
 import { evaluationsCheckAll, getEvalutionsList } from "@/api/courses/courses";
-import { Response } from "@/utils/http/types";
-import { evalutionType, evalutionListResultModel } from "@/api/types/courses";
+import { EvalutionItem } from "@/api/types/courses";
+import { formatCover } from "@/utils/course";
+
+defineOptions({
+  name: "evalutions"
+})
+
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+const EvalutionItem = defineAsyncComponent(() => import('./components/evaluation-card.vue'))
 const defaultCover = ref("");
 (async () => {
   let dc = await import("@/assets/imgs/Cool-Kids-Discussion.png");
@@ -16,7 +22,7 @@ const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",
 });
-const EvaluationList = ref([] as evalutionType[]);
+const EvaluationList = ref<EvalutionItem[]>([]);
 const hasTotal = ref(-1);
 const page = ref(1);
 const pageSize = ref(10); // 关于刷新的Size选择, 先留着，后面看有没有什么对Size的一些处理需求
@@ -25,18 +31,14 @@ const listLoading = ref(false);
 const loading = ref(false);
 const finished = ref(false);
 const userStore = useUserStore();
-const back = () => {
-  router.back();
-};
-const openDetail = (courseId: number) => {
+const openDetail = (courseId: string) => {
   router.push({ path: "/detail", query: { courseId } });
 };
 const readAll = () => {
-  if (userStore.hasEvaluateUnRead) {
-    evaluationsCheckAll().then((res: any) => {
-      if (res.code == 200) {
+    evaluationsCheckAll().then(({success}) => {
+      if (success) {
         userStore.hasEvaluateUnRead = false;
-        EvaluationList.value.forEach((item: evalutionType, index: number) => {
+        EvaluationList.value.forEach((item: EvalutionItem, index: number) => {
           if (!item.checked) {
             EvaluationList.value[index].checked = true;
           }
@@ -48,13 +50,6 @@ const readAll = () => {
         });
       }
     });
-  } else {
-    showNotify({
-      type: "warning",
-      message: "当前没有新的考评信息",
-      duration: 1 * 1000,
-    });
-  }
 };
 const getEvalutionList = () => {
   if (!finished.value) {
@@ -63,7 +58,7 @@ const getEvalutionList = () => {
       page: page.value,
       pageSize: pageSize.value,
     })
-      .then((res: Response<evalutionListResultModel>) => {
+      .then((res) => {
         if (res.code == 200) {
           const { list, total } = res.data;
           hasTotal.value = total;
@@ -77,9 +72,12 @@ const getEvalutionList = () => {
 
           // 有考评消息
           if (EvaluationList.value.length < total) {
-            list.forEach((item: evalutionType) => {
+            list.forEach((item) => {
               item.score = 5 * (item.score / 100);
-              EvaluationList.value.push(item);
+              EvaluationList.value.push({
+                ...item,
+                cover: formatCover(item.cover as unknown as string)
+              });
             });
           }
         }
@@ -109,6 +107,11 @@ const refreshList = () => {
     }, 400);
   });
 };
+
+const needReadAll = computed(() => {
+  return EvaluationList.value.some((item) => !item.checked)
+})
+
 </script>
 
 <template>
@@ -116,7 +119,7 @@ const refreshList = () => {
     <van-config-provider :theme-vars="themeVars">
       <XdHeader title="考评信息">
         <template #right>
-          <span v-if="userStore.EvaluationsCnt" @click="readAll">全部已读</span>
+          <span v-if="needReadAll" @click="readAll">全部已读</span>
         </template>
       </XdHeader>
       <van-skeleton v-if="listLoading" id="reFreashSke">
@@ -130,17 +133,13 @@ const refreshList = () => {
             }"
           >
             <div style="display: flex">
-              <van-skeleton-image />
-              <div :style="{ flex: 1, marginLeft: '16px' }">
+              <div :style="{ flex: 1 }">
                 <van-skeleton-paragraph
-                  row-width="60%"
+                  row-width="100%"
                   v-for="index in 3"
                   :key="index"
                 />
               </div>
-            </div>
-            <div style="margin-top: 20px">
-              <van-skeleton-paragraph v-for="index in 5" :key="index" />
             </div>
           </div>
         </template>
@@ -153,26 +152,16 @@ const refreshList = () => {
               <div
                 :style="{
                   display: 'flex',
-                  width: '90vw',
+                  width: '100%',
                   justifyContent: 'flex-start',
                   flexDirection: 'column',
                 }"
               >
-                <div style="display: flex">
-                  <van-skeleton-image />
-                  <div :style="{ flex: 1, marginLeft: '16px' }">
-                    <van-skeleton-paragraph row-width="60%" />
-                    <van-skeleton-paragraph />
-                    <van-skeleton-paragraph />
-                    <van-skeleton-paragraph />
-                  </div>
-                </div>
-                <div style="margin-top: 20px">
-                  <van-skeleton-paragraph />
-                  <van-skeleton-paragraph />
-                  <van-skeleton-paragraph />
-                  <van-skeleton-paragraph />
-                </div>
+                <van-skeleton-paragraph
+                  row-width="100%"
+                  v-for="index in 3"
+                  :key="index"
+                />
               </div>
             </template>
           </van-skeleton>
@@ -190,37 +179,12 @@ const refreshList = () => {
               <van-cell
                 v-for="(item, index) in EvaluationList"
                 :key="index"
-                @click="openDetail(item.courseId as number)"
+                @click="openDetail(item.courseId)"
                 :style="{
                   backgroundColor: item.checked ? '#f1f1f1' : '#ffffff',
                 }"
               >
-                <div class="eachEvaluation">
-                  <div class="Info">
-                    <van-image
-                      width="160px"
-                      height="96px"
-                      fit="cover"
-                      :src="item.cover || defaultCover"
-                      lazy-load
-                    >
-                      <template v-slot:loading>
-                        <van-loading type="spinner" size="20" />
-                      </template>
-                    </van-image>
-                    <div class="baseInfo">
-                      <div class="title">
-                        {{ item.title }}
-                      </div>
-                      <div class="rate">
-                        <van-rate v-model="item.score" readonly allow-half />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <article v-html="item.text"></article>
-                  </div>
-                </div>
+              <EvalutionItem :evalution="item" />
               </van-cell>
             </van-list>
           </van-pull-refresh>
@@ -233,10 +197,10 @@ const refreshList = () => {
 <style lang="less" scoped>
 .container {
   width: 100vw;
-
+  background: linear-gradient(to bottom, white 40%, rgb(245, 246, 248));
   .mainBox {
     width: 100vw;
-    height: calc(100vh - var(--van-nav-bar-height));
+    height: 100%;
     background-color: #f5f6f8;
     overflow-x: hidden;
     overflow-y: auto;
@@ -247,76 +211,27 @@ const refreshList = () => {
 
     :deep(.van-pull-refresh) {
       overflow-y: auto;
-      height: calc(100vh - var(--van-nav-bar-height));
+      height: 100%;
     }
 
     .list {
       #reFreashSke {
         margin-top: 30px;
 
-        :deep(.van-skeleton-image) {
-          background: #fbece1;
-        }
 
-        :deep(.van-skeleton-paragraph) {
-          background-color: #fee9dd;
-        }
-      }
-    }
-
-    .eachEvaluation {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-
-      .Info {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        width: calc(100vw - 60px);
-        height: 180px;
-        padding: 10px 30px 10px 30px;
-        justify-content: space-between;
-
-        :deep(.van-image) {
-          background-color: bisque;
-          border-radius: 10px;
-          overflow: hidden;
-          border: 4px solid #f06622d1;
-        }
-
-        .baseInfo {
-          width: calc(100vw - 60px - 120px);
-          height: 100%;
-
-          .title {
-            font-size: 33px;
-            font-weight: 600;
-            padding-left: 20px;
-            color: #575252;
-            letter-spacing: 2px;
-            height: 70%;
-            text-align: left;
-            word-wrap: break-word;
-            word-break: break-all;
-          }
-
-          .rate {
-            text-align: left;
-            padding-left: 20px;
-          }
-        }
-      }
-
-      article {
-        padding: 15px 25px 10px 120px;
-        text-align: left;
-        word-wrap: break-word;
-        word-break: break-all;
-        text-indent: 2em;
       }
     }
   }
+}
+
+:deep(.van-cell) {
+  padding: 0;
+}
+
+:deep(.van-skeleton-paragraph) {
+  background-color: #f1f1f1;
+  width: 100%;
+  height: calc((96.5vh - @xd-header-height) / 3);
+  border-radius: 15px;
 }
 </style>

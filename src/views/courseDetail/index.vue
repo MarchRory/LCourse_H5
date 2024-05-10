@@ -6,7 +6,7 @@ import useLoading from '@/hooks/useLoading';
 import { coursesItem } from '@/api/types/courses';
 import { useUserStore } from '@/store/modules/user';
 import { CourseSignUpStateEnum, CourseSignUpStateMap, CourseStateEnum, courseStateMap } from '@/api/types/public';
-import { generateCourseStateConfig, getCategoryConfig } from '@/utils/course'
+import { formatCover, generateCourseStateConfig, getCategoryConfig } from '@/utils/course'
 import { changeColorOpacity } from '@/utils/color'
 import { EChartsOption } from 'echarts';
 import { getSpecificValueIntoArr } from '@/utils/common/array';
@@ -31,24 +31,7 @@ const init = async () => {
     getCourseDetail(route.query.courseId as string)
     .then(({data}) => {
         const {cover} = data
-        let coverObj = {
-            url: "",
-            height: 0,
-            width: 0
-        }
-
-        // 兼容无封面图或者没有携带宽高信息的封面数据
-        if (!cover) {
-            coverObj = {
-                url: '',
-                height: 250,
-                width: 200
-            }
-        } else {
-            coverObj = (cover as unknown as string).includes('width')
-                ? (JSON.parse(cover as unknown as string))
-                : { url: cover, width: 150, height: 260 }
-        }
+        const coverObj = formatCover(cover as unknown as string)
         data.cover = coverObj
         detailInfo.value = data
     })
@@ -100,11 +83,12 @@ const btnColor = computed(() => {
     return courseQuery.value.disabled ? '#b5b3b3' : 'linear-gradient(to right, #ff6034, #ee0a24)'
 })
 
+// 封面图宽高比调优, 避免高度过高
 const imgPercent = computed(() => {
     const { width, height } = detailInfo.value.cover
     const imgRatio = +(width / height).toFixed(1)
     const imgWidthPercent = imgRatio < 0.5 ? '40%' : '100%'
-    const imgHeightPercent = imgRatio < 0.5 ? '100%' : '25%'
+    const imgHeightPercent = imgRatio < 0.5 ? '100%' : '20%'
     return { imgWidthPercent, imgHeightPercent }
 })
 
@@ -280,7 +264,7 @@ init()
 
 <template>
     <div class="pageContainer">
-        <XdHeader title="课程详情" back-path="/home" :actions="actions" />
+        <XdHeader title="课程详情" :actions="actions" :custom-back="() => $router.back()" />
         <main v-if="!initLoading">
             <div style="width: 100%; height: max-content">
                 <section class="header-info">
@@ -521,7 +505,7 @@ main {
 }
 
 :deep(.van-image__img) {
-    border-radius: 20px !important;
+    border-radius: 20px;
 }
 .detail {
     &-icon {
@@ -549,6 +533,7 @@ main {
         align-items: flex-start;
         border-radius: 15px;
         background-color: rgb(240, 240, 240);
+        .card-shadow;
         span {
             color: rgb(97, 97, 97);
             font-weight: bolder;
@@ -560,6 +545,7 @@ main {
             margin-top: 15px;
             text-indent: 2em;
             color: rgb(146, 146, 146);
+            text-align: left;
         }
     }
 }

@@ -111,7 +111,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: '考评消息',
       index: 2
     },
-    component: () => import('@/views/userCourse/EvalutionsPage/index.vue')
+    component: () => import('@/views/evalutions/index.vue')
   },
   {
     path: "/userObjectives",

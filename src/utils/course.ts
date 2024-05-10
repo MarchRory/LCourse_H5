@@ -6,6 +6,7 @@ import {
     CourseSignUpStateMap,
     courseStateMap
 } from "@/api/types/public";
+import { WaterFallCard } from "@/components/waterFall/types";
 
 
 export type RealCourseStateConfig =
@@ -69,13 +70,21 @@ const generateFinishConfig = (signUpState: CourseSignUpStateEnum): RealCourseSta
         ? { label: signUpConfig.signUpLabel, tagColor: signUpConfig.signUpTagColor }
         : stateConfig
     const btnDisabled = ![CourseSignUpStateEnum.admitted, CourseSignUpStateEnum.completeSign].includes(signUpState)
-    const btnText = signUpState === CourseSignUpStateEnum.admitted ? '去签到' : signUpConfig.btnText
+
+    let btnText = ''
+    if (signUpState === CourseSignUpStateEnum.normal) {
+        btnText = '已结束'
+    } else if (signUpState === CourseSignUpStateEnum.admitted) {
+        btnText = '去签到'
+    } else {
+        btnText = signUpConfig.btnText
+    }
+
     const realConfig = {
         ...lableConfig,
         disabled: btnDisabled,
         btnText
     }
-
     return realConfig
 }
 
@@ -156,4 +165,32 @@ export const getCategoryConfig = (value: CourseCategoryType) => {
         // @ts-ignore
         categoryConfig: CourseCategoryMap[key] as typeof CourseCategoryMap[keyof typeof CourseCategoryMap]
     }
+}
+
+/**
+ * @description 反序列化分页请求中的cover数据, 使其可以被瀑布流组件使用
+ * @param {string} cover 
+ * @returns {object} {url: string, width: number, height: number} 
+ */
+export const formatCover = (cover: string = ''): WaterFallCard['cover'] => {
+    let coverObj = {
+        url: "",
+        height: 0,
+        width: 0
+    }
+
+    // 兼容无封面图或者没有携带宽高信息的封面数据
+    if (!cover) {
+        coverObj = {
+            url: '',
+            height: 250,
+            width: 200
+        }
+    } else {
+        coverObj = (cover as unknown as string).includes('width')
+            ? (JSON.parse(cover as unknown as string))
+            : { url: cover, width: 150, height: 260 }
+    }
+
+    return coverObj
 }

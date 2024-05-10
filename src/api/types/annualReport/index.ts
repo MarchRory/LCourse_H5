@@ -1,5 +1,5 @@
 import { ListResponseModel, TombstoneGeneratedFields } from "../public";
-import { coursesItem, evalutionType } from "../courses";
+import { coursesItem, EvalutionItem } from "../courses";
 export interface scoreDetailType {
     '公益服务劳动'?: number
     '日常生活劳动'?: number
@@ -24,7 +24,7 @@ export interface annulReportItem extends TombstoneGeneratedFields {
     scoreDetails: scoreDetailType,      // 一个obj, 学年获取的劳动二课总学分, 其中还包含每个类别二课的得分
     courseTimeTotal: string            // 本学年参加劳动二课花费的时间， 分钟
     maxCourse: coursesItem[]           // 本年度学生打分最高的课程, 可能是一个列表
-    maxEvaluate: evalutionType         // 教师打分最高的评价
+    maxEvaluate: EvalutionItem         // 教师打分最高的评价
     maxEvaluateCourse: coursesItem     // 教师打分最高的课程
     maxScoreCategory: string           // 获取学分最多的课程类别
     firstCourse: coursesItem           // 本年度参加的第一个课程
@@ -36,13 +36,11 @@ export interface annulReportItem extends TombstoneGeneratedFields {
 }
 
 export interface annualReportListItemType extends TombstoneGeneratedFields {
-    reportBatchName: string | null
-    start: string | Date
-    end: string | Date
-    cover?: string | null
+    reportBatchName: string
+    start: string
+    end: string
+    cover?: string
 }
-
-export type annualReportListResult = ListResponseModel<annualReportListItemType>
 
 export interface annualReportParamsType {
     page: number

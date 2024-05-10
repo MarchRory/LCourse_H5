@@ -111,8 +111,6 @@ const pageToDetail = () => {
         transition: all 0.2s ease;
         animation: fadeMove 0.2s;  
     }
-    &-cover {
-    }
     &-info {
         flex: 1;
         width: 98%;
@@ -196,7 +194,7 @@ const pageToDetail = () => {
 }
 
 :deep(.van-image__img) {
-    border-radius: 10px !important;
+    border-radius: 15px !important;
 }
 
 @keyframes fadeMove {

@@ -69,10 +69,12 @@ function getAnnualReportInfo() {
     const { data } = res;
     data.monthDetails = new Map(Object.entries(data.monthDetails));
     annualReportInfo.value = data;
-  });
+  }).catch(() => {
+    goBack()
+  })
 }
 function goBack() {
-  router.back();
+  router.push({path: '/annulReportList'})
 }
 function handleTouchStart(e: TouchEvent) {
   touchPosWatch.value.startY = e.touches[0].pageY;

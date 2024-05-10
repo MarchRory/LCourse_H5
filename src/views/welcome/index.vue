@@ -36,8 +36,13 @@ const getUserInfo = (token) => {
         });
       })
       .catch((err) => {
-        console.log('err: ', err)
-        userStore.logOut()
+        const {status} = err.response
+        if (status === 500) {
+          window.localStorage.clear()
+          router.replace({ path: "/" });
+        }else {
+          userStore.logOut()
+        }
       });
   });
 };

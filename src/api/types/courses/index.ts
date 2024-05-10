@@ -91,19 +91,23 @@ export interface page {
     pageSize: number
 }
 
-export interface evalutionType extends TombstoneGeneratedFields {
-    uid?: string | number
-    title?: string
-    cover?: string
-    text?: string
-    courseId?: string | number
-    evaluate?: string
-    pass: number
-    attendance: number
-    checked: boolean
+export type EvalutionItem = Pick<WaterFallCard, 'cover'> & {
+    // uid?: string | number
+    // title?: string
+    // text?: string
+    // courseId?: string | number
+    // evaluate?: string
+    // pass: number
+    // attendance: number
+    // checked: boolean
+    // score: number
+    title: string
+    courseId: string
     score: number
+    text: string
+    checked: boolean | null
 }
 
-export type evalutionListResultModel = ListResponseModel<evalutionType>
+export type evalutionListResultModel = ListResponseModel<EvalutionItem>
 
 export type CourseCardQuery = RealCourseStateConfig & { courseId: string }
