@@ -44,13 +44,7 @@ const progress = ref<number>(0);
 const currentPage = ref(2);
 function getAnnualReportInfo() {
   getAnnualReportDetailAPI(
-    route.query.reportId as string,
-    {
-      onDownloadProgress: function (e) {
-        isDownload.value = false;
-        progress.value = Math.floor((e.loaded / (e.total as number)) * 100);
-      },
-    } as AxiosRequestConfig
+    route.query.reportId as string
   ).then((res: Response<annulReportItem>) => {
     const { success } = res;
     if (success === false) {

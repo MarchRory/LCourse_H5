@@ -26,7 +26,7 @@ const handleClick = () => {
 const openAnnulReport = () => {
   router.push({
     path: "/reportPage",
-    query: { reportId: props.preview.courseId },
+    query: { reportId: props.preview.id },
   });
 }
 

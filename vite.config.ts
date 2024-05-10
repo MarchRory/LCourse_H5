@@ -27,7 +27,7 @@ export default ({ command, mode }) => {
     },
     server: {
       hmr: true,
-      host: '192.168.31.50',
+      host: '192.168.54.161',
       proxy: {
         "/api": {
           target: "http://154.201.75.237:8100",

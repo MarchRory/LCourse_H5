@@ -25,10 +25,8 @@ export function getAnnualReportListAPI(params: annualReportTypes.annualReportPar
  * @param annualReportId 
  * @returns 
  */
-export function getAnnualReportDetailAPI(batchId: number | string, options: AxiosRequestConfig) {
+export function getAnnualReportDetailAPI(batchId: number | string) {
     return request.get<annualReportTypes.annulReportItem>(
-        API.annualReportDetail + `/${batchId}`,
-        null,
-        { ...options }
+        API.annualReportDetail + `/${batchId}`
     )
 }
