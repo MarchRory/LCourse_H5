@@ -5,6 +5,9 @@ import router from "@/router/index";
 import { getToken, removeToken } from "@/utils/auth/auth";
 import { useUserStore } from "@/store/modules/user";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
+
+const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
+
 // 需要跳转回登录界面的错误码
 const errCode = ["ERR_NETWORK", "ECONNABORTED"];
 
@@ -55,12 +58,7 @@ onMounted(() => {
 <template>
   <div class="container">
     <van-overlay :show="true">
-      <van-loading color="#E3562A" size="100">
-        <template #icon>
-          <van-icon name="star-o" size="80" />
-        </template>
-        正在获取数据...
-      </van-loading>
+      <XdLoading :visible="true" />
     </van-overlay>
   </div>
 </template>
@@ -70,6 +68,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #e1e1e1b3;
   .van-loading {
     .flex-c-c {
       flex-direction: column;

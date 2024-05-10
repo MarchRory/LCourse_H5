@@ -18,7 +18,14 @@ const showPwd = () => {
   isShowPwd.value = isShowPwd.value == "password" ? "text" : "password";
 };
 const onSubmit = (values) => {
-  if (values) {
+  const {password, username} = values
+  if (!username) {
+    showFailToast("请输入账号")
+    return
+  }else if (!password) {
+    showFailToast('请输入密码')
+    return
+  }
     login(values).then((res) => {
       if (res.code == 200) {
         const userStore = useUserStore();
@@ -30,7 +37,6 @@ const onSubmit = (values) => {
         showFailToast(res.message);
       }
     });
-  }
 };
 
 const authLogin = () => {
@@ -66,21 +72,27 @@ const authLogin = () => {
         <van-cell-group inset>
           <van-field
             v-model="loginForm.username"
+            autocomplete="off"
             name="username"
             label="账号"
             placeholder="请输入账号"
-            :rules="[{ required: true, message: '请填写用户名' }]"
             style="color: white"
-          />
+          >
+            <template #label>
+              <t-icon icon="tabler:user" class="label-icon" />
+            </template>
+          </van-field>
           <van-field
             v-model="loginForm.passwords"
             :type="isShowPwd"
             name="password"
             label="密码"
             placeholder="请输入密码"
-            :rules="[{ required: true, message: '请填写密码' }]"
             autocomplete="false"
           >
+            <template #label>
+              <t-icon icon="tabler:lock" class="label-icon" />
+            </template>
             <template #button>
               <span @click="showPwd" style="color: black">
                 <van-icon name="closed-eye" v-if="isShowPwd === 'password'" />
@@ -91,10 +103,10 @@ const authLogin = () => {
         </van-cell-group>
         <div class="tools">
           <van-button round block native-type="submit" class="button"
-            >账号密码登录</van-button
+            >登录</van-button
           >
           <van-button round block class="button authButton" @click="authLogin"
-            >易班授权登录</van-button
+            >易班授权</van-button
           >
         </div>
       </van-form>
@@ -106,32 +118,46 @@ const authLogin = () => {
 :deep(.van-cell-group){
   background-color: transparent
 }
+
+.label-icon {
+  font-size: 40px;
+}
 :deep(.van-field) {
-  padding: 16px;
+  .card-shadow;
+  padding: 25px 16px;
   align-self: stretch;
   gap: 16px;
-  border: 6px solid black;
   box-sizing: border-box;
-  // background-color: black;
-
+  background-color: rgba(255, 255, 255, 0.705);
+  border-radius: 10px;
   input {
-    // background-color: white;
-    color: black;
+    color: rgb(143, 143, 143);
+    font-size: 30px;
+    letter-spacing: 2px;
+    font-weight: bolder;
     &::placeholder {
-      color: #151514;
+      color: #929292;
     }
   }
 
   .van-field__label {
-    width: 3.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
     color: black;
   }
+}
+
+:deep(.van-form) {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 
 :deep(.van-button) {
   border-radius: 16px;
-  background: -webkit-linear-gradient(right, #8e2de2, #4a00e0);
   border: 0;
 }
 
@@ -155,13 +181,9 @@ const authLogin = () => {
   justify-content: center;
   padding: 0 16px;
   height: 100vh;
-  background: url("@/assets/imgs/cover.jpg") center no-repeat;
-  background-size: cover;
-
+  background-color: #f1f1f17a;
   div {
-    border-radius: 0;
     margin-bottom: 30px;
-    // background-color: #151514
   }
 
   .content {
@@ -181,9 +203,13 @@ const authLogin = () => {
 
   .loginForm {
     .tools {
+      width: 90%;
       height: 200px;
+      position: relative;
+      top: 200px;
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: space-between;
     }
 
@@ -193,7 +219,9 @@ const authLogin = () => {
     }
 
     .button {
-      color: #ffffff;
+      .card-shadow;
+      color: black;
+      background-color: white;
       font-family: Gen Jyuu Gothic;
       letter-spacing: 0px;
       line-height: 18px;
@@ -201,8 +229,9 @@ const authLogin = () => {
     }
 
     :deep(.authButton) {
-      color: black;
-      background: white;
+      .card-shadow;
+      color: white;
+      background: -webkit-linear-gradient(right, #f89a57, #ea8210);
     }
   }
 }
