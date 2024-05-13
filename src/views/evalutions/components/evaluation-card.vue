@@ -14,29 +14,45 @@ const router = useRouter()
 const JumpToDetail = () => {
     router.push({path: "/detail", query: {courseId: props.evalution.courseId}})
 }
+
+const img = ref<HTMLDivElement | null>()
+const maskHeight = ref(0)
+onMounted(() => {
+    maskHeight.value = img.value?.$el.offsetHeight!
+})
+
 </script>
 
 <template>
     <div class="evalution-card" @click="JumpToDetail">
-        <van-image
-            fit="cover"
-            :src="props.evalution.cover.url"
-            width="100%"
-        >
-        </van-image>
-        <section class="evalution-mask" :class="{'new-evaluation': !props.evalution.checked}">
-            <div class="evalution-info">
-                <div class="evalution-header">
-                    <div class="evalution-title">{{ props.evalution.title }}</div>
-                    <div class="evalution-score">
-                        <span class="score-value">{{ props.evalution.score }}</span>
-                        <span class="score-label">学分</span>
+            <van-image
+                fit="cover"
+                :src="props.evalution.cover.url"
+                width="100%"
+                ref="img"
+            >
+            </van-image>
+            <section 
+                class="evalution-mask" 
+                :class="{'new-evaluation': !props.evalution.checked}"
+                :style="{
+                    height: maskHeight + 'px'
+                }"
+            >
+                <div class="evalution-info">
+                    <div class="evalution-header">
+                        <div class="evalution-title">{{ props.evalution.title }}</div>
+                        <div class="evalution-score">
+                            <span class="score-value">{{ props.evalution.score }}</span>
+                            <span class="score-label">学分</span>
+                        </div>
                     </div>
                 </div>
-                <div class=""></div>
-            </div>
-            <article>{{ props.evalution.text }}</article>
-        </section>
+            </section>
+        <span class="evaluation-label">教师评语: </span><br/>
+        <article>
+            {{ props.evalution.text }}
+        </article>
     </div>
 </template>
 
@@ -46,9 +62,8 @@ const JumpToDetail = () => {
         position: relative;
         .card-shadow;
         width: calc(100% - 40px);
-        height: 100%;
-        margin: 20px auto 0;
         height: auto;
+        margin: 20px auto 0;
         background-color: white;
         border-radius: 15px;
 
@@ -57,7 +72,6 @@ const JumpToDetail = () => {
         position: absolute;
         top: 0px;
         width: 100%;
-        height: 100%;
         border-radius: 15px;
         background: linear-gradient(to bottom, #ffffff00 5%, #111111e0);
         display: flex;
@@ -102,14 +116,20 @@ const JumpToDetail = () => {
                 }
             }
         }
-        article {
-            width: 90%;
-            text-align: left;
-            text-indent: 2em;
-            color: rgb(185, 185, 185);
-            font-size: 25px;
-        }
     }
+}
+.evaluation-label {
+ position: relative;
+ right: calc(90% - 80px);
+}
+article {
+    text-align: left;
+    width: 90%;
+    text-indent: 2em;
+    padding: 10px 30px;
+    text-align: left;
+    color: rgb(88, 88, 88);
+    font-size: 25px;
 }
 
 :deep(.van-image__img) {

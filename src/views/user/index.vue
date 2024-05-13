@@ -20,10 +20,10 @@ import "vant/es/cell-group/style";
 import "vant/es/nav-bar/style";
 import { defineAsyncComponent } from 'vue'
 import { useUserStore } from "@/store/modules/user";
-import { showConfirmDialog } from "vant";
-import { yibanBind, getInfo } from "@/api/user/user";
+import { getInfo } from "@/api/user/user";
 import { showFailToast, showSuccessToast } from "vant";
 import type { KingkongTabItem } from './components/type'
+import { usePointStore } from "@/store/modules/point";
 
 defineOptions({
   name:  "user"
@@ -35,8 +35,8 @@ const KingkongTabCard = defineAsyncComponent(() => import('./components/kingkong
 const userStore = useUserStore()
 const showParent = ref(true);
 const route = useRoute();
-const router = useRouter();
-const show = ref(false);
+
+const pointStore = usePointStore()
 
 const courseTabs = ref<KingkongTabItem[]>([
   { label: '历史课程', icon: 'tabler:books', path: '/userCourse', dot: false },
@@ -76,7 +76,9 @@ const init = () => {
         });
       });
     });
+    pointStore.updatePointTotal()
   }
+  pointStore.updatePointTotal()
 }
 
 // 在路由更新前，检查是否要隐藏父级路由界面
@@ -89,6 +91,11 @@ onBeforeRouteUpdate((to, from, next) => {
 });
 
 init()
+
+// 每次回到个人主页，都要更新一遍积分, 确保是最新的
+onActivated(() => {
+    pointStore.updatePointTotal()
+})
 </script>
 
 <style scoped lang="less">

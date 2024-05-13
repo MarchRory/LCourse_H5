@@ -4,6 +4,9 @@ import { HomeSearchParams } from './components/types';
 import { useUserStore } from '@/store/modules/user';
 import { selectCourseParams } from '@/api/types/courses';
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
+import { useWsStore } from '@/store/modules/ws';
+import { usePointStore } from '@/store/modules/point';
+
 const HomeHeader = defineAsyncComponent(() => import('./components/home-header.vue'))
 const CoursewaterFall = defineAsyncComponent(() => import('@/components/waterFall/index.vue'))
 
@@ -20,7 +23,7 @@ const pageParams = ref<Pick<selectCourseParams, keyof Omit<selectCourseParams, '
     userType: 0,
     reviewed: 0,
     passType: -1,
-    semesterId: ""
+    semesterId: userStore.semesterId
 })
 const handleTabChange = (newTab: number) => {
     pageParams.value.departmentLimit = newTab ? [userStore.departmentId] : []
@@ -43,6 +46,16 @@ onActivated(() => {
         waterfall.value && waterfall.value.waterFallScrollTo(scrollTop.value)
     })
 });
+
+// 因为首页会被缓存, 所以init方法只会在第一次加载时触发, 后续都是触发onActived钩子
+const init = () => {
+    const wsStore = useWsStore()
+    !wsStore.wsInstance && wsStore.initWs()
+    const pointStore = usePointStore()
+    pointStore.updatePointTotal()
+}
+
+init()
 </script>
 
 <template>
@@ -66,4 +79,7 @@ onActivated(() => {
 </template>
 
 <style scoped lang="less">
+.pageContainer {
+    height: calc(100vh - var(--van-tabbar-height));
+}
 </style>

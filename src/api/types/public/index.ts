@@ -190,7 +190,7 @@ export const CourseSignUpStateMap: CourseSignUpStateMap = {
     [CourseSignUpStateEnum.getEvaluation]: {
         btnText: '修读完成',
         signUpLabel: '已完成',
-        signUpTagColor: ''
+        signUpTagColor: '#4dd1c6'
     }
 }
 

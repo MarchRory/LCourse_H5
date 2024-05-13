@@ -7,12 +7,9 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AxiosProgressBar: typeof import('./src/components/axiosProgressBar/index.vue')['default']
-    BackButton: typeof import('./src/components/backButton/backButton.vue')['default']
     Ball: typeof import('./src/components/suspension/ball.vue')['default']
     CardItem: typeof import('./src/components/waterFall/components/CardItem.vue')['default']
     Chart: typeof import('./src/components/chart/index.vue')['default']
-    CourseList: typeof import('./src/components/courseList/courseList.vue')['default']
     CoursePageSkeleton: typeof import('./src/components/coursePageSkeleton/coursePageSkeleton.vue')['default']
     CoursePreview: typeof import('./src/components/coursePreview/coursePreview.vue')['default']
     Dots: typeof import('./src/components/swiper/dots.vue')['default']
@@ -22,10 +19,7 @@ declare module 'vue' {
     ProgressBar: typeof import('./src/components/progressBar/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SearchBar: typeof import('./src/components/searchBar/searchBar.vue')['default']
     StackSwpier: typeof import('./src/components/swiper/Stack-Swpier.vue')['default']
-    TemplateComment: typeof import('./src/components/templateComment/index.vue')['default']
-    TemplateItemInList: typeof import('./src/components/templateComment/components/templateItemInList.vue')['default']
     VanButton: typeof import('vant/es')['Button']
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']
@@ -57,10 +51,8 @@ declare module 'vue' {
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VanTabs: typeof import('vant/es')['Tabs']
-    VanTag: typeof import('vant/es')['Tag']
     VanToast: typeof import('vant/es')['Toast']
     VanUploader: typeof import('vant/es')['Uploader']
-    VocabularyList: typeof import('./src/components/templateComment/components/vocabularyList.vue')['default']
     WaterFall: typeof import('./src/components/waterFall/index.vue')['default']
   }
 }

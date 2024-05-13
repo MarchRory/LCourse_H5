@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from 'vue'
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 enum platformEnum {
     ios = 1,
     android = 2,
@@ -11,7 +11,7 @@ enum platformEnum {
 function useIOSMonitor() {
     // IOS系统, 软键盘弹起和收起会自动时输入框聚焦、失焦
     // 获取初始高度
-    const [visible, setVisible] = useToggle(false)
+    const [visible, setVisible] = useBoolean(false)
     function onIOSKeyBoardVisible(visibleState: boolean) {
         setVisible(visibleState)
     }
@@ -31,7 +31,7 @@ function useIOSMonitor() {
  */
 function useAndroidMonitor() {
     const initHeight = window.innerHeight
-    const [visible, setVisible] = useToggle(false)
+    const [visible, setVisible] = useBoolean(false)
     function onAndroidKeyBoardVisible() {
         // 按理说, 安卓应该会在软键盘弹起时导致页面高度变化, 但是不知道为什么实测并没有, 暂未排查出原因
         const resizeHeight = window.innerHeight

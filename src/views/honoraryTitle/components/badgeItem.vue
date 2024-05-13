@@ -5,6 +5,8 @@ const props = defineProps<{
     badge: badgeItem
 }>()
 
+
+
 </script>
 
 <template>

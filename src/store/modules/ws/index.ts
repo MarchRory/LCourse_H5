@@ -30,11 +30,12 @@ export const useWsStore = defineStore("useWxStore", {
             }
         },
         closeWebSocket() {
-            if (this.wsInstance) {
-                this.isUserQuit = true
+            let protoType = Object.prototype.toString.call(this.wsInstance)
+            if (this.wsInstance && protoType === '[object WebSocket]') {
                 this.wsInstance.closeLink();
-                this.wsInstance = null
             }
+            this.isUserQuit = true
+            this.wsInstance = null
 
         }
     },

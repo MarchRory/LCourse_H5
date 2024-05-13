@@ -3,20 +3,18 @@
  * @description 待创建的计划列表
  */
 import { getToCreatePlanList } from '@/api/plan';
-import { CourseCategoryMap } from '@/api/types/public';
 import { ToCreatePlanItem } from '@/api/types/user';
 import useLoading from '@/hooks/useLoading';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 
 const ToCreateBtn = defineAsyncComponent(() => import('../components/create-btn.vue'))
 const {loading: initLoading, setLoading: setInitLoading} = useLoading(true)
-const [isInit, setInit] = useToggle(true)
-const [isFinished, setFinish] = useToggle(false)
-const categoryOptions = Object.keys(CourseCategoryMap)
+const [isInit, setInit] = useBoolean(true)
+const [isFinished, setFinish] = useBoolean(false)
 
 const listData = ref<ToCreatePlanItem[]>([])
 const {loading, setLoading} = useLoading(false)
-const [isRefreash, setRefreash] = useToggle(false)
+const [isRefreash, setRefreash] = useBoolean(false)
 
 const loadList = () => {
     return new Promise((resolve) => {

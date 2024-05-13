@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { HeaderDefaultAction } from '@/components/header/types';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 import { HomeSearchParams } from './types'
 import { CourseCategoryMap, CourseCategoryType, CourseStateEnum, courseStateMap } from '@/api/types/public';
 import { deepClone } from '@/utils/dataUtil/common';
@@ -34,7 +34,7 @@ const tabs = [
 ]
 
 // menu选择逻辑
-const [menuVisible, setVisible] = useToggle(false)
+const [menuVisible, setVisible] = useBoolean(false)
 const params = ref<HomeSearchParams>({
     category: "",
     state: 0

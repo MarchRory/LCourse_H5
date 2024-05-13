@@ -3,7 +3,6 @@ import { getAnnualReportDetailAPI } from "@/api/annulReport/annulReport";
 import { annulReportItem } from "@/api/types/annualReport";
 import { useRoute, useRouter } from "vue-router";
 import { Response } from "@/utils/http/types";
-import { AxiosRequestConfig } from "axios";
 import { defineAsyncComponent } from "vue";
 import { gsap } from "gsap";
 import { showFailToast, showLoadingToast } from "vant";

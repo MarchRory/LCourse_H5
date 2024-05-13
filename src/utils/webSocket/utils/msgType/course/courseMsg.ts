@@ -1,10 +1,8 @@
+import { showNotify } from "vant";
 import { msgType } from "../../../types/eventType";
 import { wsDataType } from '../../../types/ws'
 import { mySocket } from "../../../useSocket";
-import { useNotifyStore } from "@/store/modules/notify";
 import { useUserStore } from "@/store/modules/user";
-const notifyStore = useNotifyStore()
-let userStore: any
 export enum courseTypeMap {
     courseStateChange = -1,  // 课程状态改变
     beAdmitted = 2,          // 报名课程被通过
@@ -27,7 +25,10 @@ export function subscribeCourseType(wsInstance: mySocket): Map<string | number, 
             type: courseTypeMap.beAdmitted,
             callback: (wxData: wsDataType) => {
                 const { message } = wxData
-                notifyStore.notify(message as string)
+                showNotify({
+                    type: 'success',
+                    message: message || '报名课程被录取'
+                })
             }
         },
         {
@@ -35,13 +36,14 @@ export function subscribeCourseType(wsInstance: mySocket): Map<string | number, 
             callback: (wxData: wsDataType<string>) => {
                 const { data, message } = wxData
                 if (wxData.type == courseTypeMap.unReadEvaluate) {
-                    if (!userStore) {
-                        userStore = useUserStore()
-                    }
+                    const userStore = useUserStore()
                     userStore.hasEvaluateUnRead = true
                 }
                 // 是否需要点击跳转?
-                notifyStore.notify(message as string)
+                showNotify({
+                    type: 'primary',
+                    message: message || '您有新的课程考评信息'
+                })
             }
         },
     ]

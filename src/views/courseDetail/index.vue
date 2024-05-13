@@ -14,7 +14,7 @@ import * as echarts from 'echarts'
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import router from '@/router';
 import { showFailToast, showSuccessToast } from 'vant';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
@@ -124,7 +124,7 @@ const submit = () => {
 
 // 签到
 
-const [signVisible, setSignVisible] = useToggle(false)
+const [signVisible, setSignVisible] = useBoolean(false)
 const actions = computed<HeaderDefaultAction[]>(() => {
     let actions:HeaderDefaultAction[] = []
     const {state, signUpstate} = detailInfo.value
@@ -347,13 +347,13 @@ init()
                     <section class="core-info">
                         <span><t-icon class="info-title-tag" icon="tabler:building-community" />学院限制</span>
                         <div class="core-text">
-                            {{ (detailInfo.departmentLimits || []).length ? detailInfo.departmentLimits.join('、') : '全校' }}
+                            {{ (detailInfo.departmentLimits || []).length ? [...new Set(detailInfo.departmentLimits)].join('、') : '全校' }}
                         </div>
                     </section>
                     <section class="core-info">
                         <span><t-icon class="info-title-tag" icon="tabler:user-check" />年级限制</span>
                         <div class="core-text">
-                            {{ (detailInfo.gradeLimit || []).length ? detailInfo.gradeLimit.join('、') : '全年级' }}
+                            {{ (detailInfo.gradeLimit || []).length ? [...new Set(detailInfo.gradeLimit)].join('、') : '全年级' }}
                         </div>
                     </section>
                     <section class="core-info">
@@ -403,6 +403,7 @@ init()
 
 <style scoped lang="less">
 main {
+    overflow-x: hidden;
     background-color: white;
     overflow-y: scroll;
     section {

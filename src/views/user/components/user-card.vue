@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user';
+import {usePointStore} from '@/store/modules/point'
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore()
+const pointStore = usePointStore()
 
-const userData = ref([
-    { label: '年级', value: 2023 },
-    { label: '课程', value: 30 },
-    { label: '积分', value: 20 }
-])
+const {pointTotal} = storeToRefs(pointStore)
 
+const userData = computed(() => {
+    return [
+        { label: '年级', value: 2023 },
+        { label: '课程', value: 30 },
+        { label: '积分', value: pointTotal.value }
+    ]
+})
 </script>
 
 <template>
@@ -43,7 +49,10 @@ const userData = ref([
         </section>
         <div class="line"></div>
         <section class="user-data">
-            <div class="data-item" v-for="(item, index) in userData" :key="index">
+            <div class="data-item" 
+                v-for="(item, index) in userData" 
+                :key="index"
+            >
                 <div class="value">{{ item.value }}</div>
                 <div class="label">{{ item.label }}</div>
             </div>

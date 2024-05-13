@@ -54,7 +54,7 @@ const contentList = ref<DimensionCommentContentItem[]>([])
 const chooseTag = (chosenTag: typeof dimensionList.value[0]) => {
     chosenTag.chosen = true
     contentList.value.push({
-        course_evaluate_top_id: chosenTag.id as number,
+        id: chosenTag.id as number,
         course_evaluate_id: +props.courseId,
         name: chosenTag.name,
         text: '',
@@ -65,13 +65,13 @@ const chooseTag = (chosenTag: typeof dimensionList.value[0]) => {
 
 // 删除已经选择的tag
 const delEditedDimension = (deleteItem: DimensionCommentContentItem, index: number) => {
-    const {course_evaluate_top_id} = deleteItem
+    const {id} = deleteItem
 
     // 删除编辑框里的维度
     contentList.value.splice(index, 1)
 
     // 回显维度选择器中的维度
-    const dimensionIndex = dimensionList.value.findIndex(item => item.id === course_evaluate_top_id)
+    const dimensionIndex = dimensionList.value.findIndex(item => item.id === id)
     dimensionList.value[dimensionIndex].chosen = false
 
     const wordNum = contentList.value.reduce((acc, cur) => acc + cur.text.length, 0)

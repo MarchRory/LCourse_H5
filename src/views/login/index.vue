@@ -53,13 +53,6 @@ const authLogin = () => {
 <template>
   <div class="container">
     <div class="cover">
-      <!-- <van-image
-        width="250"
-        height="250"
-        fit="cover"
-        position="center"
-        :src="logoSrc"
-      /> -->
     </div>
     <div class="content">
       <span style="color: black; font-size: 30px; margin-top: -31px">登录</span>

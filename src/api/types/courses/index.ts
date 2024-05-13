@@ -72,7 +72,7 @@ export interface commentToCourseObj {
     courseId: number;
     evaluateText: string;  // 课程建议
     anonymous: boolean; // 是否匿名
-    detailComment: DimensionCommentContentItem[]
+    detailCommand: DimensionCommentContentItem[]
 }
 
 export interface commentToSelfObj {

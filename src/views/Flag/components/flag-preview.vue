@@ -2,7 +2,7 @@
 import { FlagItem, deleteFlagApi, updateFlagApi } from '@/api/user/user'
 import { flagStateMap } from '../config';
 import { showConfirmDialog, showSuccessToast } from 'vant';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 import { FlagStateEnum } from '../config';
 import useLoading from '@/hooks/useLoading';
 
@@ -41,7 +41,7 @@ const deleteFlag = () => {
 }
 
 // menu配置和逻辑
-const [menuVisible, menuToggle] = useToggle(false)
+const [menuVisible, menuToggle] = useBoolean(false)
 const updateState = async (state: FlagStateEnum) => {
     setLoading(true)
     const data = {

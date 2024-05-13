@@ -1,8 +1,7 @@
 import request from "@/utils/http/request";
 import * as coursesApiType from "../types/courses";
 import * as templateType from "../types/comment";
-import { vocabularyPagination } from '@/components/templateComment/types'
-import { ListResponseModel, pageParams } from "../types/public";
+import { ListResponseModel } from "../types/public";
 import { DimensionCommentItem } from "../dimension";
 import { AddPointData, PointItem } from "../types/user";
 import { coursesItem } from "../types/courses";
@@ -10,7 +9,7 @@ enum API {
   coursePage = "/curriculum/course/front/page",
   courseDetail = "/curriculum/course/detail/front",
   joinCourse = "/curriculum/course/join",
-  commentCourse = "/curriculum/courseEvaluate",
+  commentCourse = "/curriculum/courseEvaluate/",
   commentSelf = "/curriculum/selfEvaluation/",
   sign = "/curriculum/signUp/attendance/code",
   unReadEvaluationCnt = "/curriculum/signUp/evaluations/count",
@@ -152,35 +151,6 @@ export function getCommentTemplateAPI(
   return request.get<templateType.commentTemplateResultModel>(
     API.commonTemplateList,
     params,
-  );
-}
-/**
- * 获取词汇种类列表
- * @param params
- * @returns
- */
-/* export  function getVocabularyCategoriesAPI(
-  params: templateType.templateListParamsType,
-) {
-  return  request.get<templateType.vocabularyCategoryResultModel>({
-    url: API.vocabularyCategory,
-    params,
-  });
-} */
-
-/**
- * 获取某类词汇列表
- * @param params
- * @returns
- */
-export function getVocabularyListAPI(
-  params: vocabularyPagination
-) {
-  let { level } = params
-  let levelMin = level, levelMax = level
-  return request.get<templateType.vocabularyResultModel>(
-    API.vocabulary,
-    { ...params, levelMax, levelMin }
   );
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CSSProperties } from 'vue';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 
 interface Props {
     /**
@@ -44,7 +44,7 @@ const CustomStyle = computed<CSSProperties>(() => {
     }
 })
 
-const [isRefresh, setRefresh] = useToggle(false)
+const [isRefresh, setRefresh] = useBoolean(false)
 const handleClick = async () => {
     setRefresh(true)
     await props.trigger()

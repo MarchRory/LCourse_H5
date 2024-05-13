@@ -15,4 +15,4 @@ export interface DimensionCommentItem extends TombstoneGeneratedFields {
  */
 export type DimensionCommentContentItem =
     Pick<DimensionCommentItem, 'name' | 'icon'>
-    & { text: string, course_evaluate_id: number, course_evaluate_top_id: number, id?: number, description?: string }
+    & { text: string, course_evaluate_id: number, id: number, description?: string }

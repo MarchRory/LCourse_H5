@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCourses } from '@/api/courses/courses';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 import { CourseStateEnum } from '@/api/types/public';
 import { HeaderDefaultAction } from '@/components/header/types';
 import { showFailToast } from 'vant';
@@ -13,10 +13,9 @@ const searchParams = ref({
   title: '',
   state: CourseStateEnum.all,
   reviewed: 0,
-  semesterId: ""
 })
 
-const [isSearch, setSearchState] = useToggle(false)
+const [isSearch, setSearchState] = useBoolean(false)
 const keywords = ref('')
 
 const handleInput = debounce((e: Event) => {

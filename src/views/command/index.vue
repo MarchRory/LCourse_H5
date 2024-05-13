@@ -25,7 +25,7 @@ const form = ref<commentToCourseObj>({
   courseId: courseId.value,
   evaluateText: '',
   anonymous: false,
-  detailComment: [],
+  detailCommand: [],
 })
 const flag_content = ref('')
 
@@ -36,7 +36,7 @@ const mailSelfThreshold = ref(50)
 const isMailToSelfCanWrite = ref(false)
 
 // 同步维度评价结果
-const handleDimensionCommentChange = (detail: commentToCourseObj['detailComment'], wordsNum: number) => {
+const handleDimensionCommentChange = (detail: commentToCourseObj['detailCommand'], wordsNum: number) => {
   isMailToSelfCanWrite.value = wordsNum >= mailSelfThreshold.value
   const data = deepClone<typeof detail>(detail)
   data.forEach((item) => {
@@ -44,7 +44,7 @@ const handleDimensionCommentChange = (detail: commentToCourseObj['detailComment'
       delete item.description
     }
   })
-  form.value.detailComment = data
+  form.value.detailCommand = data.map(({id, text, icon, name, course_evaluate_id}) => ({ id, text, icon, name, course_evaluate_id }))
 }
 
 // 高质量评价认定逻辑, 多给点积分就行了
@@ -53,7 +53,7 @@ const totalSteps = ref(5)
 // 当前完成步骤数
 const currentStep = computed(() => {
   let step = 0
-  const {score, detailComment, evaluateText} = form.value
+  const {score, detailCommand, evaluateText} = form.value
   // 完成评分 +1
   if (score) {
     step += 1
@@ -61,8 +61,8 @@ const currentStep = computed(() => {
 
   // 详细评价填满50个字 +2
   // 使用reduce导致计算速度有点慢, 这里后人可以想一下怎么优化
-  const detailCommentLength = detailComment.reduce((acc, cur) => acc + cur.text.length, 0)
-  step += (detailCommentLength >= 50 ? 2 : 0)
+  const detailCommandLength = detailCommand.reduce((acc, cur) => acc + cur.text.length, 0)
+  step += (detailCommandLength >= 50 ? 2 : 0)
 
   // 完成吐槽与建议填写 +1
   step += (evaluateText.length > 20 ? 1 : 0)
@@ -137,14 +137,14 @@ const submit = debounce(() => {
     <van-sticky :offset-top="0">
       <header>
         <XdHeader title="课程评价" >
-          <template #right>
+          <template v-if="!isCommentSuccess" #right>
           <div class="seat">
             <van-switch v-model="form.anonymous" :size="20" active-color="#ffac40"/>
             <span>匿名</span>
           </div>
           </template>
         </XdHeader>
-        <PointGetProgressBar :current-step="currentStep" :total-steps="totalSteps" :nodes="tempCommentGoodNodes" />
+        <PointGetProgressBar v-if="!isCommentSuccess" :current-step="currentStep" :total-steps="totalSteps" :nodes="tempCommentGoodNodes" />
       </header>
     </van-sticky>
 

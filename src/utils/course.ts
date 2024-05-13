@@ -52,12 +52,12 @@ const generateIngConfig = (signUpState: CourseSignUpStateEnum): RealCourseStateC
     let config = {} as RealCourseStateConfig
     const { signUpLabel, signUpTagColor, btnText } = CourseSignUpStateMap[signUpState]
     const stateConfig = courseStateMap[CourseStateEnum.ing]
-    const disabled = [CourseSignUpStateEnum.completeSign, CourseSignUpStateEnum.normal].includes(signUpState)
+    const disabled = [CourseSignUpStateEnum.rejetced, CourseSignUpStateEnum.normal].includes(signUpState)
     config = {
         label: signUpState === CourseSignUpStateEnum.normal ? stateConfig.label : signUpLabel,
         tagColor: signUpState === CourseSignUpStateEnum.normal ? stateConfig.tagColor : signUpTagColor,
         disabled,
-        btnText: signUpState === CourseSignUpStateEnum.normal ? '无法报名' : btnText
+        btnText: signUpState === CourseSignUpStateEnum.normal ? '无法报名' : (signUpState === CourseSignUpStateEnum.admitted ? '去签到' : btnText)
     }
 
     return config
@@ -114,8 +114,8 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
     if (!allowJoin) {
         realConfig = {
             ...stateConfig,
-            disabled: false,
-            btnText: '本课程不对当前学院开放'
+            disabled: true,
+            btnText: '暂无本课程修读权限'
         }
         return realConfig
     }
@@ -125,7 +125,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
         case CourseStateEnum.prepare:
             realConfig = {
                 ...stateConfig,
-                disabled: allowJoin,
+                disabled: true,
                 btnText: '未到报名时间'
             }
             break;
@@ -136,7 +136,7 @@ export const generateCourseStateConfig = (data: ConfigCacheKey): RealCourseState
             realConfig = {
                 ...stateConfig,
                 disabled: true,
-                btnText: '请等待后台审核结果'
+                btnText: signUpState === CourseSignUpStateEnum.normal ? '正在审核报名学生' : CourseSignUpStateMap[signUpState].btnText
             }
             break;
         case CourseStateEnum.ing:

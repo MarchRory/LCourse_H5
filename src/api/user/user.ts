@@ -1,6 +1,6 @@
 import request from "@/utils/http/request";
 import * as userApiTypes from "../types/user";
-import { CateGoryScore, ListResponseModel, TombstoneGeneratedFields, pageParams } from "../types/public";
+import { ListResponseModel, TombstoneGeneratedFields, pageParams } from "../types/public";
 import { FlagStateEnum } from "@/views/Flag/config";
 import { PointItem, PointTypeEnum } from "../types/user";
 enum API {
@@ -13,7 +13,7 @@ enum API {
   flag = '/user/flag',  // flag
   point = '/user/integral',  // 积分
   mailToSelf = '/user/wishes',
-  CateGoryScore = '/user/course/total'
+  CateGoryScore = '/user/course/total',
 }
 /**
  * @param 一个对象，{ username, password }
@@ -31,9 +31,10 @@ export function login(data: userApiTypes.loginParams) {
 
 // 易班授权登录跳转到授权登录页
 export function yibanLogin() {
+  const cb = encodeURIComponent(import.meta.env.VITE_APP_REDIRECT_PATH)
   return (window.location.href =
     import.meta.env.VITE_APP_API_BASE_URL +
-    `/user/yiban/login?callback=${import.meta.env.VITE_APP_REDIRECT_PATH}`);
+    `/user/yiban/login?callback=${cb}`);
 }
 
 
@@ -200,8 +201,21 @@ export function addPointApi(point: number, type: PointTypeEnum, departmentId: st
   } as PointItem)
 }
 
+/**
+ * @description 积分历史记录
+ * @param params 
+ * @returns 
+ */
 export function getPointHistoryApi(params: pageParams) {
   return request.get<ListResponseModel<userApiTypes.PointHistoryItem>>(API.point + '/log/page/front', params)
+}
+
+/**
+ * @description 获取用户账号总积分
+ * @returns
+ */
+export function getUserPointTotalAPi() {
+  return request.get(API.point + '/total')
 }
 
 

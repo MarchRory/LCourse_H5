@@ -7,6 +7,7 @@ import router from "@/router";
 import { CateGoryScore } from "@/api/types/public";
 import { getUserCateGoryScore } from "@/api/plan";
 import { nowSemesterType } from "@/api/types/user";
+import { removeCookie } from "@/utils/cookie";
 
 interface badge {
   hasEvaluateUnRead: boolean
@@ -127,6 +128,7 @@ export const useUserStore = defineStore("userInfo", {
               useRouterCacheStore().clearRouterCache()
               useUserStore().$reset();
               window.localStorage.clear()
+              removeCookie('swpu_token')
             })
             .finally(() => {
               router.replace({ path: '/', query: { isLogOut: 1 } });

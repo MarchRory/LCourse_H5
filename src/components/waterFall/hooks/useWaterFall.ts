@@ -2,7 +2,7 @@ import { WaterFallCard, WaterFallListProps, WaterfallCardRect, WaterfallColumnQu
 import useLoading from "@/hooks/useLoading";
 import { formatCover } from "@/utils/course";
 import { sleep, throttle } from "@/utils/freqCtrl/freqCtrl";
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 import { showFailToast } from "vant";
 import { CSSProperties, UnwrapNestedRefs } from "vue";
 
@@ -30,7 +30,15 @@ function useListHeight(queueState: UnwrapNestedRefs<{ queue: WaterfallColumnQueu
     })
 }
 
-
+/**
+ * @description 处理数据, 生成瀑布流中每一张卡片的尺寸以及布局信息
+ * @param rectInfoMap 
+ * @param item 
+ * @param beforeItem 
+ * @param minIndex 
+ * @param gap 
+ * @returns 
+ */
 function generateWaterFallItem(rectInfoMap: ComputedRef<Map<WaterFallCard['id'], WaterfallCardRect>>, item: WaterFallCard, beforeItem: WaterfallRenderItem, minIndex: number, gap: number): WaterfallRenderItem {
     const rect = rectInfoMap.value.get(item.id)
     const { width, height } = rect as WaterfallCardRect
@@ -54,7 +62,8 @@ function generateWaterFallItem(rectInfoMap: ComputedRef<Map<WaterFallCard['id'],
 /**
  * 因为瀑布流里涉及了许多中间过程的操作, 所以就不使用useAutoList那个搭配van-list使用的hooks了
  * @description 虚拟瀑布流核心逻辑
- * @param data 
+ * @param containerDom 瀑布流容器
+ * @param data 瀑布流组件的props
  */
 function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallListProps) {
     const {
@@ -68,7 +77,7 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
     // 列表加载
     const { loading, setLoading } = useLoading(false)
     // 是否加载完毕
-    const [isFinish, setFinish] = useToggle(false)
+    const [isFinish, setFinish] = useBoolean(false)
     // 当前展示的页码
     const curPage = ref(1)
     // 完整的列表数据, 真正的数据源
@@ -93,17 +102,20 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
         height: renderListHeight.value.maxHeight + 'px'
     }))
 
-    // 一维待渲染的列表数据
+    // 一维待渲染的列表数据, 便于计算
     const cardList = computed<WaterfallRenderItem[]>(() => (
         queueState.queue.reduce<WaterfallRenderItem[]>((pre, { list }) => pre.concat(list), [])
     ))
 
     // 实际渲染在视口的列表数据
-    const renderedList = computed<WaterfallRenderItem[]>(() =>
-        // 在视口外多渲染一层, 减少计算时候的卡顿感, 模拟无缝
-        cardList.value.filter(item => {
-            return item._height + item._y > scrollState.start * 0.6 && item._y < end.value
+    const renderedList = computed<WaterfallRenderItem[]>(() => {
+        return cardList.value.filter(item => {
+            // 触发虚拟列表自动加载的底部多延伸一点, 提前加载模拟无缝, 同时解决两列等长时无法触发加载的bug
+            return item._height + item._y > scrollState.start * 0.6 && (item._y < end.value + 150)
         })
+    }
+
+
     )
 
     // 动态计算待渲染的的卡片宽高
@@ -116,7 +128,7 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
             const preHeight = Math.floor((renderedCardWidth * cur.cover.height) / cur.cover.width)
             pre.set(cur.id, {
                 width: renderedCardWidth,
-                height: ratio < 1 ? preHeight : preHeight * 3
+                height: ratio < 1 ? preHeight : preHeight * 2
             })
             return pre
         }, new Map())
@@ -144,26 +156,30 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
                 resolve(listData.value.length)
             }
             setLoading(true)
-            const { list, total } = (await requestApi({ pageNum: curPage.value, pageSize, ...otherRequestParams })).data
-            const hasImgInfoList = list.map(item => {
-                const { cover } = item
-                const coverObj = formatCover(cover as unknown as string)
-                return {
-                    ...item,
-                    cover: coverObj
+            try {
+                const { list, total } = (await requestApi({ pageNum: curPage.value, pageSize, ...otherRequestParams })).data
+                const hasImgInfoList = list.map(item => {
+                    const { cover } = item
+                    const coverObj = formatCover(cover as unknown as string)
+                    return {
+                        ...item,
+                        cover: coverObj
+                    }
+                })
+                listData.value.push(...hasImgInfoList)
+                if (listData.value.length === +total || !list.length) {
+                    setFinish(true)
+                } else {
+                    curPage.value++
                 }
-            })
-            listData.value.push(...hasImgInfoList)
-            if (listData.value.length === +total || !list.length) {
-                setFinish(true)
-            } else {
-                curPage.value++
+                // todo: 打点 
+
+                setLoading(false)
+                resolve(list.length)
+            } catch {
+                setLoading(false)
+                resolve(listData.value.length)
             }
-
-            // todo: 打点 
-
-            setLoading(false)
-            resolve(list.length)
         })
     }
 
@@ -193,11 +209,13 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
         // 400ms延迟, 应对初次登录时, 首页无法及时获取wapper宽高, 导致的白屏现象
         isInit && await sleep(400)
         initScrollState()
-        const len = await loadList()
-        if (!len) {
-            showFailToast("暂无相关课程数据")
+        try {
+            const len = await loadList()
+            len && addInQueue(len)
+        } catch {
+            showFailToast("服务器异常")
         }
-        len && addInQueue(len)
+
         // containerDom.value && resizeObserver.observe(containerDom.value)
     }
 
