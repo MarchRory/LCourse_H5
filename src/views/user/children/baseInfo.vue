@@ -16,7 +16,7 @@
                 :before-read="beforeRead"
                 :max-count="1"
               >
-                <van-image width="60" height="60" :src="avatar" />
+                <van-image width="60" height="60" :src="avatar || defaultAvatar" />
               </van-uploader>
             </template>
           </van-field>
@@ -150,6 +150,7 @@ import {
   showSuccessToast,
   Toast,
 } from "vant";
+import defaultAvatar from '@/assets/imgs/default-avatar.jpg'
 
 defineOptions({
   name: 'UserInfo'

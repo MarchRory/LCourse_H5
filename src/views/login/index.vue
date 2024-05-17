@@ -6,7 +6,6 @@ import { showFailToast } from "vant";
 import { Loading } from "vant";
 import router from "@/router/index";
 import { getToken } from "@/utils/auth/auth";
-import logoSrc from "@/assets/schoolLogo.jpg";
 
 const userStore = useUserStore();
 const loginForm = reactive({
@@ -56,9 +55,6 @@ const authLogin = () => {
     </div>
     <div class="content">
       <span style="color: black; font-size: 30px; margin-top: -31px">登录</span>
-      <!-- <span style="color: #949390; letter-spacing: 0px; font-size: 15px"
-        >选择登录方式</span
-      > -->
     </div>
     <div class="loginForm">
       <van-form @submit="onSubmit">

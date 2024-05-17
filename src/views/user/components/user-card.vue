@@ -2,6 +2,7 @@
 import { useUserStore } from '@/store/modules/user';
 import {usePointStore} from '@/store/modules/point'
 import { storeToRefs } from 'pinia';
+import defaultAvatar from '@/assets/imgs/default-avatar.jpg'
 
 const userStore = useUserStore()
 const pointStore = usePointStore()
@@ -25,7 +26,7 @@ const userData = computed(() => {
                 fit="cover"
                 width="4rem"
                 height="4rem"
-                :src="userStore.avatar"
+                :src="userStore.avatar || defaultAvatar"
             />
             <div class="info">
                 <span  class="username">

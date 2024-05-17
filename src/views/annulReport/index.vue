@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { getAnnualReportListAPI } from "@/api/annulReport/annulReport";
-import swpuLogo from "@/assets/logo_D.png";
 import useAutoLoadList from "@/hooks/useAutoLoadList";
 import { annualReportListItemType } from "@/api/types/annualReport";
+import { registerTimingLog } from "@/utils/logger/hooks";
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
@@ -29,6 +29,8 @@ const handleChange = (current: number) => {
 }
 
 loadList();
+
+registerTimingLog()
 </script>
 
 <template>

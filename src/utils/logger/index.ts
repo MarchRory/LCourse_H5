@@ -1,111 +1,201 @@
-import { RouteRecordRaw } from "vue-router";
-import { Log, LogRequest } from "./types"
+import { Log, LogTypeConfigMap, TimingLog } from "./types"
 import Queue from "@/dataStruct/queue";
+import { ObserverMode } from "@/modes/Observer";
+import { formatElapsedTime } from "../time";
+import { type userInfo } from "@/store/modules/user";
 
 /**
- * @description 监控埋点工具类, 因为埋点的产生频率会随着需求迭代变得越来越高, 所以前端必须在设计时候采用高并发控制
+ * @description 模拟请求发送, 实际请求计划使用 navigator.sendBeacon
+ * @link https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator/sendBeacon
+ * @param log 
+ * @returns 
  */
-class XdLogger {
-    // 界面曝光时长map
-    private timeMap: Map<RouteRecordRaw['path'], number>
+function testReq(log: Log) {
+    return new Promise((resolve) => {
+        const randTime = (Math.random() * 10) * 100
+        setTimeout(() => {
+            console.log('发送日志: ', log)
+            resolve(true)
+        }, randTime)
+    })
+}
 
-    // 埋点请求发送池
-    private logPool: Queue<LogRequest>
+/**
+ * @description 监控埋点工具类, 因为埋点的发送频率会随着需求迭代变得越来越高, 所以前端必须在设计之初就采用高并发控制
+ * @todo 每个暴露的方法需要对传入的Log做埋点归类、去重等二次处理, 以削峰，给服务器降低压力 
+ */
+class XdLogger extends ObserverMode {
+    // 请求发送池
+    private logPool: Queue<Log>
 
-    // 埋点请求等待队列
-    private waitPool: Queue<LogRequest>
-
-    // 传输队列
-    private baseQueue: Queue<LogRequest>
+    // 请求任务池
+    private taskPool: Queue<Log>
 
     // 发送池规模限制
     private reqLimit: number
 
-    // 定时器, 利用空闲时间, 及时消费请求池中未满的暂存内容
-    private timeout: NodeJS.Timeout | null
-
     // 请求状态控制器
-    private isRequesting: boolean
+    private requestLock: boolean
+
+    // 定时器, 用于空闲时候及时消费任务队列
+    private timer: NodeJS.Timeout | null
+
+    private timingMap: Map<string, TimingLog>
 
     constructor(reqLimit: number) {
-        const self = this
+        super()
         this.reqLimit = reqLimit
-        this.isRequesting = false
-        this.baseQueue = new Queue()
-        this.timeMap = new Map()
-        this.logPool = new Proxy(new Queue(), {
-            set(target, key, value) {
-                if (key === 'length') {
-                    // 请求池队长变化, 主要关注池子清空时的情况
-                    if (self.isRequesting && value === 0) {
-                        // 当前队列被消费完毕
-                        const waitSize = self.waitPool.size()
-                        const needReqNum = waitSize < self.reqLimit ? waitSize : self.reqLimit
-                        for (let i = 1; i <= needReqNum; i++) {
-                            const log = self.waitPool.deQueue()
-                            log && self.logPool.enQueue(log)
-                        }
+        this.requestLock = false
+        // 只对请求池代理, 用于自动消费
+        this.logPool = new Queue()
+        this.taskPool = new Queue()
+        this.timingMap = new Map()
+        this.timer = null
+        this.initLogPoolObserver()
+    }
 
-                    } else if (!self.isRequesting) {
-                        // 500ms内没有新增就自动消费
-                        self.timeout = setTimeout(() => {
-                            self.sendLog()
-                        }, 500)
+    private initLogPoolObserver() {
+        super.addObserver({
+            update: async () => {
+                // 这里观察者模式只用于实现请求池消费完毕时, 自动检查并完成任务池的消费, 所以只需要关注这里
+                while (this.taskPool.size()) {
+                    const log = this.taskPool.deQueue()
+                    const sendNum = this.taskPool.size() >= this.reqLimit ? this.reqLimit : this.taskPool.size()
+                    for (let i = 0; i < sendNum; i++) {
+                        log && this.logPool.enQueue(log)
                     }
+                    console.log('任务队列填充中----------------------------------------------------------')
+                    await this.sendLog()
                 }
-                return true
             }
         })
-        this.waitPool = new Queue()
-        // this.waitPool = new Proxy(new Queue(), {
-        //     set(target, key, value) {
-        //         // 等待池长度变化时
-        //         if (key === 'length') {
-        //             // 每次增删
-
-        //         }
-        //         return true
-        //     }
-        // })
     }
 
     /**
-     * @description 埋点请求发送底层逻辑, 高并发请求控制
+     * @description 埋点请求发送底层逻辑, 采用分片削峰方式进行高并发请求控制
      * @param logData 
      */
-    private sendLog() {
-
+    private async sendLog() {
+        return new Promise(async (resolve) => {
+            this.setRequestLock(true)
+            do {
+                const currentSize = this.logPool.size()
+                const sendNum = currentSize < this.reqLimit ? currentSize : this.reqLimit
+                const sendQueue: Promise<unknown>[] = []
+                for (let i = 0; i < sendNum; i++) {
+                    const log = this.logPool.deQueue()
+                    // 发送方法具体采用 axios 还是 1*1 gif 或者是 Navigator.sendBeacon(), 看后人的选择
+                    // 反正axios肯定是最不好的方案
+                    log && sendQueue.push(testReq(log))
+                }
+                try {
+                    await Promise.allSettled(sendQueue)
+                } catch (e) {
+                    console.log(e)
+                }
+            } while (this.logPool.size())
+            console.log('本轮埋点发送完毕');
+            this.setRequestLock(false)
+            resolve(true)
+        })
     }
 
     /**
-     * @description 埋点调度器
+     * @description 埋点任务添加调度器
      * @param logReq 
      */
-    private dispatch(logReq: LogRequest) {
-        if (this.isRequesting || this.reqLimit < this.logPool.size()) {
-            this.waitPool.enQueue(logReq)
+    private dispatch(log: Log) {
+        // 通过环境变量开启埋点开关, 这个等以后后端对应的微服务做好了再开, 前端先把调试走通
+
+        // 关闭监控
+        if (true) {
+            return;
+        }
+        if (this.requestLock) {
+            console.log('埋点请求发送中 ---------------- 填充任务队列');
+            this.taskPool.enQueue(log)
         } else {
-            this.logPool.enQueue(logReq)
+            this.logPool.enQueue(log)
+            if (this.logPool.size() === this.reqLimit) {
+                this.sendLog()
+            }
+
+            if (this.logPool.size() < this.reqLimit) {
+                if (this.timer) {
+                    this.timer = null
+                }
+                this.timer = setTimeout(() => {
+                    if (this.timer) {
+                        // 没有处于启动状态再发送， 这里是为了避免
+                        !this.requestLock && this.sendLog()
+                        this.timer = null
+                    }
+                }, 500)
+            }
         }
     }
 
-    // 点击埋点发送顶层逻辑
+    private setRequestLock(lockStatus: boolean) {
+        this.requestLock = lockStatus
+        if (!lockStatus) {
+            // 当请求结束时, 触发观察者响应, 自动开始消费任务存量
+            super.notifyObserver()
+        }
+    }
+
+    // 点击埋点
     sendClickLog() {
 
     }
 
-    // 浏览量埋点发送顶层逻辑
-    sendPvLog() {
-
+    // 浏览量埋点
+    sendPvLog(pvLog: Log) {
+        this.dispatch(pvLog)
     }
 
-    // 页面曝光时间埋点发送顶层逻辑
-    sendViewTimingLog() {
+    // 曝光时长埋点开始记录
+    recordPageEnter({ fullPath, pageName }: { fullPath: string, pageName: string }) {
+        const enterTime = new Date().getTime()
+        const TimingLog: TimingLog = {
+            pageName,
+            enterTime
+        }
+        this.timingMap.set(fullPath, TimingLog)
+    }
 
+    // 曝光时间埋点信息发送
+    sendViewTimingLog(fullPath: string, userInfo: Partial<userInfo>) {
+        const timingRecord = this.timingMap.get(fullPath)
+        if (typeof timingRecord !== 'undefined') {
+            const leaveTime = new Date().getTime()
+            const showTimeLength = formatElapsedTime(leaveTime - timingRecord.enterTime)
+            const LogValue = {
+                showTimeLength,
+                fullPath,
+                pageName: timingRecord.pageName
+            }
+            const timingLog: Log = {
+                type: 'timing',
+                desc: LogTypeConfigMap['timing'],
+                userInfo,
+                time: new Date().toUTCString(),
+                value: JSON.stringify(LogValue)
+            }
+            this.dispatch(timingLog)
+        }
     }
 
     // 网站性能埋点发送顶层逻辑
-    sendPerformanceLogger() {
+    sendPerformanceLog(log: Log) {
+        this.dispatch(log)
+    }
+
+    sendUvLog(log: Log) {
+        this.dispatch(log)
+    }
+
+    // 一次展现过程里
+    sendWaterFallLog() {
 
     }
 
@@ -114,6 +204,6 @@ class XdLogger {
     }
 }
 
-const logger = new XdLogger(6)
+const logger = new XdLogger(5)
 
 export default logger

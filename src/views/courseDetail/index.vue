@@ -15,6 +15,7 @@ import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import router from '@/router';
 import { showFailToast, showSuccessToast } from 'vant';
 import { useBoolean } from '@/hooks/common'
+import { registerTimingLog } from '@/utils/logger/hooks';
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
@@ -260,6 +261,8 @@ const chartOpts = computed<EChartsOption>(() => {
 })
 
 init()
+
+registerTimingLog()
 </script>
 
 <template>
@@ -271,7 +274,7 @@ init()
                     <div class="detail-title">{{ detailInfo.title }}</div>
                     <div class="host-time">
                         <t-icon class="detail-icon" icon="tabler:clock" />
-                        <span>
+                        <span v-if="detailInfo.hostingStart">
                             {{ detailInfo.hostingStart.slice(0, 16) }} ~ {{ detailInfo.hostingEnd.slice(0, 16) }}
                         </span>
                     </div>
@@ -289,7 +292,7 @@ init()
                         />
                     </template>
                 </van-image>
-                <section class="core-info">
+                <section class="core-info" id="detail-card-info">
                     <span><t-icon class="info-title-tag" icon="tabler:info-hexagon-filled" />重要信息</span>
                     <div class="core-list">
                         <div 

@@ -4,6 +4,7 @@ import { getCategoryConfig } from '@/utils/course'
 import { useUserStore } from '@/store/modules/user';
 import { generateCourseStateConfig } from '@/utils/course'
 import { useRouter } from 'vue-router';
+import defaultCover from '@/assets/imgs/default-cover.jpg'
 
 /**
  * @description 瀑布流默认卡片, 样式在这里调整
@@ -14,7 +15,6 @@ const props = defineProps<{
 
 const userStore = useUserStore()
 const {categoryKey, categoryConfig} = getCategoryConfig(props.course.courseCategory)
-const default_img = ''
 const hasPermission = computed(() => {
     const { gradeLimit = [], departmentLimits = [] } = props.course
     const { department, currentGrade } = userStore
@@ -43,7 +43,7 @@ const pageToDetail = () => {
 <template>
     <div class="course-default-card" @click="pageToDetail">
         <van-image 
-            :src="course.cover.url || default_img"
+            :src="course.cover.url || defaultCover"
             height="80%"
             fit="cover"
             lazy-load

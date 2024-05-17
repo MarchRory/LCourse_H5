@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
+import { RouteRecordName } from "vue-router";
 interface routerCacheType {
-    cache: string[]
+    cache: RouteRecordName[]
 }
 export const useRouterCacheStore = defineStore("useRouterCacheStore", {
     state: (): routerCacheType => {
@@ -10,7 +11,7 @@ export const useRouterCacheStore = defineStore("useRouterCacheStore", {
     },
     actions: {
         initRouterCache() {
-            this.cache = ['home', 'user', 'plan', 'evalutions']
+            this.cache = ['home', 'user', 'plan']
         },
         clearRouterCache() {
             this.cache = []

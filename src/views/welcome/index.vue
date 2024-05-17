@@ -37,9 +37,11 @@ const getUserInfo = (token) => {
             router.replace({ path: "/home" });
           }, 800);
         });
+      }, (err) => {
+        userStore.logOut()
       })
       .catch((err) => {
-        const {status} = err.response
+        const {status = 500} = err.response
         if (status === 500) {
           window.localStorage.clear()
           router.replace({ path: "/" });

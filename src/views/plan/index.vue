@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from "vue";
 import { storeToRefs } from "pinia";
-import swpuLogo from "@/assets/logo_D.png";
 import { useUserStore } from "@/store/modules/user";
 import { CourseCategoryMap } from "@/api/types/public";
 
@@ -44,13 +43,7 @@ const refresh = () => {
             :key="index"
           >
             <div class="seat">
-              <van-image
-                width="80%"
-                height="80%"
-                fit="contain"
-                :lazy-load="true"
-                :src="swpuLogo"
-              />
+              <t-icon icon="tabler:certificate" class="category-icon"  />
             </div>
             <div class="ObjInfo">
               <div class="name">
@@ -142,5 +135,9 @@ const refresh = () => {
       }
     }
   }
+}
+.category-icon {
+  font-size: 140px;
+  color: #E3562A;
 }
 </style>

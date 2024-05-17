@@ -11,10 +11,9 @@ import { Notify } from "vant";
 import "vant/es/notify/style";
 import router from "./router";
 import stores from "@/store/index";
-import "@/auth";
 import { Lazyload } from "vant";
 import { Icon } from '@iconify/vue'
-
+import { registerJSErrorMonitor } from "./utils/logger/errorMonitor";
 
 createApp(App)
   .use(router)
@@ -24,3 +23,6 @@ createApp(App)
   .use(Lazyload)
   .component('t-icon', Icon)
   .mount("#app")
+
+
+registerJSErrorMonitor()

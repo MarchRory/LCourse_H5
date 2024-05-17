@@ -6,6 +6,7 @@ import { selectCourseParams } from '@/api/types/courses';
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import { useWsStore } from '@/store/modules/ws';
 import { usePointStore } from '@/store/modules/point';
+import { registerFmpLog, registerTimingLog } from "@/utils/logger/hooks";
 
 const HomeHeader = defineAsyncComponent(() => import('./components/home-header.vue'))
 const CoursewaterFall = defineAsyncComponent(() => import('@/components/waterFall/index.vue'))
@@ -56,6 +57,12 @@ const init = () => {
 }
 
 init()
+
+/**
+ * -----------------------------埋点
+ */
+registerTimingLog()
+registerFmpLog('home-water-fall')
 </script>
 
 <template>
@@ -66,7 +73,7 @@ init()
             @on-tab-change="handleTabChange"
             @on-search-params-change="handleFilterParamsChange"
         />
-        <main>
+        <main id="home-water-fall">
             <CoursewaterFall
                 ref="waterfall"
                 :request-api="getCourses"

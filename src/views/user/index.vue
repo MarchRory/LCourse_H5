@@ -3,7 +3,7 @@
     <header>
       <UserCenterHeader />
     </header>
-    <main>
+    <main id="user-main">
       <UserCard />
       <section>
         <KingkongTabCard title="我的" :tabs="courseTabs" />
@@ -24,6 +24,7 @@ import { getInfo } from "@/api/user/user";
 import { showFailToast, showSuccessToast } from "vant";
 import type { KingkongTabItem } from './components/type'
 import { usePointStore } from "@/store/modules/point";
+import { registerFmpLog } from "@/utils/logger/hooks";
 
 defineOptions({
   name:  "user"
@@ -38,7 +39,7 @@ const route = useRoute();
 
 const pointStore = usePointStore()
 
-const courseTabs = ref<KingkongTabItem[]>([
+const courseTabs = computed<KingkongTabItem[]>(() => [
   { label: '历史课程', icon: 'tabler:books', path: '/userCourse', dot: false },
   { label: '考评信息', icon: 'tabler:checks', path: '/evalutions', dot: userStore.EvaluationsCnt > 0 },
   { label: '年度报告', icon: 'tabler:chart-area-line', path: '/annulReportList', dot: false },
@@ -96,6 +97,8 @@ init()
 onActivated(() => {
     pointStore.updatePointTotal()
 })
+
+registerFmpLog('user-main')
 </script>
 
 <style scoped lang="less">

@@ -38,10 +38,14 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { ref, provide } from "vue";
+import { ref } from "vue";
 import { useNotifyStore } from "@/store/modules/notify/index";
 import { storeToRefs } from "pinia";
 import useKeyBoardMonitor from '@/hooks/useKeyBoardMonitor'
+import { registerFpLog } from "@/utils/logger/hooks";
+
+// 首屏渲染埋点
+registerFpLog()
 
 let transitionName = ref("");
 const router = useRouter();

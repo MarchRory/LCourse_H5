@@ -9,8 +9,8 @@ import type {commentToCourseObj} from '@/api/types/courses/index'
 import { deepClone } from '@/utils/dataUtil/common'
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
 import { starScoreTextMap, tempCommentGoodNodes } from './config'
-import resPic from "@/assets/imgs/commentRes.gif";
 import { PointTypeEnum } from "@/api/types/user";
+import { registerTimingLog } from "@/utils/logger/hooks";
 const DimensionComment = defineAsyncComponent(() => import('./components/dimensionComment.vue'))
 const PointGetProgressBar = defineAsyncComponent(() => import('@/components/progressBar/index.vue'))
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
@@ -130,6 +130,7 @@ const submit = debounce(() => {
   })
 }, 500);
 
+registerTimingLog()
 </script>
 
 <template>
@@ -222,13 +223,6 @@ const submit = debounce(() => {
     </div>
 
     <div class="res" v-else>
-      <van-image
-        width="375"
-        height="253"
-        fit="scale-down"
-        lazy-load
-        :src="resPic"
-      />
       <div class="resText">
         <div style="font-size: 30px; font-weight: 300; color: #9e9e9e">
           感<span class="speFont">谢</span>你的宝<span class="speFont">贵</span

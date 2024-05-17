@@ -6,6 +6,7 @@ import { showNotify } from "vant";
 import { evaluationsCheckAll, getEvalutionsList } from "@/api/courses/courses";
 import { EvalutionItem } from "@/api/types/courses";
 import { formatCover } from "@/utils/course";
+import { registerTimingLog } from "@/utils/logger/hooks";
 
 defineOptions({
   name: "evalutions"
@@ -112,6 +113,7 @@ const needReadAll = computed(() => {
   return EvaluationList.value.some((item) => !item.checked)
 })
 
+registerTimingLog()
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import mountRouterGuide from "./guard";
 // import scan from "@/views/scanQR/index.vue";
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -172,7 +173,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "command",
     meta: {
       title: '课程评价',
-      index: 2
+      index: 3
     },
     component: () => import("@/views/command/index.vue"),
   },
@@ -263,4 +264,7 @@ const router = createRouter({
   history: createWebHashHistory(), // history 模式则使用 createWebHistory()
   routes,
 });
+
+mountRouterGuide(router)
+
 export default router;

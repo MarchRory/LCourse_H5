@@ -160,5 +160,10 @@ export function getCommentTemplateAPI(
  * @returns 
  */
 export function getCommentTopics(departmentId: number | string) {
-  return request.get<ListResponseModel<DimensionCommentItem>>(API.topics, { page: 1, pageSize: 50, key: '', departmentId })
+  return request.get<ListResponseModel<DimensionCommentItem>>(
+    API.topics,
+    { page: 1, pageSize: 50, key: '', departmentId },
+    {},
+    { cache: true }
+  )
 }

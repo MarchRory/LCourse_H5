@@ -16,7 +16,7 @@ enum API {
 export function getAnnualReportListAPI(params: annualReportTypes.annualReportParamsType) {
     return request.get<ListResponseModel<annualReportListItemType>>(
         API.annualReportList,
-        params
+        params,
     )
 }
 
@@ -27,6 +27,9 @@ export function getAnnualReportListAPI(params: annualReportTypes.annualReportPar
  */
 export function getAnnualReportDetailAPI(batchId: number | string) {
     return request.get<annualReportTypes.annulReportItem>(
-        API.annualReportDetail + `/${batchId}`
+        API.annualReportDetail + `/${batchId}`,
+        {},
+        {},
+        { cache: true }
     )
 }

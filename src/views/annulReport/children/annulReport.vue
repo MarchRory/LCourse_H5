@@ -6,6 +6,7 @@ import { Response } from "@/utils/http/types";
 import { defineAsyncComponent } from "vue";
 import { gsap } from "gsap";
 import { showFailToast, showLoadingToast } from "vant";
+import { registerTimingLog } from "@/utils/logger/hooks";
 const AnnulReportLoading = defineAsyncComponent(
   () => import("../children/components/loadingPage.vue")
 );
@@ -124,6 +125,8 @@ watch(
     }
   }
 );
+
+registerTimingLog()
 </script>
 
 <template>

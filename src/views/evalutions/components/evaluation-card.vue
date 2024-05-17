@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {  } from '@/api/courses/courses'
 import { EvalutionItem } from '@/api/types/courses';
 import { useRouter } from 'vue-router';
 
@@ -17,7 +16,7 @@ const JumpToDetail = () => {
 
 const img = ref<HTMLDivElement | null>()
 const maskHeight = ref(0)
-onMounted(() => {
+nextTick(() => {
     maskHeight.value = img.value?.$el.offsetHeight!
 })
 

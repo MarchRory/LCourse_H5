@@ -5,6 +5,7 @@ import { sleep, throttle } from "@/utils/freqCtrl/freqCtrl";
 import { useBoolean } from '@/hooks/common'
 import { showFailToast } from "vant";
 import { CSSProperties, UnwrapNestedRefs } from "vue";
+import { registerWaterFallLog } from "@/utils/logger/hooks";
 
 /**
  * @description 计算DOM中渲染列表的两列高度
@@ -111,7 +112,7 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
     const renderedList = computed<WaterfallRenderItem[]>(() => {
         return cardList.value.filter(item => {
             // 触发虚拟列表自动加载的底部多延伸一点, 提前加载模拟无缝, 同时解决两列等长时无法触发加载的bug
-            return item._height + item._y > scrollState.start * 0.6 && (item._y < end.value + 150)
+            return item._height + item._y > scrollState.start && (item._y < end.value + 150)
         })
     }
 
@@ -172,8 +173,6 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
                 } else {
                     curPage.value++
                 }
-                // todo: 打点 
-
                 setLoading(false)
                 resolve(list.length)
             } catch {
@@ -255,7 +254,6 @@ function useWaterFall(containerDom: Ref<HTMLDivElement | null>, data: WaterFallL
         },
         { deep: true }
     )
-
     onUnmounted(() => {
         // containerDom.value && resizeObserver && resizeObserver.disconnect()
     })
