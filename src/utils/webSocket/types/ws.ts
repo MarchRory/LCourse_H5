@@ -7,7 +7,7 @@ export interface mySocketOptions {
 export interface wsDataType<T = any> {
     type: number | string
     state: number
-    message?: string | null
+    message?: string
     data: T
     time: number
 }

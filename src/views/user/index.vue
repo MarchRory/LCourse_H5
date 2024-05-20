@@ -1,100 +1,15 @@
 <template>
-  <!-- <div class="info" v-if="showParent">
-    <van-pull-refresh v-model="reLoad" @refresh="refresh">
-      <van-nav-bar>
-        <template #title><span style="color: black">个人中心</span></template>
-        <template #right>
-          <span style="color: #409EFF" @click="logOut">登出</span>
-        </template>
-      </van-nav-bar>
-      <div class="mainBox" @touchmove.stop>
-        <van-cell-group inset>
-          <van-cell
-            title="用户名"
-            :value="userInfo.name"
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: flex-start;
-            "
-            
-          >
-            <template #title>
-              <van-image
-                round
-                width="5rem"
-                lazy-load
-                height="5rem"
-                :src="userInfo.avatar"
-              />
-            </template>
-          </van-cell>
-          <van-cell title="姓名" :value="userInfo.realName" />
-          <van-cell title="学号" :value="userInfo.studentId" />
-          <van-cell title="校区" :value="userInfo.campus" />
-          <van-cell title="学院" :value="userInfo.department" />
-          <van-cell title="专业" :value="userInfo.major" />
-
-          <van-cell title="信息修改" is-link value="去修改" @click="open" icon="edit"/>
-        </van-cell-group>
-        <van-cell-group title="我的易班" inset>
-          <van-cell
-            v-if="userStore.hasBind"
-            title="易班账号绑定"
-            value="已绑定"
-            icon="link-o"
-          />
-          <van-cell
-            v-else
-            title="易班账号绑定"
-            value="去绑定"
-            is-link
-            @click="bindYiban"
-            icon="link-o"
-          />
-          <van-cell
-            title="劳动二课年度报告"
-            value="查看"
-            is-link
-            @click="openAnnulReport"
-            icon="newspaper-o"
-          />
-        </van-cell-group>
-        <van-cell-group title="课程信息" inset>
-          
-          <van-cell
-            title="历史规划"
-            value=""
-            is-link
-            @click="toUserObjectives"
-            icon="todo-list-o"
-            size="normal"
-          />
-        </van-cell-group>
-        <van-action-sheet
-          v-model:show="show"
-          cancel-text="取消"
-          close-on-click-action
-          @cancel="onCancel"
-        >
-          <van-cell-group>
-            <van-cell title="个人信息修改" is-link @click="toChangeUserInfo" />
-            <van-cell title="密码修改" is-link @click="toChangePwd" />
-          </van-cell-group>
-        </van-action-sheet>
-      </div>
-    </van-pull-refresh>
-  </div> -->
   <div class="user-center-container">
     <header>
       <UserCenterHeader />
     </header>
-    <main>
+    <main id="user-main">
       <UserCard />
       <section>
         <KingkongTabCard title="我的" :tabs="courseTabs" />
         <!--  暂时没别的拓展功能 -->
         <KingkongTabCard v-if="false" title="更多功能" :tabs="extraFnTabs" />
+        <WishesSwiper />
       </section>
     </main>
   </div>
@@ -106,10 +21,11 @@ import "vant/es/cell-group/style";
 import "vant/es/nav-bar/style";
 import { defineAsyncComponent } from 'vue'
 import { useUserStore } from "@/store/modules/user";
-import { showConfirmDialog } from "vant";
-import { yibanBind, getInfo } from "@/api/user/user";
+import { getInfo } from "@/api/user/user";
 import { showFailToast, showSuccessToast } from "vant";
 import type { KingkongTabItem } from './components/type'
+import { usePointStore } from "@/store/modules/point";
+import { registerFmpLog } from "@/utils/logger/hooks";
 
 defineOptions({
   name:  "user"
@@ -118,13 +34,14 @@ defineOptions({
 const UserCenterHeader = defineAsyncComponent(() => import('./components/header.vue'))
 const UserCard = defineAsyncComponent(() => import('./components/user-card.vue'))
 const KingkongTabCard = defineAsyncComponent(() => import('./components/kingkong-tab-card.vue'))
+const WishesSwiper = defineAsyncComponent(() => import('./components/wishes-swpier.vue'))
 const userStore = useUserStore()
 const showParent = ref(true);
 const route = useRoute();
-const router = useRouter();
-const show = ref(false);
 
-const courseTabs = ref<KingkongTabItem[]>([
+const pointStore = usePointStore()
+
+const courseTabs = computed<KingkongTabItem[]>(() => [
   { label: '历史课程', icon: 'tabler:books', path: '/userCourse', dot: false },
   { label: '考评信息', icon: 'tabler:checks', path: '/evalutions', dot: userStore.EvaluationsCnt > 0 },
   { label: '年度报告', icon: 'tabler:chart-area-line', path: '/annulReportList', dot: false },
@@ -162,7 +79,9 @@ const init = () => {
         });
       });
     });
+    pointStore.updatePointTotal()
   }
+  pointStore.updatePointTotal()
 }
 
 // 在路由更新前，检查是否要隐藏父级路由界面
@@ -175,15 +94,16 @@ onBeforeRouteUpdate((to, from, next) => {
 });
 
 init()
+
+// 每次回到个人主页，都要更新一遍积分, 确保是最新的
+onActivated(() => {
+    pointStore.updatePointTotal()
+})
+
+registerFmpLog('user-main')
 </script>
 
 <style scoped lang="less">
-.info {
-  height: calc(100vh - var(--van-tabbar-height));
-  overflow: hidden;
-  background-color: rgb(245, 246, 248);
-}
-
 .mainBox {
   margin-top: 30px;
   width: 100vw;

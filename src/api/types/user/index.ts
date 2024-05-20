@@ -17,7 +17,7 @@ interface tokenUserInfoType {
     avatar: string | undefined | null
     nickname: string
 }
-interface nowSemesterType extends TombstoneGeneratedFields {
+export interface nowSemesterType extends TombstoneGeneratedFields {
     semesterName: string
     start: string
     end: string
@@ -53,9 +53,25 @@ export interface getInfoByStuIdResultModel {
 }
 
 export const enum PointTypeEnum {
+
+    /**
+     * @description 完成签到
+     */
     completeSign = 1,
+
+    /**
+     * @description 寄语
+     */
     writeMailToSelf = 2,
+
+    /**
+     * @description 完成计划
+     */
     completeSelfPlan = 3,
+
+    /**
+     * @description 优质评价
+     */
     goodCommend = 4
 }
 export interface PointItem extends TombstoneGeneratedFields {

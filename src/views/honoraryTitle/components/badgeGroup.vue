@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import {badgeItem, tempBadgeList} from '../config'
+import { usePointStore } from '@/store/modules/point';
 interface Props {
     title: string
     badges?: badgeItem[]
@@ -9,6 +11,14 @@ const props = withDefaults(defineProps<Props>(), {
     badges: () => tempBadgeList
 })
 const BadgeItem = defineAsyncComponent(() => import('./badgeItem.vue'))
+
+const pointStore = usePointStore()
+const { pointTotal } = storeToRefs(pointStore)
+
+// 成长系列的荣誉称号
+const groupUpbadeges = computed(() => {
+    return props.badges.map((item) => ({...item, isGain: pointTotal.value >= item.minPoint}))
+})
 </script>
 
 <template>
@@ -21,7 +31,7 @@ const BadgeItem = defineAsyncComponent(() => import('./badgeItem.vue'))
             </div>
         </slot>
         <section class="badge-list-container">
-            <div v-for="(badge, index) in props.badges" :key="index" class="badge-list-item">
+            <div v-for="(badge, index) in groupUpbadeges" :key="index" class="badge-list-item">
                 <BadgeItem :badge="badge" />
             </div>
         </section>

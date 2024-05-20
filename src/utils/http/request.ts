@@ -2,15 +2,18 @@ import router from "@/router";
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { showFailToast } from "vant";
 import { getToken, tokenKey, removeToken } from "../auth/auth";
-import { HttpCustomCodeEnum, Response, errorCodeMap } from "./types";
+import { EnhanceOpts, HttpCustomCodeEnum, Response, errorCodeMap } from "./types";
+import LRUCache from "@/dataStruct/LRU";
+import { generateQueryString } from "../common/object";
 class HttpRequest {
     private service: AxiosInstance;
-
+    private cache: LRUCache
     constructor() {
         this.service = axios.create({
             baseURL: import.meta.env.VITE_APP_API_BASE_URL,
             timeout: 10 * 1000 // 默认超时时间10秒
         })
+        this.cache = new LRUCache(5)
         this.service.interceptors.request.use(
             (config: AxiosRequestConfig) => {
                 config.headers = {
@@ -50,14 +53,16 @@ class HttpRequest {
                             }, 800);
                             break;
                         default:
-                            showFailToast('服务器异常')
+                            showFailToast(message || '服务器异常')
                             break;
                     }
                     return Promise.reject(res)
                 }
                 return res
             },
-            (error) => {
+            (error: AxiosError) => {
+                const { request } = error
+                showFailToast(request.statusText || '网络异常')
                 return Promise.reject(error);
             },
         )
@@ -68,13 +73,33 @@ class HttpRequest {
      * @param config axios完整配置对象
      * @returns 
      */
-    private request<T = any>(config: AxiosRequestConfig): Promise<Response<T>> {
+    private request<T = any>(config: AxiosRequestConfig, opts?: EnhanceOpts): Promise<Response<T>> {
         return new Promise(async (resolve, reject) => {
             try {
+                if (opts) {
+                    const { cache } = opts
+                    if (cache) {
+                        const { url, params } = config
+                        const cacheKey = url + generateQueryString(params)
+                        const res = this.cache.get(cacheKey) as Response<T>
+                        // @ts-ignore
+                        if (res !== -1) {
+                            return resolve(res)
+                        }
+                    }
+                }
                 const res = await this.service.request<AxiosResponse<T>>(config) as AxiosResponse['data']
-                resolve(res as Response<T>)
+                if (opts && opts?.cache) {
+                    const { url, params } = config
+                    const cacheKey = url + Object
+                        .keys(params)
+                        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+                        .join('&')
+                    this.cache.put(cacheKey, res)
+                }
+                return resolve(res as Response<T>)
             } catch (err) {
-                reject(err)
+                return reject(err)
             }
         })
     }
@@ -85,8 +110,8 @@ class HttpRequest {
      * @param otherConfig 可选, axios其他配置
      * @returns 
      */
-    get<T = any>(url: string, params?: any, otherConfig?: Omit<AxiosRequestConfig, 'url' | 'params' | 'method'>) {
-        return this.request<T>({ url, params, method: 'GET', ...otherConfig })
+    get<T = any>(url: string, params?: any, otherConfig?: Omit<AxiosRequestConfig, 'url' | 'params' | 'method'>, opts?: EnhanceOpts) {
+        return this.request<T>({ url, params, method: 'GET', ...otherConfig }, opts)
     }
 
     /**

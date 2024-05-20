@@ -62,7 +62,6 @@
 <script setup>
 import CoursePageSkeleton from "@/components/coursePageSkeleton/coursePageSkeleton.vue";
 import { getObjects } from "@/api/objectives/objectives";
-import swpuLogo from "@/assets/logo_D.png";
 const themeVars = reactive({
   navBarTextColor: "#e1562a",
   navBarIconColor: "#e1562a",

@@ -1,100 +1,111 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
 import { getAnnualReportListAPI } from "@/api/annulReport/annulReport";
-import {
-  annualReportListItemType,
-  annualReportListResult,
-} from "@/api/types/annualReport/index";
-import { Response } from "@/utils/http/types";
-import swpuLogo from "@/assets/logo_D.png";
-const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
-const themeVars = reactive({
-  navBarTextColor: "#e1562a",
-  navBarIconColor: "#e1562a",
-});
-const router = useRouter();
-const loading = ref(true);
-const finished = ref(true);
-const annulReportList = ref<annualReportListItemType[]>(
-  [] as annualReportListItemType[]
-);
+import useAutoLoadList from "@/hooks/useAutoLoadList";
+import { annualReportListItemType } from "@/api/types/annualReport";
+import { registerTimingLog } from "@/utils/logger/hooks";
 
-function openAnnulReport(id: string | number) {
-  router.push({
-    path: "/reportPage",
-    query: { reportId: id },
-  });
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
+const ReportPreview = defineAsyncComponent(() => import('./components/reportItem.vue'))
+const AnnulReportSwiper = defineAsyncComponent(() => import('@/components/swiper/Stack-Swpier.vue'))
+
+const otherRequestParms = {page: 1, pageSize: 20, state: 3}
+const {
+  listData,
+  loading,
+  isFinished,
+  isRefreash,
+  totalAll,
+  loadList,
+} = useAutoLoadList({
+  requestApi: getAnnualReportListAPI,
+  otherRequestParms
+})
+
+const activeTab = ref(0)
+
+const handleChange = (current: number) => {
+  activeTab.value = current
 }
-function loadList() {
-  getAnnualReportListAPI({ page: 1, pageSize: 10, state: 3 })
-    .then((res: Response<annualReportListResult>) => {
-      setTimeout(() => {
-        const { list } = res.data;
-        annulReportList.value = list;
-      }, 300);
-      loading.value = false;
-    })
-    .finally(() => {
-      finished.value = true;
-    });
-}
+
 loadList();
+
+registerTimingLog()
 </script>
 
 <template>
-  <div>
-    <van-config-provider :theme-vars="themeVars">
-      <XdHeader title="年度报告" />
-      <div class="container">
-        <van-list
-          class="list"
-          v-model:loading="loading"
-          :finished="finished"
-          finished-text="没有更多了"
-          @load="loadList"
+  <div 
+    class="pageContainer"
+  >
+      <XdHeader class="xd-header" 
+        title="年度报告" 
+        bg-color="transparent" 
+        :font-color="totalAll ? 'white' : 'black'"
+        back-path="/user"
+      />
+      <main
+        class="report-container"
+      >
+        <AnnulReportSwiper
+          v-if="totalAll"
+          :list="listData" 
+          :active-tab="activeTab" 
+          :total="totalAll" 
+          width="100vw"
+          height="100%"
+          @on-change="handleChange"
         >
-          <div>
-            <van-cell
-              v-for="report in annulReportList"
-              :key="report.id"
-              @click="openAnnulReport(report.id)"
-            >
-              <div class="object">
-                <div class="seat">
-                  <van-image
-                    width="80%"
-                    height="80%"
-                    fit="contain"
-                    :lazy-load="true"
-                    :src="report.cover || swpuLogo"
-                  />
-                </div>
-                <div class="ObjInfo">
-                  <div class="name">
-                    {{ report.reportBatchName }}
-                  </div>
-                  <div>
-                    {{ report.start.toString().substring(0, 10) }} ~
-                    {{ report.end.toString().substring(0, 10) }}
-                  </div>
-                </div>
-              </div>
-            </van-cell>
-          </div>
-        </van-list>
+        <template #item="{item, index}: {item: annualReportListItemType, index: number}">
+          <ReportPreview 
+            :preview="item" 
+            :is-active="activeTab === index" 
+            :index="index" 
+            @on-to-be-active="handleChange"
+          />
+        </template>
+      </AnnulReportSwiper>
+      <div v-else>
+        暂无数据
       </div>
-    </van-config-provider>
+      </main>
+      <XdLoading :visible="loading" />
+      <div 
+        class="list-back"
+        :style="{
+          backgroundImage: totalAll ? `url(${listData[activeTab].cover || swpuLogo})` : 'gray'
+        }"
+      />
   </div>
 </template>
 
 <style scoped lang="less">
 @objInfoWidth: 430px;
-
-.container {
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+@bg-color: #cdcdcd;
+.pageContainer {
+  overflow: hidden;
+  position: relative;
+  .xd-header {
+    z-index: 10;
+    backdrop-filter: blur(10px)
+  }
+  .list-back {
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px) brightness(0.9);
+    transition: all .4s ease;
+    position: absolute;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    transform: scale(1.2);
+  }
+}
+.report-container {
+  z-index: 10;
+  background: transparent !important;
+  overflow-x: auto !important;
+  width: 100% !important;
+  padding: 20px 0 !important;
 
   .list {
     overflow-y: auto;

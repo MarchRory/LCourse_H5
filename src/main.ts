@@ -7,14 +7,13 @@ import "@/styles/index.less";
 import { Toast } from "vant";
 import "vant/es/toast/style"; // 全局引入toast样式
 import "vant/es/dialog/style";
-import { Notify } from "vant";
+import { Notify, Swipe, SwipeItem } from "vant";
 import "vant/es/notify/style";
 import router from "./router";
 import stores from "@/store/index";
-import "@/auth";
 import { Lazyload } from "vant";
 import { Icon } from '@iconify/vue'
-
+import { registerJSErrorMonitor } from "./utils/logger/errorMonitor";
 
 createApp(App)
   .use(router)
@@ -22,5 +21,10 @@ createApp(App)
   .use(Toast)
   .use(Notify)
   .use(Lazyload)
+  .use(Swipe)
+  .use(SwipeItem)
   .component('t-icon', Icon)
   .mount("#app")
+
+
+registerJSErrorMonitor()

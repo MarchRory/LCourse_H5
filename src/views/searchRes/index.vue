@@ -1,277 +1,99 @@
-<template>
-  <div class="results">
-    <van-sticky :offset-top="0">
-      <div class="results-top">
-        <div class="back-btn">
-          <img @click="backBtn" src="../../assets/imgs/left-icon.png" alt="" />
-        </div>
-        <div class="search-box">
-          <input
-            v-model="searchVal"
-            class="search-ipt"
-            type="text"
-            placeholder="输入课程关键词或课程地点查询"
-          />
-          <img
-            @click="searchBtn"
-            class="search-icon"
-            src="../../assets/imgs/Search-Icon.png"
-            alt=""
-          />
-        </div>
-      </div>
-    </van-sticky>
+<script setup lang="ts">
+import { getCourses } from '@/api/courses/courses';
+import { useBoolean } from '@/hooks/common'
+import { CourseStateEnum } from '@/api/types/public';
+import { HeaderDefaultAction } from '@/components/header/types';
+import { showFailToast } from 'vant';
+import { debounce } from '@/utils/freqCtrl/freqCtrl';
+import { registerTimingLog } from '@/utils/logger/hooks';
 
-    <div v-if="isFound" class="results-content">
-      <div class="title">
-        <span>{{ resultsArr.length }}</span>
-        <span>个搜索结果</span>
+const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
+const SearchResWaterfall = defineAsyncComponent(() => import('@/components/waterFall/index.vue'))
+
+const searchParams = ref({
+  title: '',
+  state: CourseStateEnum.all,
+  reviewed: 0,
+})
+
+const [isSearch, setSearchState] = useBoolean(false)
+const keywords = ref('')
+
+const handleInput = debounce((e: Event) => {
+  keywords.value = (e.target as HTMLInputElement).value
+  if (!keywords.value) {
+    setSearchState(false)
+  }
+})
+const search = () => {
+  if (keywords.value) {
+    searchParams.value.title = keywords.value
+    setSearchState(true)
+  }else {
+    showFailToast('请先输入查询关键词')
+  }
+}
+const actions: HeaderDefaultAction[] = [
+  { icon: 'tabler:search', trigger: search}
+]
+
+registerTimingLog()
+</script>
+
+<template>
+  <div class="search-container">
+    <XdHeader :actions="actions">
+      <template #center>
+        <input type="text" @input="handleInput" placeholder="课程名查询">
+      </template>
+    </XdHeader>
+    <main>
+      <!--占位, 未来有可能换成别的, 比如推荐、榜单啥的, 到时候换成组件就行-->
+      <div 
+        v-if="!isSearch"
+        class="search-seat"
+      >
+      输入关键词开始搜索吧
       </div>
-      <div class="results-list">
-        <course-list :prop-list="resultsArr"></course-list>
-        <!--         <div @click="toDetailsBnt(v.id, v.isSignUp)" class="list-item" v-for="(v, i) in resultsArr" :key="i">
-          <course-preview :course="v" @find-state="findState"></course-preview>
-        </div> -->
-      </div>
-    </div>
-    <div v-else class="not-found">
-      <img
-        class="not-found-img"
-        src="../../assets/imgs/Cool-Kids-Standing.png"
-        alt=""
-      />
-      <div v-show="isSearch">
-        <h3>课程没有找到呢</h3>
-        <p>尝试一下别的关键词吧</p>
-      </div>
-      <div class="tips" v-show="!isSearch">请输入关键字</div>
-    </div>
+      <SearchResWaterfall v-else="isSearch" :request-api="getCourses" :other-request-params="searchParams" />
+    </main>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, defineAsyncComponent } from "vue";
-import { throttle } from "@/utils/freqCtrl/freqCtrl";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/store/modules/user";
-import { getCourses } from "@/api/courses/courses";
-const courseList = defineAsyncComponent(
-  () => import("@/components/courseList/courseList.vue")
-);
-
-var pageNum = ref(0);
-const userStore = useUserStore();
-const searchVal = ref(""); //搜索框绑定值
-const isFound = ref(false); //是否搜索到状态
-const isSearch = ref(false); //是否搜索
-let resultsArr: any = ref([]); //搜索结果数组
-const router = useRouter();
-//返回上一个路由
-const backBtn = () => {
-  router.go(-1);
-};
-//搜索函数
-const searchBtn = throttle(() => {
-  console.log(searchVal.value != "");
-  if (searchVal.value != "") {
-    getCourses({
-      title: searchVal.value,
-      pageNum: pageNum.value,
-      semesterId: userStore.semesterId,
-      pageSize: 15,
-      state: 0,
-      reviewed: 0,
-    }).then((res: any) => {
-      if (res.code === 200) {
-        if (res.data.list.length < 1) {
-          isFound.value = false;
-          isSearch.value = true;
-          searchVal.value = "";
-        } else {
-          res.data.list.forEach((item: any) => {
-            resultsArr.value.push(item);
-          });
-          if (res.data.total != resultsArr.length) {
-            pageNum.value++;
-          }
-          isFound.value = true;
-        }
-      }
-    });
-  }
-}, 500);
-</script>
-
-<style lang="less" scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.loading-icon {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.results {
-  padding: 3vh 3vw;
-
-  .not-found {
-    padding-top: 1.9375rem;
-
-    .not-found-img {
-      width: 23.4375rem;
-      height: 15.8125rem;
-    }
-
-    h3 {
-      font-family: Gen Jyuu Gothic;
-      font-size: 1.5rem;
-      color: #3c3a36;
-      font-weight: 100;
-      line-height: 2rem;
-      margin: 2rem 0 0.5rem 0;
-    }
-
-    p {
-      font-family: Gen Jyuu Gothic Monospace;
-      font-size: 0.875rem;
-      font-weight: 200;
-      line-height: 1.3125rem;
-      color: #78746d;
-    }
-
-    .tips {
-      margin-top: 1.25rem;
-      font-family: Gen Jyuu Gothic Monospace;
-      font-size: 1rem;
-      font-weight: 200;
-      line-height: 1.3125rem;
-      color: #78746d;
-    }
-  }
-
-  .results-content {
-    .title {
-      text-align: left;
-      font-family: Gen Jyuu Gothic;
-      font-size: 1.5rem;
-      font-weight: 100;
-      line-height: 2rem;
-      color: #3c3a36;
-      margin: 0.75rem 0 1.5625rem 0;
-
-      span {
-        margin-right: 0.3125rem;
-      }
-    }
-  }
-
-  .results-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .list-item {
-      border-radius: 0.5rem;
-      margin-bottom: 1rem;
-
-      .item-top {
-        height: 12.125rem;
-        position: relative;
-        background: #f8f2ee;
-        padding: 1rem 0;
-
-        .item-img {
-          width: 100%;
-          border-top-left-radius: 0.5rem;
-          border-top-right-radius: 0.5rem;
-        }
-
-        .item-top-label {
-          right: 1rem;
-          bottom: 0.5rem;
-          position: absolute;
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-          padding: 0.25rem 1rem;
-          background: #65aaea;
-          border-radius: 0.75rem;
-          color: #f2f2f2;
-          height: 1.5rem;
-          font-size: 0.875rem;
-        }
-      }
-
-      .item-bottom {
-        text-align: left;
-        padding: 1rem;
-
-        .time {
-          font-family: Gen Jyuu Gothic;
-          font-size: 0.75rem;
-          color: #5ba092;
-        }
-
-        h3 {
-          font-family: Gen Jyuu Gothic;
-          font-size: 1.5rem;
-          color: #3c3a36;
-          font-weight: 100;
-          line-height: 2rem;
-          margin: 0.25rem 0;
-        }
-
-        .text {
-          font-family: Gen Jyuu Gothic Monospace;
-          font-size: 0.875rem;
-          font-weight: 200;
-          color: #3c3a36;
-        }
-      }
-    }
-  }
-
-  .results-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .back-btn {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      border: 0.0625rem solid #bebab3;
+<style scoped lang="less">
+.search-container {
+  padding: 0 20px;
+  width: calc(100% - 40px);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  main {
+    width: 100%;
+    flex: 1;
+    overflow-y: scroll;
+    .search-seat {
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .search-box {
-      margin-left: 0.5rem;
-      flex: 1;
-      position: relative;
-
-      .search-ipt {
-        width: 100%;
-        padding-left: 1rem;
-        height: 3.5rem;
-        border: 0.0625rem solid #bebab3;
-        border-radius: 0.75rem;
-      }
-
-      .search-icon {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-      }
+      color: gray;
     }
   }
+}
+input {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  width: auto;
+  height: 50px;
+  padding-left: 20px;
+  border-radius: 15px;
+  background-color: #f1f1f1;
+  border: 0px;
+  font-size: 1em;
+  color: rgb(167, 167, 167);
 }
 </style>

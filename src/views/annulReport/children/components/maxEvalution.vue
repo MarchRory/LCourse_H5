@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { coursesItem, evalutionType } from "@/api/types/courses";
+import { coursesItem, EvalutionItem } from "@/api/types/courses";
 import { gsap } from "gsap";
 import { onMounted, onBeforeUnmount } from "vue";
-import defaultCover from "@/assets/defaultCover.png";
+import defaultCover from "@/assets/imgs/default-avatar.jpg";
 const props = defineProps<{
-  maxEvalution: evalutionType;
+  maxEvalution: EvalutionItem;
   maxEvaluateCourse: coursesItem;
 }>();
 var tl: gsap.core.Timeline | null = gsap.timeline();
@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
         <div class="photoFrame">
           <div class="imgBox">
             <img
-              :src="props.maxEvaluateCourse.cover || defaultCover"
+              :src="props.maxEvaluateCourse.cover.url || defaultCover"
               alt="课程封面"
             />
           </div>

@@ -1,231 +1,92 @@
-<script lang="ts">
-export default {
-  name: "home",
-};
-</script>
 <script setup lang="ts">
-import { onMounted, onActivated, ref, defineAsyncComponent } from "vue";
-import { useUserStore } from "@/store/modules/user/index";
-import { useWsStore } from "@/store/modules/ws/index";
-import { onBeforeRouteLeave } from "vue-router";
-import router from "@/router/index";
-import searchBar from "@/components/searchBar/searchBar.vue"; // 这里不动态获取，因为需要加载时拿到searchBar的高
-const courseCategory = ref("");
-const courseList = defineAsyncComponent(
-  () => import("@/components/courseList/courseList.vue")
-);
-const userStore = useUserStore();
-const keyWords = ref("");
-const scrollTop = ref(0);
-const listContainer = ref<HTMLDivElement | null>();
-const chosenTagIndex = ref(0);
-const tags = reactive([
-  {
-    tag: "全部",
-    key: "",
-  },
-  {
-    tag: "日常劳动",
-    key: "日常生活劳动",
-  },
-  {
-    tag: "生产顶岗",
-    key: "生产顶岗劳动",
-  },
-  {
-    tag: "劳动理论",
-    key: "劳动理论学习",
-  },
-  {
-    tag: "公益服务",
-    key: "公益服务劳动",
-  },
-  {
-    tag: "其他劳动",
-    key: "其他方式劳动",
-  },
-]);
-const header = ref<HTMLDivElement | null>(null);
-const sbar = ref<HTMLElement | null>(null);
-const headerHeight = ref(0);
-const isRefresh = ref(false);
-function handleRefresh() {
-  isRefresh.value = true;
+import { getCourses } from '@/api/courses/courses';
+import { HomeSearchParams } from './components/types';
+import { useUserStore } from '@/store/modules/user';
+import { selectCourseParams } from '@/api/types/courses';
+import { debounce } from '@/utils/freqCtrl/freqCtrl';
+import { useWsStore } from '@/store/modules/ws';
+import { usePointStore } from '@/store/modules/point';
+import { registerFmpLog, registerTimingLog } from "@/utils/logger/hooks";
+
+const HomeHeader = defineAsyncComponent(() => import('./components/home-header.vue'))
+const CoursewaterFall = defineAsyncComponent(() => import('@/components/waterFall/index.vue'))
+
+defineOptions({
+    name: 'home'
+})
+const userStore = useUserStore()
+
+const pageParams = ref<Pick<selectCourseParams, keyof Omit<selectCourseParams, 'title' | "pageNum" | "pageSize">>>({
+    category: "",
+    state: 0,
+    departmentLimit: [],
+    gradeLimit: [],
+    userType: 0,
+    reviewed: 0,
+    passType: -1,
+    semesterId: userStore.semesterId
+})
+const handleTabChange = (newTab: number) => {
+    pageParams.value.departmentLimit = newTab ? [userStore.departmentId] : []
 }
-function handleRefreshEnd() {
-  isRefresh.value = false;
+const handleFilterParamsChange = (newFilterParams: HomeSearchParams) => {
+    const {category, state} = newFilterParams
+    pageParams.value.category = category
+    pageParams.value.state = +state
 }
-onMounted(() => {
-  headerHeight.value = (header.value as HTMLDivElement).offsetHeight;
-  // useWsStore().initWs();
-});
-const searchTag = (key: string, index: number) => {
-  chosenTagIndex.value = index;
-  courseCategory.value = key;
-};
-const toSearchPage = () => {
-  router.push({ path: "/searchRes/index" });
-};
+
+const waterfall = ref()
+const scrollTop = ref(0)
+
+const handleScroll = debounce((curScrollTop: number) => {
+    scrollTop.value = curScrollTop
+})
+
 onActivated(() => {
-  if (scrollTop.value) {
-    (listContainer.value as unknown as HTMLDivElement).scrollTop =
-      scrollTop.value;
-  }
-});
-onBeforeRouteLeave((to, from, next) => {
-  scrollTop.value = (
-    listContainer.value as unknown as HTMLDivElement
-  ).scrollTop;
-  next();
+    nextTick(() => {
+        waterfall.value && waterfall.value.waterFallScrollTo(scrollTop.value)
+    })
 });
 
-/* const scanQR = () => {
-  router.push({ path: '/scan/scanQR' }) // 扫码页面, 有了https后将数字码签到更改为扫码签到
-} */
+// 因为首页会被缓存, 所以init方法只会在第一次加载时触发, 后续都是触发onActived钩子
+const init = () => {
+    const wsStore = useWsStore()
+    !wsStore.wsInstance && wsStore.initWs()
+    const pointStore = usePointStore()
+    pointStore.updatePointTotal()
+}
+
+init()
+
+/**
+ * -----------------------------埋点
+ */
+registerTimingLog()
+registerFmpLog('home-water-fall')
 </script>
 
 <template>
-  <div class="container">
-    <van-pull-refresh
-      v-model="isRefresh"
-      @refresh="handleRefresh"
-      success-text="更新成功"
-    >
-      <div ref="header">
-        <div class="header">
-          <div class="welcomeInfo">
-            <div class="leftSide">
-              <div style="text-align: left">
-                <span style="color: #3c3a36; font-size: 16px">欢</span>
-                <span style="color: rgb(163, 163, 163)">迎回来</span>
-              </div>
-              <div style="font-size: 28px; font-weight: 300">
-                {{ userStore.name }}
-              </div>
-            </div>
-            <div class="tools">
-              <!-- <van-icon name="scan" size="25" @click="scanQR" /> -->
-            </div>
-          </div>
-          <search-bar
-            ref="sbar"
-            :key-words="keyWords"
-            @search-course="toSearchPage"
-            @update:key-words="keyWords = $event"
-          />
-          <div class="tag">
-            <span
-              style="
-                font-weight: 300;
-                line-height: 21px;
-                font-size: 16px;
-                width: 47px;
-              "
-              >分类:
-            </span>
-            <div class="tagListBox">
-              <div class="tagList">
-                <van-tag
-                  mark
-                  :color="chosenTagIndex == index ? '#E3562A' : '#65AAEA'"
-                  size="medium"
-                  v-for="(item, index) in tags"
-                  :key="index"
-                  @click="searchTag(item.key, index)"
-                >
-                  {{ item.tag }}
-                </van-tag>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        ref="listContainer"
-        :style="{
-          height: `calc(100vh - var(--van-tabbar-height) - ${headerHeight}px)`,
-        }"
-        style="
-          overflow-y: auto;
-          background-color: rgb(245, 246, 248);
-          width: 100%;
-        "
-      >
-        <course-list
-          :category="courseCategory"
-          :is-refresh="isRefresh"
-          @onRefreshEnd="handleRefreshEnd"
+    <div class="pageContainer">
+        <HomeHeader
+            :category="pageParams.category"
+            :state="pageParams.state"
+            @on-tab-change="handleTabChange"
+            @on-search-params-change="handleFilterParamsChange"
         />
-      </div>
-    </van-pull-refresh>
-  </div>
+        <main id="home-water-fall">
+            <CoursewaterFall
+                ref="waterfall"
+                :request-api="getCourses"
+                :column="2"
+                :other-request-params="pageParams"
+                @on-scroll="handleScroll"
+            />
+        </main>
+    </div>
 </template>
 
 <style scoped lang="less">
-.container {
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-
-  .header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    background-color: white;
-    position: sticky;
-    padding-bottom: 10px;
-
-    .welcomeInfo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: @max-div-width;
-      //width: calc(100% - 40px);
-      margin-bottom: 10px;
-    }
-
-    .tools {
-      border-radius: 50%;
-      width: 90px;
-      height: 90px;
-      //border: 2px solid #bebab3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tag {
-      display: flex;
-      flex-direction: row;
-      width: @max-div-width;
-      margin-bottom: 10px;
-      align-items: center;
-      margin: 0 auto;
-
-      .tagListBox {
-        overflow-x: auto;
-
-        .tagList {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          width: 780px;
-          overflow-x: auto;
-
-          :deep(.van-tag) {
-            margin-left: 10px;
-          }
-
-          ::webkit-scrollbar {
-            display: none;
-          }
-        }
-      }
-    }
-  }
+.pageContainer {
+    height: calc(100vh - var(--van-tabbar-height));
 }
 </style>

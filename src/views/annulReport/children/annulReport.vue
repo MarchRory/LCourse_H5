@@ -3,10 +3,10 @@ import { getAnnualReportDetailAPI } from "@/api/annulReport/annulReport";
 import { annulReportItem } from "@/api/types/annualReport";
 import { useRoute, useRouter } from "vue-router";
 import { Response } from "@/utils/http/types";
-import { AxiosRequestConfig } from "axios";
 import { defineAsyncComponent } from "vue";
 import { gsap } from "gsap";
 import { showFailToast, showLoadingToast } from "vant";
+import { registerTimingLog } from "@/utils/logger/hooks";
 const AnnulReportLoading = defineAsyncComponent(
   () => import("../children/components/loadingPage.vue")
 );
@@ -41,19 +41,13 @@ const touchPosWatch = ref({
 const isDownload = ref(true);
 const annualReportInfo = ref<annulReportItem>({} as annulReportItem);
 const progress = ref<number>(0);
-const currentPage = ref(2);
+const currentPage = ref(1);
 function getAnnualReportInfo() {
   getAnnualReportDetailAPI(
-    route.query.reportId as string,
-    {
-      onDownloadProgress: function (e) {
-        isDownload.value = false;
-        progress.value = Math.floor((e.loaded / (e.total as number)) * 100);
-      },
-    } as AxiosRequestConfig
+    route.query.reportId as string
   ).then((res: Response<annulReportItem>) => {
     const { success } = res;
-    if (success === false) {
+    if (!success) {
       showFailToast("报告尚未生成完毕");
       goBack();
       return;
@@ -69,10 +63,12 @@ function getAnnualReportInfo() {
     const { data } = res;
     data.monthDetails = new Map(Object.entries(data.monthDetails));
     annualReportInfo.value = data;
-  });
+  }).catch(() => {
+    goBack()
+  })
 }
 function goBack() {
-  router.back();
+  router.push({path: '/annulReportList'})
 }
 function handleTouchStart(e: TouchEvent) {
   touchPosWatch.value.startY = e.touches[0].pageY;
@@ -129,6 +125,8 @@ watch(
     }
   }
 );
+
+registerTimingLog()
 </script>
 
 <template>
@@ -181,7 +179,7 @@ watch(
         :keywords-obj="annualReportInfo.keyword"
       />
     </transition>
-    <div id="tool">上划进入下一页</div>
+    <div id="tool">{{ currentPage < 7 ? '上划查看下一页' : '期待未来的故事' }}</div>
   </div>
 </template>
 

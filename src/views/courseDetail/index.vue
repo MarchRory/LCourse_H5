@@ -1,481 +1,557 @@
-<template>
-  <div>
-    <XdHeader title="详情">
-      <template #right>
-          <t-icon
-            v-if="detailsObj.signUpstate == 2"
-            @click="showCenter = true"
-            icon="tabler:clock-edit"
-            class="sign-icon" 
-          />
-      </template>
-    </XdHeader>
-    <div class="details">
-      <course-ske :ske-load="skeLoad"></course-ske>
-      <div v-if="!skeLoad" class="mainInfo">
-        <div class="img-box">
-          <van-image
-            width="100%"
-            height="240"
-            fit="cover"
-            lazy-load
-            :src="detailsObj.cover || defaultCover"
-          />
-        </div>
-        <div class="label">
-          <span>{{ detailsObj.courseCategory }}</span>
-        </div>
-
-        <div class="info">
-          <div>
-            <span class="point">课程名</span>
-            <strong>{{ detailsObj.title }}</strong>
-          </div>
-          <div>
-            <span class="point">举办学期</span>
-            <strong style="font-size: 18px">{{ detailsObj.semester }}</strong>
-          </div>
-          <div class="time">
-            <span class="point">报名时间</span>
-            <span class="timeRange"
-              >{{ detailsObj.applicationStart }} 至
-              {{ detailsObj.applicationEnd }}</span
-            >
-          </div>
-          <div class="time">
-            <span class="point">活动时间</span>
-            <span class="timeRange"
-              >{{ detailsObj.hostingStart }} 至
-              {{ detailsObj.hostingEnd }}</span
-            >
-          </div>
-          <div>
-            <span class="point">课程分类</span>
-            <span>{{ detailsObj.courseCategory }}</span>
-          </div>
-          <div>
-            <span class="point">主办单位</span>
-            <span>{{ detailsObj.organizer }}</span>
-          </div>
-          <div>
-            <span class="point">承办单位</span>
-            <span>{{ detailsObj.undertaker }}</span>
-          </div>
-          <div>
-            <span class="point">人数限制</span>
-            <span style="font-size: 20px; font-weight: bold; color: #076a6a">{{
-              detailsObj.numberLimit
-            }}</span>
-          </div>
-          <div>
-            <span class="point">举办地点</span>
-            <span>{{ detailsObj.courseLocation }}</span>
-          </div>
-          <div>
-            <span class="point">活动介绍</span>
-            <article style="text-indent: 2em; padding: 5px 20px">
-              {{ detailsObj.introduction }}
-            </article>
-          </div>
-          <div>
-            <span class="point">加分规则</span>
-            <span>{{ detailsObj.pointsRules }}</span>
-          </div>
-          <div>
-            <div>
-              <span class="point">课程群:</span>
-              <span>{{ detailsObj.contact }}</span>
-            </div>
-            <div v-if="detailsObj.attachment">
-              <span class="point">附件</span>
-              <a :href="detailsObj.attachment" target="downloadFile" download
-                >查看附件</a
-              >
-            </div>
-          </div>
-        </div>
-
-        <div class="application">
-          <van-button
-            :disabled="btnState != 1"
-            @click="RegisterNowBtn"
-            class="application-btn"
-            :color="btnColor[`${btnState === 1 ? 0 : 1}`]"
-          >
-            {{ btnContent }}
-          </van-button>
-
-          <div
-            v-if="detailsObj.signUpstate == 3"
-            @click="toComment"
-            style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              color: rgba(252, 131, 26, 0.879);
-              margin-top: 10px;
-            "
-          >
-            <van-icon name="smile-comment" size="30"></van-icon>
-            评价课程
-          </div>
-        </div>
-
-        <van-popup
-          v-model:show="showCenter"
-          round
-          :style="{ padding: 'px', overflow: 'hidden' }"
-          :transition-appear="true"
-          :close-on-click-overlay="false"
-        >
-          <div class="signBox">
-            <div class="signTitle">签到码签到</div>
-            <div class="inputArea">
-              <van-field
-                v-model="signCode"
-                size="large"
-                type="text"
-                label="签到码"
-              />
-            </div>
-            <div class="tools">
-              <div @click="close">取消</div>
-              <div class="signUp" @click="courseSign">签到</div>
-            </div>
-          </div>
-        </van-popup>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, defineAsyncComponent, onActivated } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { debounce, throttle } from "@/utils/freqCtrl/freqCtrl";
-import { showFailToast, showSuccessToast } from "vant/es";
-import defaultCover from "@/assets/imgs/Illustration.png";
-import { getCourseDetail, joinCourse, sign } from "@/api/courses/courses";
-import { useUserStore } from "@/store/modules/user";
-import { PointTypeEnum } from "@/api/types/user";
+import { HeaderDefaultAction } from '@/components/header/types';
+import { useRoute } from 'vue-router';
+import { getCourseDetail, joinCourse } from '@/api/courses/courses'
+import useLoading from '@/hooks/useLoading';
+import { coursesItem } from '@/api/types/courses';
+import { useUserStore } from '@/store/modules/user';
+import { CourseSignUpStateEnum, CourseSignUpStateMap, CourseStateEnum, courseStateMap } from '@/api/types/public';
+import { formatCover, generateCourseStateConfig, getCategoryConfig } from '@/utils/course'
+import { changeColorOpacity } from '@/utils/color'
+import { EChartsOption } from 'echarts';
+import { getSpecificValueIntoArr } from '@/utils/common/array';
+import * as echarts from 'echarts'
+import { debounce } from '@/utils/freqCtrl/freqCtrl';
+import router from '@/router';
+import { showFailToast, showSuccessToast } from 'vant';
+import { useBoolean } from '@/hooks/common'
+import { registerTimingLog } from '@/utils/logger/hooks';
 
-const userStore = useUserStore()
-const router = useRouter();
-const route = useRoute();
-const showCenter = ref(false);
-const signCode = ref("");
-const skeLoad = ref(true);
-const courseId = ref(Number(route.query.courseId));
-const btnState = ref(0);
-const btnContent = ref("");
-const btnColor = ["linear-gradient(to right, #ff6034, #ee0a24)", "grey"];
-const detailsObj: any = ref({});
-const courseSke = defineAsyncComponent(
-  () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
-);
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
-const checkStaus = () => {
-  // 按钮状态
-  if (
-    detailsObj.value.numberLimit == detailsObj.value.signUpCount &&
-    detailsObj.value.signUpstate != 2 &&
-    detailsObj.value.state == 2
-  ) {
-    btnState.value = 0;
-    btnContent.value = "课程已满员";
-  } else if (detailsObj.value.signUpstate === 0) {
-    btnState.value = detailsObj.value.state !== 2 ? 0 : 1;
-    btnContent.value =
-      detailsObj.value.state !== 2 ? "当前无法报名" : "报名课程";
-  } else if (detailsObj.value.signUpstate === -1) {
-    // 报名被打回, 未通过审核
-    btnState.value = 0;
-    btnContent.value = "未通过审核";
-  } else if (detailsObj.value.signUpstate === 1) {
-    // 报名成功, 等待审核
-    btnState.value = 0;
-    btnContent.value = "等待录取";
-  } else if (detailsObj.value.signUpstate === 2) {
-    // 通过报名
-    btnState.value = 0;
-    btnContent.value =
-      detailsObj.value.state !== 3 ? "等待课程开始" : "等待签到";
-  } else if (detailsObj.value.signUpstate === 3) {
-    // 完成签到
-    btnState.value = 0;
-    btnContent.value = "还未填写评价";
-  } else if (detailsObj.value.signUpstate === 4) {
-    // 完成课程自评
-    btnState.value = 0;
-    btnContent.value = "等待老师考评";
-  } else {
-    // 完成自评且老师已经考评, 此时全部完成
-    btnState.value = 0;
-    btnContent.value = "课程已全部完成";
-  }
-};
-const getDetails = () => {
-  skeLoad.value = true;
-  getCourseDetail(courseId.value)
-    .then((res: any) => {
-      if (res.code == 200) {
-        const { data } = res;
-        detailsObj.value = data;
-      }
+const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
+const SignComp = defineAsyncComponent(() => import("./components/sign-popup.vue"))
+const RefreshBall = defineAsyncComponent(() => import('@/components/suspension/ball.vue'))
+const DimensionChart = defineAsyncComponent(() => import('@/components/chart/index.vue'))
+
+const route = useRoute()
+
+const detailInfo = ref({} as coursesItem)
+const {loading:initLoading, setLoading:setInit} = useLoading(false)
+const init = async () => {
+    setInit(true)
+    getCourseDetail(route.query.courseId as string)
+    .then(({data}) => {
+        const {cover} = data
+        const coverObj = formatCover(cover as unknown as string)
+        data.cover = coverObj
+        detailInfo.value = data
     })
-    .then(() => {
-      checkStaus();
+    .catch(() => {
+        router.push({path: '/home'})
+        setTimeout(() => {
+            showFailToast('课程状态异常')
+        }, 500)
     })
     .finally(() => {
-      setTimeout(() => {
-        skeLoad.value = false;
-      }, 200);
-    });
-};
-getDetails();
-const RegisterNowBtn = debounce(() => {
-  joinCourse(courseId.value).then((res: any) => {
-    if (res.code == 200) {
-      showSuccessToast("报名成功, 等待审核");
-      setTimeout(() => {
-        router.go(-1);
-      }, 800);
-    } else {
-      showFailToast("遇到错误, 报名失败");
-    }
-  });
-}, 500);
+        setInit(false)
+    })
+
+}
+
+const canJoin = computed(() => {
+    const { gradeLimit = [], departmentLimits = [] } = detailInfo.value
+    const { department, currentGrade } = userStore
+    const gradeAllow = !(gradeLimit || []).length || (gradeLimit || []).includes(currentGrade)
+    const departmentAllow = !(departmentLimits || []).length || (departmentLimits || []).includes(department)
+    return gradeAllow && departmentAllow
+})
+const courseQuery = computed(() => {
+    return generateCourseStateConfig({
+        state: detailInfo.value.state,
+        signUpState: detailInfo.value.signUpstate,
+        allowJoin: canJoin.value
+    })
+})
+
+const userStore = useUserStore()
+const coreInfoConfig = computed(() => {
+    const {categoryKey, categoryConfig} = getCategoryConfig(detailInfo.value.courseCategory)
+    const signUpConfig = CourseSignUpStateMap[detailInfo.value.signUpstate]
+    let coreInfo = [
+        { label: '课程状态', content: courseStateMap[detailInfo.value.state].label, icon: 'tabler:status-change', iconColor: courseStateMap[detailInfo.value.state].tagColor },
+        { label: "参与状态", content: signUpConfig.signUpLabel, icon: 'tabler:bell-ringing-filled', iconColor: signUpConfig.signUpTagColor },
+        { label: '分类', content: categoryKey, icon: 'tabler:brand-planetscale', iconColor: categoryConfig.tagColor },
+        { label: '满学分', content: detailInfo.value.score || 5, icon: 'tabler:rosette-discount-check', iconColor: '#de820c' },
+        { label: '修读权限', content: `${canJoin ? '可修读' : '不可修读'}`, icon: `${canJoin.value ? 'tabler:zoom-check-filled': 'tabler:zoom-cancel'}`, iconColor: `${canJoin ? "#0fd041" : "#6b6b6b"}` },
+        { label: '人数限制', content: detailInfo.value.numberLimit, icon: 'tabler:password-user', iconColor: '#e02121' },
+        { label: '举办方', content: detailInfo.value.organizer, icon: 'tabler:vector-bezier-circle', iconColor: '#9e76e2' },
+        { label: '承办方', content: detailInfo.value.undertaker, icon: 'tabler:school', iconColor: '#4f75e2' }
+    ]
+    return coreInfo
+})
+
+const btnColor = computed(() => {
+    return courseQuery.value.disabled ? '#b5b3b3' : 'linear-gradient(to right, #ff6034, #ee0a24)'
+})
+
+// 封面图宽高比调优, 避免高度过高
+const imgPercent = computed(() => {
+    const { width, height } = detailInfo.value.cover
+    const imgRatio = +(width / height).toFixed(1)
+    const imgWidthPercent = imgRatio < 0.5 ? '40%' : '100%'
+    const imgHeightPercent = imgRatio < 0.5 ? '100%' : '20%'
+    return { imgWidthPercent, imgHeightPercent }
+})
+
+// 报名
+const joinIn = debounce(() => {
+    joinCourse(detailInfo.value.id)
+    .then(({success}) => {
+        if (success) {
+            showSuccessToast("报名成功, 等待审核");
+            setTimeout(() => {
+                init()
+            }, 800);
+        }
+    })
+}, 300)
 const toComment = () => {
-  router.push({ path: "/command", query: { courseId: detailsObj.value.id } });
-};
-const courseSign = throttle(() => {
-  if (!signCode.value) {
-    showFailToast("还没有输入签到码哦");
-    return;
-  }
-  sign({
-    courseId: Number(route.query.courseId),
-    code: signCode.value,
-  }, {
-    origin: '课程签到',
-    point: 5,
-    departmentId: userStore.departmentId as string,
-    type: PointTypeEnum.completeSign,
-    state: 1
-  }).then((res: any) => {
-    if (res.code == 200) {
-      showSuccessToast("签到成功");
-      toComment();
-    } else {
-      showFailToast(res.message);
+    const dimensionalityInfo = encodeURIComponent(JSON.stringify(detailInfo.value.dimensionalityInfo || []))
+    router.push({ path: "/command", query: { courseId: detailInfo.value.id, dimensionalityInfo } });
+}
+const submit = () => {
+    const {state, signUpstate} = detailInfo.value
+    if (courseQuery.value.disabled) {
+        return;
     }
-  });
-}, 500);
-const close = () => {
-  signCode.value = "";
-  showCenter.value = false;
-};
-onActivated(() => {
-  getDetails();
-});
+
+    if ([CourseStateEnum.ing, CourseStateEnum.finished].includes(state) && signUpstate === CourseSignUpStateEnum.admitted) {
+        setSignVisible(true)
+    }else if (signUpstate === CourseSignUpStateEnum.completeSign) {
+        toComment()
+    }else if(signUpstate === CourseSignUpStateEnum.normal) {
+        joinIn()
+    }
+}
+
+// 签到
+
+const [signVisible, setSignVisible] = useBoolean(false)
+const actions = computed<HeaderDefaultAction[]>(() => {
+    let actions:HeaderDefaultAction[] = []
+    const {state, signUpstate} = detailInfo.value
+
+    if (signUpstate === CourseSignUpStateEnum.admitted 
+        && state >= CourseStateEnum.ing 
+        && state !== CourseStateEnum.examining
+    ) {
+        actions.push({
+            icon: 'tabler:clock-edit',
+            trigger: () => setSignVisible(true)
+        })
+    }
+
+    return actions
+})
+
+// @ts-ignore
+const chartOpts = computed<EChartsOption>(() => {
+    const indicator = (detailInfo.value.dimensionalityInfo || []).map(({name, scale}) => {
+        return {
+            name,
+            scale: scale * 100
+        }
+    })
+    const names = getSpecificValueIntoArr(indicator, 'name')
+    const data = getSpecificValueIntoArr(indicator, 'scale')
+
+    const range = indicator.map(({name}) => ({name, max: 100}))
+
+    function getData() {
+        const res = {
+            series: [{
+                type: 'radar',
+                symbolSize: 10,
+                symbol: "circle",
+                areaStyle: {
+                    color: "#39B2FF",
+                    opacity: 0.3
+                },
+                lineStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#00A2FF'
+                    }, {
+                        offset: 1,
+                        color: '#0060FF'
+                    }], false),
+                    width: 2
+                },
+                itemStyle: {
+                    color: "#fff",
+                    borderColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0,
+                        color: '#00DEFF'
+                    }, {
+                        offset: 1,
+                        color: '#1598FF'
+                    }], false),
+                    borderWidth: 2,
+                    opacity: 1
+                },
+                label: {
+                    show: false,
+                },
+                data: [{
+                    value: data,
+                }],
+                z: 100
+            }, ],
+        };
+
+        res.series.map((item, index) => ({
+            ...item,
+            type: 'radar',
+            data: [{
+                value: indicator[index].scale,
+            }],
+            symbol: 'none',
+            lineStyle: {
+                width: 0
+            },
+            itemStyle: {
+                color: '#fff'
+            },
+            areaStyle: {
+                color: '#fff',
+                shadowColor: 'rgba(14,122,191,0.15)',
+                shadowBlur: 30,
+                shadowOffsetY: 20
+            }
+        }))
+        return res;
+    }
+    const optionData = getData()
+
+    const option = {
+        backgroundColor: '#fff',
+        tooltip: {
+            formatter: function() {
+                var html = '';
+                for (var i = 0; i < indicator.length; i++) {
+                    html += names[i] + ': ' + data[i] + '%<br>'
+                }
+                return html
+            }
+        },
+        radar: {
+            indicator: range,
+            splitArea: {
+                show: true,
+                areaStyle: {
+                    color: '#fff',
+                    shadowColor: 'rgba(14,122,191,0.19)',
+                    shadowBlur: 30,
+                    shadowOffsetY: 20
+                }
+            },
+            splitLine: {
+                show: false,
+
+            },
+            axisLine: {
+                show: false,
+            },
+            axisLabel: {
+                show: false
+            },
+        },
+        series: optionData.series
+    };
+    return option
+})
+
+init()
+
+registerTimingLog()
 </script>
 
-<style lang="less" scoped>
-.sign-icon  {
-  font-size: 45px;
-}
-.details {
-  padding: 10px 4vw;
+<template>
+    <div class="pageContainer">
+        <XdHeader title="课程详情" :actions="actions" :custom-back="() => $router.back()" />
+        <main v-if="!initLoading">
+            <div style="width: 100%; height: max-content">
+                <section class="header-info">
+                    <div class="detail-title">{{ detailInfo.title }}</div>
+                    <div class="host-time">
+                        <t-icon class="detail-icon" icon="tabler:clock" />
+                        <span v-if="detailInfo.hostingStart">
+                            {{ detailInfo.hostingStart.slice(0, 16) }} ~ {{ detailInfo.hostingEnd.slice(0, 16) }}
+                        </span>
+                    </div>
+                </section>
+                <van-image
+                    :src="detailInfo.cover.url"
+                    :width="imgPercent.imgWidthPercent"
+                    :height="imgPercent.imgHeightPercent"
+                    fit="cover"
+                >
+                    <template #loading>
+                        <van-skeleton-image
+                            animate
+                            image-size="40"
+                        />
+                    </template>
+                </van-image>
+                <section class="core-info" id="detail-card-info">
+                    <span><t-icon class="info-title-tag" icon="tabler:info-hexagon-filled" />重要信息</span>
+                    <div class="core-list">
+                        <div 
+                            v-for="(info, index) in coreInfoConfig" 
+                            :key="index"
+                            class="core-card"
+                        >
+                            <div class="core-content">
+                                <span class="core-title">{{ info.label }}</span>
+                                <span class="core-value">{{ info.content }}</span>
+                            </div>
+                            <div
+                                class="core-tag"
+                                :style="{
+                                    backgroundColor: changeColorOpacity(info.iconColor),
+                                    borderColor: info.iconColor
+                                }"
+                            >
+                                <t-icon :icon="info.icon" :color="info.iconColor" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-  .application {
-    position: fixed;
-    bottom: 30px;
-    padding-right: 15px;
-    width: calc(100% - 8vw);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    height: 90px;
+                <section class="core-info" style="margin: 30px 0">
+                    <span><t-icon class="info-title-tag" icon="tabler:chart-radar" />能力维度</span>
+                    <div style="width: 100%; height: auto;">
+                        <DimensionChart
+                            width="100%"
+                            height="250px"
+                            :options="chartOpts"
+                        />
+                    </div>
+                </section>
+
+                <div>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:location-filled" />活动地点</span>
+                        <div class="core-text">
+                            {{ detailInfo.courseLocation }}
+                        </div>
+                    </section>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:clock" />报名时间</span>
+                        <div class="core-text">
+                            {{ detailInfo.applicationStart.slice(0, 16) }} ~ {{ detailInfo.applicationEnd.slice(0, 16) }}
+                        </div>
+                    </section>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:brand-messenger" />联系方式</span>
+                        <div class="core-text">
+                            {{ detailInfo.contact || '暂无' }}
+                        </div>
+                    </section>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:building-community" />学院限制</span>
+                        <div class="core-text">
+                            {{ (detailInfo.departmentLimits || []).length ? [...new Set(detailInfo.departmentLimits)].join('、') : '全校' }}
+                        </div>
+                    </section>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:user-check" />年级限制</span>
+                        <div class="core-text">
+                            {{ (detailInfo.gradeLimit || []).length ? [...new Set(detailInfo.gradeLimit)].join('、') : '全年级' }}
+                        </div>
+                    </section>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:coins" />学分获取规则</span>
+                        <div class="core-text">
+                            {{ detailInfo.scoringStandards }}
+                        </div>
+                    </section>
+                    <section class="core-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:coins" />积分产出规则</span>
+                        <div class="core-text">
+                            {{ detailInfo.pointsRules }}
+                        </div>
+                    </section>
+                    <section v-if="detailInfo.introduction" class="detail-extra-info">
+                        <span><t-icon class="info-title-tag" icon="tabler:affiliate-filled" />附加信息</span>
+                        <article>
+                            {{ detailInfo.introduction }}
+                        </article>
+                    </section>
+                </div>
+                <div class="detail-footer"></div>
+            </div>
+        </main>
+        <div 
+            v-if="!initLoading"
+            class="detail-btn"
+            @click="submit"
+            :style="{
+                background: btnColor
+            }"
+        >
+            {{ courseQuery.btnText }}
+        </div>
+        <SignComp
+            :visible="signVisible"
+            :course-id="detailInfo.id || (route.query.courseId as string)"
+            :user-department-id="userStore.departmentId"
+            @on-close="() => setSignVisible(false)"
+            @on-success="toComment"
+        />
+        <XdLoading :visible="initLoading" />
+        <RefreshBall :loading="initLoading" :trigger="init" need-rotate/>
+    </div>
+</template>
+
+
+<style scoped lang="less">
+main {
+    overflow-x: hidden;
     background-color: white;
-
-    .application-btn {
-      width: 70vw;
-      border-radius: 1rem;
-      color: white;
-      margin-top: 10px;
+    overflow-y: scroll;
+    section {
+        border-radius: 15px;
     }
-  }
-
-  .img-box {
-    margin: 0 auto;
-    margin-top: 1.25rem;
-  }
-
-  .mainInfo {
-    height: calc(100vh - 4vh - 4rem - 70px);
-    overflow-y: auto;
-  }
-
-  .info {
-    text-align: left;
-
-    > div {
-      margin-bottom: 1.375rem;
-    }
-
-    .time {
-      font-family: Gen Jyuu Gothic;
-      font-size: 30px;
-      color: #5ba092;
-
-      .timeRange {
-        font-size: 22px;
-        font-weight: 600;
-      }
-    }
-
-    .point {
-      width: fit-content;
-      font-family: Gen Jyuu Gothic;
-      color: black;
-      font-size: large;
-      font-weight: bold;
-      margin-right: 1rem;
-    }
-
-    p {
-      font-family: Gen Jyuu Gothic Monospace;
-      font-size: 0.875rem;
-      font-weight: 200;
-      line-height: 1.3125rem;
-
-      color: #3c3a36;
-    }
-  }
-
-  .label {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin: 2rem 0;
-
-    span {
-      height: 1.5rem;
-      font-size: 0.875rem;
-      background: #65aaea;
-      padding: 0.25rem 1rem;
-      border-radius: 0.75rem;
-      color: #f2f2f2;
-    }
-  }
-
-  .details-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 4rem;
-
-    .back-btn {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      border: 0.0625rem solid #bebab3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    h1 {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: Gen Jyuu Gothic;
-      font-size: 1.5rem;
-
-      font-weight: normal;
-      color: #3c3a36;
-    }
-
-    .signBox {
-      position: relative;
-      bottom: 25px;
-      left: 73%;
-      height: 220px;
-      width: 100px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-around;
-
-      .tools {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      span {
-        font-size: 24px;
-        font-weight: bold;
-      }
-    }
-  }
-
-  .signBox {
-    width: 550px;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-
-    .signTitle {
-      font-size: 36px;
-      font-weight: 600;
-    }
-
-    .inputArea {
-      :deep(.van-field) {
-        flex-wrap: wrap;
-        border: 1px solid #f7a660;
-        //padding: 20px 25px;
-        width: 400px;
-        border-radius: 10px;
-
-        .van-field__label {
-          width: 130px;
-          border-right: 2px solid #efbf81;
+    .header-info {
+        .flex-column-start;
+        padding: 15px;
+        width: calc(100% - 30px);
+        margin: 10px auto 15px;
+        align-items: flex-start;
+        div {
+            margin-top: 10px;
         }
-
-        #van-field-1-label {
-          color: #f79823;
+        .detail-title {
+            font-size: 55px;
+            font-weight: bolder;
         }
-      }
+        .host-time {
+            display: flex;
+            align-items: center;
+            span {
+                color: rgb(226, 105, 6);
+            }
+        }
     }
+    .core {
+        &-info {
+            width: 100%;
+            margin-top: 25px;
+            text-align: left;
+            background-color: transparent;
+            &>span {
+                display: flex;
+                align-items: center;
+                font-size: 30px;
+                letter-spacing: 2px;
+                margin: 15px 0;
+                font-weight: 800;
+                .info-title-tag {
+                    margin-right: 10px;
+                }
+            }
+            .detail-dimension-chart {
+                width: 100%;
+                height: 600px;
+            }
+        }
+        &-list {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        &-card {
+            width: 49%;
+            height: 120px;
+            background-color: white;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            .card-shadow;
+        }
+        &-content {
+            padding: 20px;
+            width: calc(76% - 40px);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-around;
+            .core-title {
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .core-value {
+                font-size: 23px;
+                font-weight: bold;
+                color: rgb(150, 150, 150);
+            }
+        }
+        &-tag {
+            flex: 1;
+            font-size: 40px;
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.8);
+            border: 2px solid transparent;
+        }
+        &-text {
+            width: 90%;
+            margin: 0 auto;
+        }
+    }
+}
 
-    .tools {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      border-top: 2px solid rgb(243, 139, 60);
-      overflow: hidden;
-      position: relative;
-      top: 60px;
-
-      div {
-        padding: 20px;
-        width: 240px;
-        font-weight: 600;
-        letter-spacing: 5px;
-        font-size: 35px;
-      }
-
-      .signUp {
+:deep(.van-image__img) {
+    border-radius: 20px;
+}
+.detail {
+    &-icon {
+        margin-right: 5px;
+    }
+    &-footer {
+        width: 100%;
+        height: 250px;
+    }
+    &-btn {
+        .card-shadow;
+        position: fixed;
+        bottom: 20px;
+        padding: 20px 180px;
+        border-radius: 15px;
         color: white;
-        background-color: #fba665;
-      }
     }
-  }
+    &-extra-info {
+        margin: 50px auto 0;
+        padding: 20px;
+        width: calc(90% - 40px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        border-radius: 15px;
+        background-color: rgb(240, 240, 240);
+        .card-shadow;
+        span {
+            color: rgb(97, 97, 97);
+            font-weight: bolder;
+            .info-title-tag {
+                margin-right: 10px;
+            }
+        }
+        article {
+            margin-top: 15px;
+            text-indent: 2em;
+            color: rgb(146, 146, 146);
+            text-align: left;
+        }
+    }
 }
 </style>

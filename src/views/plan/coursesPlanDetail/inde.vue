@@ -18,9 +18,6 @@ const chart = ref<HTMLElement>();
 const courseSke = defineAsyncComponent(
   () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
 );
-const courseList = defineAsyncComponent(
-  () => import("@/components/courseList/courseList.vue")
-);
 
 const getWaterBallOpts = (numerator: number, denominator: number) => {
   var rate =

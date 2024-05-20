@@ -3,17 +3,24 @@
  * @description 全局通用header, 不可用于tabbar页面。图标集目前只支持tabler, 需要其他的可以自行引入, 但要注意大小
  * @link tabler图标集 https://icon-sets.iconify.design/tabler/?category=General
  */
-import {HeaderDefaultAction} from './types'
-import {debounce} from '@/utils/freqCtrl/freqCtrl'
+import { HeaderDefaultAction } from './types'
+import { debounce } from '@/utils/freqCtrl/freqCtrl'
 import { useRouter } from 'vue-router';
-const props = defineProps<{
+interface Props {
+    hidenBack?: boolean
     title?: string
     actions?: HeaderDefaultAction[] // 建议最多三个
     bgColor?: string
     fontColor?: string
-    backPath?: string  // 预防页面中存在较多子路由跳转
+    backPath?: string  // 预防页面中存在较多子路由跳转, 还有携带query跳转后再回去导致query不搭发生白屏的问题
     customBack?: (...args: any[]) => any
-}>()
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    hidenBack: false,
+    bgColor: 'white',
+    fontColor: '#3f3f3f'
+})
 
 const handleAction = debounce((action: HeaderDefaultAction) => {
     action.trigger && action.trigger()  
@@ -38,15 +45,15 @@ const handleDefaultBack = () => {
     <header 
         class="header-container" 
         :style="{
-            backgroundColor: `${props.bgColor ? props.bgColor : 'white'}`,
-            color: `${props.fontColor ? props.fontColor : '#3f3f3f'}`
+            backgroundColor: props.bgColor,
+            color: props.fontColor
         }"
     >
         <!--左区域、包括默认返回按钮和左插槽, 二者互斥-->
         <section class="left-area">
             <slot name="left">
                 <!--默认内容为一个返回按钮-->
-                <t-icon class="header-icon" icon="tabler:chevron-left" @click="handleDefaultBack" />
+                <t-icon v-if="!props.hidenBack" class="header-icon" icon="tabler:chevron-left" @click="handleDefaultBack" />
             </slot>
         </section>
         <!--中央区域, 目前只是title, 如果设置了左插槽, 那么title不显示-->
@@ -77,8 +84,9 @@ const handleDefaultBack = () => {
 <style scoped lang="less">
 header {
     margin: 0 auto;
-    width: 100%;
-    height: 80px;
+    padding: 0 20px;
+    width: calc(100% - 40px);
+    height: @xd-header-height;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -112,7 +120,7 @@ header {
         margin: 0;
         li {
             display: flex;
-            margin-right: 15px;
+            margin-left: 15px;
             .action-icon {
                 font-size: 45px;
             }

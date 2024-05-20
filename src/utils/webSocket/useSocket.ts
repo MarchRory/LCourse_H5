@@ -88,7 +88,7 @@ export class mySocket extends WebSocket {
     receiveMesaage(e) {
         // 这里我直接取的e.data用，对其他的数据有需求需要从e里面拿
         const data = JSON.parse(e.data)
-        console.log('接收到消息: ', data)
+        // console.log('接收到消息: ', data)
         const wsData: wsDataType = data
         if (!wsData) {
             return;

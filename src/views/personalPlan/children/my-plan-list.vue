@@ -3,18 +3,17 @@
  * @description 个人已创建的计划列表
  */
 import { getPlanListAPI } from '@/api/plan';
-import { CourseCategory, CourseCategoryType } from '@/api/types/public';
+import { CourseCategoryType } from '@/api/types/public';
 import { PlanItem } from '@/api/types/user';
 import useAutoLoadList from '@/hooks/useAutoLoadList';
 import useLoading from '@/hooks/useLoading';
-import { useToggle } from '@vant/use';
+import { useBoolean } from '@/hooks/common'
 
 const PlanPreview = defineAsyncComponent(() => import('../components/plan-preview.vue'))
 const {loading: initLoading, setLoading: setInitLoading} = useLoading(true)
-const [isInit, setInit] = useToggle(true)
-const categoryOptions = Object.keys(CourseCategory)
+const [isInit, setInit] = useBoolean(true)
 
-const { loading, listData, pageParams, isFinished, isRefreash, loadList, onRefresh } = useAutoLoadList<PlanItem, {grade: string, type: CourseCategoryType}>({
+const { loading, listData, isFinished, isRefreash, loadList, onRefresh } = useAutoLoadList<PlanItem, {grade: string, type: CourseCategoryType}>({
     requestApi: getPlanListAPI,
     otherRequestParms: {grade: "", type: ""}
 })
@@ -60,7 +59,7 @@ init()
     .empty-icon {
         font-size: 120px;
         color: rgb(194, 194, 194);
-        .card-shaow;
+        .card-shadow;
     }
 }
 </style>

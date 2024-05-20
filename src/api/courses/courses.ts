@@ -1,15 +1,15 @@
 import request from "@/utils/http/request";
 import * as coursesApiType from "../types/courses";
 import * as templateType from "../types/comment";
-import { vocabularyPagination } from '@/components/templateComment/types'
-import { ListResponseModel, pageParams } from "../types/public";
+import { ListResponseModel } from "../types/public";
 import { DimensionCommentItem } from "../dimension";
 import { AddPointData, PointItem } from "../types/user";
+import { coursesItem } from "../types/courses";
 enum API {
   coursePage = "/curriculum/course/front/page",
   courseDetail = "/curriculum/course/detail/front",
   joinCourse = "/curriculum/course/join",
-  commentCourse = "/curriculum/courseEvaluate",
+  commentCourse = "/curriculum/courseEvaluate/",
   commentSelf = "/curriculum/selfEvaluation/",
   sign = "/curriculum/signUp/attendance/code",
   unReadEvaluationCnt = "/curriculum/signUp/evaluations/count",
@@ -18,25 +18,19 @@ enum API {
   commonTemplateList = "/curriculum/template/page",
   vocabularyCategory = "/curriculum/wordType/page",
   vocabulary = "/curriculum/word/page",
-  topics = "/curriculum/courseEvaluate/topic/"
+  topics = "/curriculum/dimensionality/topic/complain"
 }
 
 /**
  *
- * @param params 一个对象, 包含查询关键词, 页数, 页容量( 前端设定死, 暂定为15 ), 还应该有一个学期id, 后面后端改了再用
+ * @param data 一个对象, 包含查询关键词, 页数, 页容量( 前端设定死, 暂定为15 ), 还应该有一个学期id, 后面后端改了再用
  * @returns
  */
-export function getCourses(params: coursesApiType.selectCourseParams) {
-  params.title = params.title == "" ? null : params.title;
-  params.category = params.category == "" ? null : params.category;
-  return request.get<coursesApiType.coursesListResultModel>(
+export function getCourses(data: coursesApiType.selectCourseParams) {
+  data.title = data.title == "" ? null : data.title;
+  return request.post<ListResponseModel<coursesItem>>(
     API.coursePage,
-    params,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      }
-    }
+    data
   );
 }
 
@@ -45,7 +39,7 @@ export function getCourses(params: coursesApiType.selectCourseParams) {
  * @param curriculumId 课程id
  * @returns
  */
-export function getCourseDetail(curriculumId: number) {
+export function getCourseDetail(curriculumId: string) {
   return request.get<coursesApiType.coursesItem>(
     API.courseDetail + `/${curriculumId}`,
     null,
@@ -61,7 +55,7 @@ export function getCourseDetail(curriculumId: number) {
  * @param curriculumId
  * @returns
  */
-export function joinCourse(curriculumId: number) {
+export function joinCourse(curriculumId: string) {
   return request.put(
     API.joinCourse + `/${curriculumId}`,
     null,
@@ -159,35 +153,6 @@ export function getCommentTemplateAPI(
     params,
   );
 }
-/**
- * 获取词汇种类列表
- * @param params
- * @returns
- */
-/* export  function getVocabularyCategoriesAPI(
-  params: templateType.templateListParamsType,
-) {
-  return  request.get<templateType.vocabularyCategoryResultModel>({
-    url: API.vocabularyCategory,
-    params,
-  });
-} */
-
-/**
- * 获取某类词汇列表
- * @param params
- * @returns
- */
-export function getVocabularyListAPI(
-  params: vocabularyPagination
-) {
-  let { level } = params
-  let levelMin = level, levelMax = level
-  return request.get<templateType.vocabularyResultModel>(
-    API.vocabulary,
-    { ...params, levelMax, levelMin }
-  );
-}
 
 /**
  * 获取课程评价主题列表
@@ -195,5 +160,10 @@ export function getVocabularyListAPI(
  * @returns 
  */
 export function getCommentTopics(departmentId: number | string) {
-  return request.get<ListResponseModel<DimensionCommentItem>>(API.topics, { page: 1, pageSize: 50, key: '', departmentId })
+  return request.get<ListResponseModel<DimensionCommentItem>>(
+    API.topics,
+    { page: 1, pageSize: 50, state: 1, departmentId },
+    {},
+    { cache: true }
+  )
 }

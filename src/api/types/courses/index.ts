@@ -1,45 +1,61 @@
-import { DimensionCommentContentItem } from "@/api/dimension";
-import { ListResponseModel, TombstoneGeneratedFields } from "../public";
+import { SuggestionContentItem } from "@/api/dimension";
+import { CourseCategoryType, CourseSignUpStateEnum, CourseStateEnum, ListResponseModel, TombstoneGeneratedFields } from "../public";
+import { WaterFallCard } from "@/components/waterFall/types";
+import { RealCourseStateConfig } from "@/utils/course";
+
 /**
  * 获取课程列表
  */
 export interface selectCourseParams {
     title: string | null; // 课程名关键字, 用于输入框搜索
-    category?: string | null; // 课程标签关键字, 用于首页按照标签查找
+    category: CourseCategoryType; // 课程标签关键字, 用于首页按照标签查找
     pageNum: number;
     pageSize: number;
-    semesterId: number | null; // 学期id
+    semesterId: string; // 学年id, 但是因为需求变了的原因, 还是沿用这个key
+    departmentLimit: string[]
+    gradeLimit: string[]
     userType?: number;
-    state: number; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
+    state: CourseStateEnum; // 课程状态,   0->全部,  1->筹备中, 2->报名中， 3->进行中, 4->已结束
     passType?: number; // 查询全部
     reviewed?: number | null
-} // 后面还要补一个semsesterId
-export interface coursesItem {
-    state: number
-    id: number | string
-    cover: string | null
-    title: string
+}
+
+export interface CourseDimensionality {
+    id: string
+    name: string
+    scale: number
+}
+export interface coursesItem extends WaterFallCard {
+    state: CourseStateEnum
+    id: string
+    title: string,
+    score: number,
     semester: string | null
     numberlimit: number | null
+    departmentLimits: string[],
+    gradeLimit: string[]
     courseManager: null | string
     courseLocation: string | null
     applicationStart: string
     applicationEnd: string
     hostingEnd: string
     hostingStart: string
-    courseCategory: string
+    courseCategory: CourseCategoryType
     pointsRules: string
     ruleContent: string | null
     scoringStandards: string
     organizer: string
     undertaker: string
     introduction: string
-    contact: any
-    attachment: any
+    contact: string
+    attachment: string
     signUpCount: number
-    signUpstate: number
+    signUpstate: CourseSignUpStateEnum
     objectivesType: number | null
-    signUpState?: number
+    /**
+     * @description 课程维度评价数据，分页请求里是null, 详情才有数据
+     */
+    dimensionalityInfo: CourseDimensionality[] | null
 }
 export type coursesListResultModel = ListResponseModel<coursesItem>
 
@@ -56,7 +72,7 @@ export interface commentToCourseObj {
     courseId: number;
     evaluateText: string;  // 课程建议
     anonymous: boolean; // 是否匿名
-    detailComment: DimensionCommentContentItem[]
+    detailCommand: SuggestionContentItem[]
 }
 
 export interface commentToSelfObj {
@@ -75,17 +91,23 @@ export interface page {
     pageSize: number
 }
 
-export interface evalutionType extends TombstoneGeneratedFields {
-    uid?: string | number
-    title?: string
-    cover?: string
-    text?: string
-    courseId?: string | number
-    evaluate?: string
-    pass: number
-    attendance: number
-    checked: boolean
+export type EvalutionItem = Pick<WaterFallCard, 'cover'> & {
+    // uid?: string | number
+    // title?: string
+    // text?: string
+    // courseId?: string | number
+    // evaluate?: string
+    // pass: number
+    // attendance: number
+    // checked: boolean
+    // score: number
+    title: string
+    courseId: string
     score: number
+    text: string
+    checked: boolean | null
 }
 
-export type evalutionListResultModel = ListResponseModel<evalutionType>
+export type evalutionListResultModel = ListResponseModel<EvalutionItem>
+
+export type CourseCardQuery = RealCourseStateConfig & { courseId: string }

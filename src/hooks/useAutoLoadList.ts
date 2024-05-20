@@ -47,7 +47,7 @@ function useAutoLoadList<T extends object, R extends object = {}>(config: config
         requestApi(pageParams.value)
             .then(({ data }) => {
                 const { list, total } = data
-                totalAll.value = total
+                totalAll.value = +total
                 list.forEach((item) => {
                     // @ts-ignore
                     listRequiredData.listData.push(item)

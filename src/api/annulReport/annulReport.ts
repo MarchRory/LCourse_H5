@@ -1,6 +1,8 @@
 import request from "@/utils/http/request";
 import * as annualReportTypes from '../types/annualReport/index'
 import { AxiosRequestConfig } from "axios";
+import { ListResponseModel } from "../types/public";
+import { annualReportListItemType } from "../types/annualReport/index";
 
 enum API {
     annualReportList = '/curriculum/academic_year_report/batch',
@@ -12,9 +14,9 @@ enum API {
  * @returns 
  */
 export function getAnnualReportListAPI(params: annualReportTypes.annualReportParamsType) {
-    return request.get<annualReportTypes.annualReportListResult>(
+    return request.get<ListResponseModel<annualReportListItemType>>(
         API.annualReportList,
-        params
+        params,
     )
 }
 
@@ -23,10 +25,11 @@ export function getAnnualReportListAPI(params: annualReportTypes.annualReportPar
  * @param annualReportId 
  * @returns 
  */
-export function getAnnualReportDetailAPI(batchId: number | string, options: AxiosRequestConfig) {
+export function getAnnualReportDetailAPI(batchId: number | string) {
     return request.get<annualReportTypes.annulReportItem>(
         API.annualReportDetail + `/${batchId}`,
-        null,
-        { ...options }
+        {},
+        {},
+        { cache: true }
     )
 }

@@ -83,7 +83,7 @@ onMounted(() => {
   }
   .description {
     max-width: 80%;
-    font-size: 35px;
+    font-size: 23px;
     width: 50%;
     height: fit-content;
     margin: 0 auto;
@@ -111,6 +111,9 @@ onMounted(() => {
       height: 45px;
       border-right: 5px solid var(--borderColor);
       border-bottom: 5px solid var(--borderColor);
+    }
+    article {
+
     }
   }
 }

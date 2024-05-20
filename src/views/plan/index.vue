@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from "vue";
 import { storeToRefs } from "pinia";
-import swpuLogo from "@/assets/logo_D.png";
 import { useUserStore } from "@/store/modules/user";
-import { CourseCategory } from "@/api/types/public";
+import { CourseCategoryMap } from "@/api/types/public";
 
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 
@@ -16,7 +15,7 @@ const skeletonLoad = ref(false);
 const courseSke = defineAsyncComponent(
   () => import("@/components/coursePageSkeleton/coursePageSkeleton.vue")
 );
-const reLoad = ref(false);
+const reLoad = ref(false); 
 
 const userStore = useUserStore()
 const {cateGoryScore} = storeToRefs(userStore)
@@ -28,12 +27,20 @@ const refresh = () => {
     reLoad.value = false;
   });
 };
+
+const tagIcon = [
+  'tabler:home-heart',
+  'tabler:book-2',
+  'tabler:carambola',
+  'tabler:axe',
+  'tabler:car-garage'
+]
 </script>
 
 <template>
   <course-ske :ske-load="skeletonLoad"></course-ske>
   <div class="container">
-    <XdHeader title="学分进度" />
+    <XdHeader title="学分进度" hiden-back />
     <van-pull-refresh v-model="reLoad" @refresh="refresh">
       <div v-if="!skeletonLoad" class="container" @touchmove.stop>
         <van-loading color="#1989fa" v-if="isLoad" />
@@ -44,13 +51,7 @@ const refresh = () => {
             :key="index"
           >
             <div class="seat">
-              <van-image
-                width="80%"
-                height="80%"
-                fit="contain"
-                :lazy-load="true"
-                :src="swpuLogo"
-              />
+              <t-icon :icon="tagIcon[index]" class="category-icon"  />
             </div>
             <div class="ObjInfo">
               <div class="name">
@@ -58,10 +59,10 @@ const refresh = () => {
               </div>
               <div>
                 <van-progress
-                  v-if="obj.name !== CourseCategory['三下乡']"
+                  v-if="obj.name !== CourseCategoryMap['三下乡']['value']"
                   :pivot-text="`${obj.value}分`"
                   color="#E3562A"
-                  :percentage="(obj.value / 20) * 100"
+                  :percentage="((obj.value > 12 ? 12 : obj.value) / 12) * 100"
                 />
                 <van-progress
                   v-else
@@ -142,5 +143,9 @@ const refresh = () => {
       }
     }
   }
+}
+.category-icon {
+  font-size: 140px;
+  color: #E3562A;
 }
 </style>

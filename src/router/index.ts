@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import aliveIndex from '@/views/searchRes/aliveIndex.vue'
+import mountRouterGuard from "./guard";
 // import scan from "@/views/scanQR/index.vue";
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -24,7 +24,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/mainPage:',
     name: 'layOut',
-    component: () => import('@/components/layout/Layout.vue'),
+    component: () => import('@/layout/Layout.vue'),
     redirect: "/home",
     children: [
       {
@@ -112,7 +112,7 @@ export const routes: Array<RouteRecordRaw> = [
       title: '考评消息',
       index: 2
     },
-    component: () => import('@/views/userCourse/EvalutionsPage/index.vue')
+    component: () => import('@/views/evalutions/index.vue')
   },
   {
     path: "/userObjectives",
@@ -134,19 +134,12 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/searchRes',
-    redirect: '/index',
-    component: aliveIndex,
-    children: [
-      {
-        path: 'index',
-        name: 'searchRes',
-        meta: {
-          title: '课程搜索',
-          index: 2
-        },
-        component: () => import('@/views/searchRes/index.vue')
-      }
-    ]
+    name: 'searchRes',
+    meta: {
+      title: '课程搜索',
+      index: 2
+    },
+    component: () => import('@/views/searchRes/index.vue')
   },
   {
     path: "/detail",
@@ -180,7 +173,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "command",
     meta: {
       title: '课程评价',
-      index: 2
+      index: 3
     },
     component: () => import("@/views/command/index.vue"),
   },
@@ -271,4 +264,7 @@ const router = createRouter({
   history: createWebHashHistory(), // history 模式则使用 createWebHistory()
   routes,
 });
+
+mountRouterGuard(router)
+
 export default router;

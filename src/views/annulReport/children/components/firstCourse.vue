@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import { gsap } from "gsap";
 import { TextPlugin } from "gsap/all";
 import { coursesItem } from "@/api/types/courses";
-import defaultCover from "@/assets/defaultCover.png";
+import defaultCover from "@/assets/imgs/default-cover.jpg";
 gsap.registerPlugin(TextPlugin);
 const props = defineProps<{
   firstCourse: coursesItem;

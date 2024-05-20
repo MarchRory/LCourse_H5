@@ -22,3 +22,13 @@ export const errorCodeMap: ErrorCodeMap = {
     [HttpCustomCodeEnum.error]: '服务器异常',
     [HttpCustomCodeEnum.account_expire]: '登录过期'
 }
+
+/**
+ * @description axios增强功能选项
+ */
+export interface EnhanceOpts {
+    /**
+     * @description 使用LRU对http请求结果进行缓存, 建议只缓存那些在一次登录里, 多次请求中结果不会改变的get请求, 不要滥用
+     */
+    cache?: boolean
+}

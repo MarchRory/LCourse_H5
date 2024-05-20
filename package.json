@@ -6,12 +6,13 @@
   "scripts": {
     "dev": "vite --mode development",
     "build": " vite build --mode production",
-    "preview": "vite preview",
+    "preview": "npm run build && vite preview",
     "lint": "eslint --ext .js,.vue,.ts src --fix"
   },
   "dependencies": {
     "@iconify/icons-tabler": "^1.2.95",
     "@iconify/vue": "^4.1.2",
+    "@vueuse/core": "^10.9.0",
     "@zxing/library": "^0.20.0",
     "autoprefixer": "^10.4.14",
     "axios": "^1.2.0-alpha.1",

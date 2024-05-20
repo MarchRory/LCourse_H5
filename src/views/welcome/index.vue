@@ -5,6 +5,9 @@ import router from "@/router/index";
 import { getToken, removeToken } from "@/utils/auth/auth";
 import { useUserStore } from "@/store/modules/user";
 import { useRouterCacheStore } from "@/store/modules/routerCache/index";
+
+const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
+
 // 需要跳转回登录界面的错误码
 const errCode = ["ERR_NETWORK", "ECONNABORTED"];
 
@@ -26,46 +29,24 @@ const getUserInfo = (token) => {
   userStore.init(token).then(() => {
     getInfo(token)
       .then((res) => {
-        const {
-          studentId,
-          name,
-          pass,
-          evaluate,
-          department,
-          major,
-          campus,
-          sex,
-          enrollmentYear,
-          contact,
-        } = res[1].data;
-        const objUser = {
-          studentId,
-          name,
-          pass,
-          evaluate,
-          department,
-          sex,
-          enrollmentYear,
-          contact,
-          major,
-          campus,
-        };
-        const { userInfo, nowSemester } = res[0].data;
-        const info = Object.assign(userInfo, nowSemester, objUser);
-        userStore.initInfo(info).then((res) => {
+        const {userInfo, nowSemester} = res[0].data
+        const info = Object.assign(userInfo, res[1].data)
+        userStore.initInfo(userInfo, nowSemester).then((res) => {
           setTimeout(() => {
             useRouterCacheStore().initRouterCache();
             router.replace({ path: "/home" });
           }, 800);
         });
+      }, (err) => {
+        userStore.logOut()
       })
       .catch((err) => {
-        const { code } = err;
-        if (errCode.includes(code)) {
-          userStore.clearToken().then(() => {
-            window.localStorage.clear();
-            router.replace({ path: "/", query: { isLogOut: 1 } });
-          });
+        const {status = 500} = err.response
+        if (status === 500) {
+          window.localStorage.clear()
+          router.replace({ path: "/" });
+        }else {
+          userStore.logOut()
         }
       });
   });
@@ -79,12 +60,7 @@ onMounted(() => {
 <template>
   <div class="container">
     <van-overlay :show="true">
-      <van-loading color="#E3562A" size="100">
-        <template #icon>
-          <van-icon name="star-o" size="80" />
-        </template>
-        正在获取数据...
-      </van-loading>
+      <XdLoading :visible="true" />
     </van-overlay>
   </div>
 </template>
@@ -94,6 +70,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #e1e1e1b3;
   .van-loading {
     .flex-c-c {
       flex-direction: column;
