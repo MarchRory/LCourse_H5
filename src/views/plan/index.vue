@@ -27,6 +27,14 @@ const refresh = () => {
     reLoad.value = false;
   });
 };
+
+const tagIcon = [
+  'tabler:home-heart',
+  'tabler:book-2',
+  'tabler:carambola',
+  'tabler:axe',
+  'tabler:car-garage'
+]
 </script>
 
 <template>
@@ -43,7 +51,7 @@ const refresh = () => {
             :key="index"
           >
             <div class="seat">
-              <t-icon icon="tabler:certificate" class="category-icon"  />
+              <t-icon :icon="tagIcon[index]" class="category-icon"  />
             </div>
             <div class="ObjInfo">
               <div class="name">
