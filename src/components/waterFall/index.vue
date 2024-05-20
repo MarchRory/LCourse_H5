@@ -4,6 +4,7 @@
  */
 import { WaterFallListProps } from './types'
 import useWaterFallFeed from './hooks/useWaterFall'
+import { registerMethodsLog } from '@/utils/logger/hooks';
 const DefaultCourseCard = defineAsyncComponent(() => import('./components/CardItem.vue'))
 const XdLoading = defineAsyncComponent(() => import('@/components/loading/index.vue'))
 const RefreshBall = defineAsyncComponent(() => import('@/components/suspension/ball.vue'))
@@ -48,6 +49,10 @@ defineExpose({
     waterFallScrollTo
 })
 
+// 方法埋点测试
+const {
+    scrollTriggerLogged
+} = registerMethodsLog({scrollTrigger})
 </script>
 
 <template>
@@ -55,7 +60,7 @@ defineExpose({
         <div
             ref="waterfall" 
             class="virtual-waterfallfeed-container"
-            @scroll.stop="scrollTrigger"
+            @scroll.stop="scrollTriggerLogged"
         >
             <div class="virtual-waterfallfeed-list">
                 <div

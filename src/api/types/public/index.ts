@@ -28,7 +28,7 @@ export interface pageParams {
  */
 export interface ListResponseModel<T> {
     list: T[]
-    total: number
+    total: number | string
 }
 
 /**

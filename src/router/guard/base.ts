@@ -1,15 +1,15 @@
-import { type Router } from 'vue-router'
+import { RouteLocationNormalized, type Router } from 'vue-router'
 import { getToken, setToken } from "@/utils/auth/auth"
 import NProgress from "nprogress"   // 路由加载时候的进度条
 import getPageTitle from "@/utils/pageTitle"
 import { showNotify } from "vant"
 
-function createBaseRouterGuide(router: Router) {
+function createBaseRouterGuard(router: Router) {
     NProgress.configure({ showSpinner: false })
 
     const whiteList = ['/wait', '/']
 
-    router.beforeEach((to: any, _, next: Function) => {
+    router.beforeEach((to: RouteLocationNormalized, _, next: Function) => {
         NProgress.start()
         document.title = getPageTitle(to.meta.title)
         const hasToken = getToken()
@@ -51,9 +51,9 @@ function createBaseRouterGuide(router: Router) {
             } else {
                 // to.query 里有isLogOut, 但是tokne依然在url里, 这时候必须要对url处理去token
                 let url = window.location.href
-                if (url.includes('wait')) {
+                if (url.includes('token')) {
                     // 授权登录登出
-                    url = url.split('wait')[0] + '#/'
+                    url = url.split('?')[0] + '#/'
                     window.location.href = url
                 } else {
                     // 账号密码登录登出
@@ -72,4 +72,4 @@ function createBaseRouterGuide(router: Router) {
 }
 
 
-export default createBaseRouterGuide
+export default createBaseRouterGuard

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { EvalutionItem } from '@/api/types/courses';
 import { useRouter } from 'vue-router';
+import defaultCover from '@/assets/imgs/default-cover.jpg'
 
 interface Props {
     evalution: EvalutionItem
@@ -26,7 +27,7 @@ nextTick(() => {
     <div class="evalution-card" @click="JumpToDetail">
             <van-image
                 fit="cover"
-                :src="props.evalution.cover.url"
+                :src="props.evalution.cover.url || defaultCover"
                 width="100%"
                 ref="img"
             >

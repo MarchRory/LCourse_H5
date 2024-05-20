@@ -55,6 +55,7 @@ class XdLogger extends ObserverMode {
     }
 
     private initLogPoolObserver() {
+        // 观察者响应操作
         super.addObserver({
             update: async () => {
                 // 这里观察者模式只用于实现请求池消费完毕时, 自动检查并完成任务池的消费, 所以只需要关注这里
@@ -91,7 +92,7 @@ class XdLogger extends ObserverMode {
                 try {
                     await Promise.allSettled(sendQueue)
                 } catch (e) {
-                    console.log(e)
+                    console.log('埋点发送时遇到异常: ', e)
                 }
             } while (this.logPool.size())
             console.log('本轮埋点发送完毕');
@@ -126,7 +127,6 @@ class XdLogger extends ObserverMode {
                 }
                 this.timer = setTimeout(() => {
                     if (this.timer) {
-                        // 没有处于启动状态再发送， 这里是为了避免
                         !this.requestLock && this.sendLog()
                         this.timer = null
                     }
@@ -143,8 +143,8 @@ class XdLogger extends ObserverMode {
         }
     }
 
-    // 点击埋点
-    sendClickLog() {
+    // 事件埋点
+    sendMethodsLog() {
 
     }
 

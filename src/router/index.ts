@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import mountRouterGuide from "./guard";
+import mountRouterGuard from "./guard";
 // import scan from "@/views/scanQR/index.vue";
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -265,6 +265,6 @@ const router = createRouter({
   routes,
 });
 
-mountRouterGuide(router)
+mountRouterGuard(router)
 
 export default router;

@@ -1,10 +1,10 @@
 import { Router } from "vue-router";
 import createBaseRouterGuide from "./base";
-import createPageLogRouterGuide from "./log";
+import createPageLogRouterGuard from "./log";
 
-function mountRouterGuide(router: Router) {
+function mountRouterGuard(router: Router) {
     createBaseRouterGuide(router)
-    createPageLogRouterGuide(router)
+    createPageLogRouterGuard(router)
 }
 
-export default mountRouterGuide
+export default mountRouterGuard

@@ -4,6 +4,7 @@ import { showFailToast } from "vant";
 import { getToken, tokenKey, removeToken } from "../auth/auth";
 import { EnhanceOpts, HttpCustomCodeEnum, Response, errorCodeMap } from "./types";
 import LRUCache from "@/dataStruct/LRU";
+import { generateQueryString } from "../common/object";
 class HttpRequest {
     private service: AxiosInstance;
     private cache: LRUCache
@@ -78,17 +79,27 @@ class HttpRequest {
                 if (opts) {
                     const { cache } = opts
                     if (cache) {
-                        const res = this.cache.get(config.url!) as Response<T>
-                        resolve(res)
+                        const { url, params } = config
+                        const cacheKey = url + generateQueryString(params)
+                        const res = this.cache.get(cacheKey) as Response<T>
+                        // @ts-ignore
+                        if (res !== -1) {
+                            return resolve(res)
+                        }
                     }
                 }
                 const res = await this.service.request<AxiosResponse<T>>(config) as AxiosResponse['data']
-                if (opts?.cache) {
-                    this.cache.put(config.url!, res)
+                if (opts && opts?.cache) {
+                    const { url, params } = config
+                    const cacheKey = url + Object
+                        .keys(params)
+                        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+                        .join('&')
+                    this.cache.put(cacheKey, res)
                 }
-                resolve(res as Response<T>)
+                return resolve(res as Response<T>)
             } catch (err) {
-                reject(err)
+                return reject(err)
             }
         })
     }

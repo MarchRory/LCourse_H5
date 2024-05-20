@@ -9,6 +9,7 @@
         <KingkongTabCard title="我的" :tabs="courseTabs" />
         <!--  暂时没别的拓展功能 -->
         <KingkongTabCard v-if="false" title="更多功能" :tabs="extraFnTabs" />
+        <WishesSwiper />
       </section>
     </main>
   </div>
@@ -33,6 +34,7 @@ defineOptions({
 const UserCenterHeader = defineAsyncComponent(() => import('./components/header.vue'))
 const UserCard = defineAsyncComponent(() => import('./components/user-card.vue'))
 const KingkongTabCard = defineAsyncComponent(() => import('./components/kingkong-tab-card.vue'))
+const WishesSwiper = defineAsyncComponent(() => import('./components/wishes-swpier.vue'))
 const userStore = useUserStore()
 const showParent = ref(true);
 const route = useRoute();
@@ -102,12 +104,6 @@ registerFmpLog('user-main')
 </script>
 
 <style scoped lang="less">
-.info {
-  height: calc(100vh - var(--van-tabbar-height));
-  overflow: hidden;
-  background-color: rgb(245, 246, 248);
-}
-
 .mainBox {
   margin-top: 30px;
   width: 100vw;

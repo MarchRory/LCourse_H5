@@ -8,8 +8,8 @@ export interface NestArr<T = any> {
  * @param target 一个对象或者一个对象数组s
  * @param key
  */
-export function getSpecificValueIntoArr(target: NestArr<any>, key: string, cb?: (...args: any[]) => any): any[] {
-    const res = [];
+export function getSpecificValueIntoArr<T = any>(target: NestArr<T>, key: string, cb?: (...args: any[]) => any): T[] {
+    const res: T[] = [];
     const origin = Array.isArray(target) ? target : [target];
     origin.forEach((item) => {
         const resItem = cb ? cb(item[key]) : item[key];

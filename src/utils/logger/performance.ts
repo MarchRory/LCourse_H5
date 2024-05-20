@@ -47,8 +47,8 @@ class XdPerformance {
     getFMP(idName: string) {
         const start = new Date().getTime()
         let fmp = 0
+        const targetNode = document.getElementById(idName) as HTMLElement
         return new Promise((resolve) => {
-            const targetNode = document.getElementById(idName) as HTMLElement
             const config: MutationObserverInit = { childList: true, subtree: true }
             const cb: MutationCallback = function (mutationsList, observer) {
                 for (const mutation of mutationsList) {

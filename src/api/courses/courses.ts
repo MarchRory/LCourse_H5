@@ -18,7 +18,7 @@ enum API {
   commonTemplateList = "/curriculum/template/page",
   vocabularyCategory = "/curriculum/wordType/page",
   vocabulary = "/curriculum/word/page",
-  topics = "/curriculum/courseEvaluate/topic/"
+  topics = "/curriculum/dimensionality/topic/complain"
 }
 
 /**
@@ -162,7 +162,7 @@ export function getCommentTemplateAPI(
 export function getCommentTopics(departmentId: number | string) {
   return request.get<ListResponseModel<DimensionCommentItem>>(
     API.topics,
-    { page: 1, pageSize: 50, key: '', departmentId },
+    { page: 1, pageSize: 50, state: 1, departmentId },
     {},
     { cache: true }
   )

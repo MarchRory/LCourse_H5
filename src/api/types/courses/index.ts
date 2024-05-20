@@ -1,4 +1,4 @@
-import { DimensionCommentContentItem } from "@/api/dimension";
+import { SuggestionContentItem } from "@/api/dimension";
 import { CourseCategoryType, CourseSignUpStateEnum, CourseStateEnum, ListResponseModel, TombstoneGeneratedFields } from "../public";
 import { WaterFallCard } from "@/components/waterFall/types";
 import { RealCourseStateConfig } from "@/utils/course";
@@ -72,7 +72,7 @@ export interface commentToCourseObj {
     courseId: number;
     evaluateText: string;  // 课程建议
     anonymous: boolean; // 是否匿名
-    detailCommand: DimensionCommentContentItem[]
+    detailCommand: SuggestionContentItem[]
 }
 
 export interface commentToSelfObj {

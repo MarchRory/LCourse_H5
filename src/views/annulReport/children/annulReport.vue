@@ -41,13 +41,13 @@ const touchPosWatch = ref({
 const isDownload = ref(true);
 const annualReportInfo = ref<annulReportItem>({} as annulReportItem);
 const progress = ref<number>(0);
-const currentPage = ref(2);
+const currentPage = ref(1);
 function getAnnualReportInfo() {
   getAnnualReportDetailAPI(
     route.query.reportId as string
   ).then((res: Response<annulReportItem>) => {
     const { success } = res;
-    if (success === false) {
+    if (!success) {
       showFailToast("报告尚未生成完毕");
       goBack();
       return;
@@ -179,7 +179,7 @@ registerTimingLog()
         :keywords-obj="annualReportInfo.keyword"
       />
     </transition>
-    <div id="tool">上划进入下一页</div>
+    <div id="tool">{{ currentPage < 7 ? '上划查看下一页' : '期待未来的故事' }}</div>
   </div>
 </template>
 

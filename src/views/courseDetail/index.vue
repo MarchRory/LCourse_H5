@@ -106,7 +106,8 @@ const joinIn = debounce(() => {
     })
 }, 300)
 const toComment = () => {
-    router.push({ path: "/command", query: { courseId: detailInfo.value.id } });
+    const dimensionalityInfo = encodeURIComponent(JSON.stringify(detailInfo.value.dimensionalityInfo || []))
+    router.push({ path: "/command", query: { courseId: detailInfo.value.id, dimensionalityInfo } });
 }
 const submit = () => {
     const {state, signUpstate} = detailInfo.value

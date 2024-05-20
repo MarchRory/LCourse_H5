@@ -42,3 +42,10 @@ export interface UvCacheStorage {
     expireTime: number
     history: string[]
 }
+
+/**
+ * @description 待埋点事件的类型
+ */
+export interface OriginMethodsToLog<T = any> {
+    [methodsName: string]: (...args: T[]) => any
+}

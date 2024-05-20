@@ -5,13 +5,15 @@ import { defineAsyncComponent } from "vue";
 import { useUserStore } from "@/store/modules/user";
 import { addFlagApi, createMailToSelf } from '@/api/user/user'
 import { commentToCourse  } from "@/api/courses/courses";
-import type {commentToCourseObj} from '@/api/types/courses/index'
+import type {CourseDimensionality, commentToCourseObj} from '@/api/types/courses/index'
 import { deepClone } from '@/utils/dataUtil/common'
 import { debounce } from "@/utils/freqCtrl/freqCtrl";
 import { starScoreTextMap, tempCommentGoodNodes } from './config'
 import { PointTypeEnum } from "@/api/types/user";
 import { registerTimingLog } from "@/utils/logger/hooks";
-const DimensionComment = defineAsyncComponent(() => import('./components/dimensionComment.vue'))
+import { TopicCommentItem } from "@/api/dimension";
+const Suggestion = defineAsyncComponent(() => import('./components/suggestion-form.vue'))
+const DimensionDetailComment = defineAsyncComponent(() => import('./components/detail-comment-form.vue'))
 const PointGetProgressBar = defineAsyncComponent(() => import('@/components/progressBar/index.vue'))
 const XdHeader = defineAsyncComponent(() => import('@/components/header/index.vue'))
 
@@ -34,17 +36,20 @@ const mailToSelf = ref('')
 const mailSelfThreshold = ref(50)
 // 寄语开放填写条件: 完成不少于两个维度的详细评价填写, 且不少于50字
 const isMailToSelfCanWrite = ref(false)
+// 吐槽字数
+const complainTextNum = ref(0)
 
 // 同步维度评价结果
-const handleDimensionCommentChange = (detail: commentToCourseObj['detailCommand'], wordsNum: number) => {
-  isMailToSelfCanWrite.value = wordsNum >= mailSelfThreshold.value
+const handleComplainChange = (detail: commentToCourseObj['detailCommand'], wordsNum: number) => {
   const data = deepClone<typeof detail>(detail)
   data.forEach((item) => {
     if (Object.hasOwnProperty.call(data, 'description')) {
       delete item.description
     }
   })
-  form.value.detailCommand = data.map(({id, text, icon, name, course_evaluate_id}) => ({ id, text, icon, name, course_evaluate_id }))
+  complainTextNum.value = wordsNum
+  const complain = data.map(({id, text, icon, name, course_evaluate_id}) => ({ id, text, icon, name, course_evaluate_id }))
+  form.value.evaluateText = JSON.stringify(complain)
 }
 
 // 高质量评价认定逻辑, 多给点积分就行了
@@ -53,25 +58,36 @@ const totalSteps = ref(5)
 // 当前完成步骤数
 const currentStep = computed(() => {
   let step = 0
-  const {score, detailCommand, evaluateText} = form.value
+  const {score, detailCommand} = form.value
   // 完成评分 +1
   if (score) {
     step += 1
   }
 
   // 详细评价填满50个字 +2
-  // 使用reduce导致计算速度有点慢, 这里后人可以想一下怎么优化
+  // 计算速度有点慢, 这里后人可以想一下怎么优化
   const detailCommandLength = detailCommand.reduce((acc, cur) => acc + cur.text.length, 0)
   step += (detailCommandLength >= 50 ? 2 : 0)
 
   // 完成吐槽与建议填写 +1
-  step += (evaluateText.length > 20 ? 1 : 0)
+  step += (complainTextNum.value >= 20 ? 1 : 0)
 
   // 完成寄语填写 +1
   step += mailToSelf.value ? 1 : 0
   
   return step
 })
+
+// 能力维度解码
+const courseDimensionInfo = computed<CourseDimensionality[]>(() => {
+  return JSON.parse(decodeURIComponent(route.query.dimensionalityInfo as string))
+})
+
+// 更新详细评价的topics详情内容数据
+const handleTopicsChange = (dimensionTopics: TopicCommentItem[], wordsNum: number) => {
+  form.value.detailCommand = dimensionTopics
+  isMailToSelfCanWrite.value = wordsNum >= mailSelfThreshold.value
+}
 
 // 提交逻辑
 const submit = debounce(() => {
@@ -145,7 +161,12 @@ registerTimingLog()
           </div>
           </template>
         </XdHeader>
-        <PointGetProgressBar v-if="!isCommentSuccess" :current-step="currentStep" :total-steps="totalSteps" :nodes="tempCommentGoodNodes" />
+        <PointGetProgressBar 
+          v-if="!isCommentSuccess" 
+          :current-step="currentStep" 
+          :total-steps="totalSteps" 
+          :nodes="tempCommentGoodNodes" 
+        />
       </header>
     </van-sticky>
 
@@ -168,19 +189,21 @@ registerTimingLog()
         <span class="form-title">详细评价 *</span>
         <div class="content-area">
           <!--@vue-ignore-->
-          <DimensionComment :course-id="courseId" :mail-self-threshold="mailSelfThreshold" @on-change="handleDimensionCommentChange" />
+          <DimensionDetailComment
+            :course-id="courseId"
+            :mail-self-threshold="mailSelfThreshold"
+            :coure-dimension-info="courseDimensionInfo"
+            @on-change="handleTopicsChange"
+          />
         </div>
       </section>
       <section class="suggestion">
         <span class="form-title">吐槽与建议 *</span>
         <div class="content-area">
-          <van-field
-            v-model="form.evaluateText"
-            rows="1"
-            autosize
-            type="textarea"
-            placeholder="说说你对这门课程有哪些想吐槽的地方? 这门课程还需要怎么改进? 建议不低于20字"
-            label-align="top"
+          <Suggestion 
+            :course-id="courseId" 
+            :mail-self-threshold="0" 
+            @on-change="handleComplainChange" 
           />
         </div>
       </section>
@@ -198,7 +221,7 @@ registerTimingLog()
         </div>
       </section>
       <section class="flag">
-        <span class="form-title">寄语未来 *</span>
+        <span class="form-title">{{ Math.random() > 0.5 ? '寄语未来' : '心情感受' }} *</span>
         <div class="content-area">
           <van-field
             v-model="mailToSelf"

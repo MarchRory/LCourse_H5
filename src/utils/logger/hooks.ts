@@ -1,9 +1,10 @@
 import XdLogger from './index'
 import { useUserStore } from '@/store/modules/user'
-import { LogTypeConfigMap, type Log, UvCacheStorage } from './types'
+import { LogTypeConfigMap, type Log, UvCacheStorage, OriginMethodsToLog } from './types'
 import { useRouterCacheStore } from '@/store/modules/routerCache'
 import { storeToRefs } from 'pinia'
 import xdPerformance from './performance'
+import { generateQueryString } from '../common/object'
 
 /**
  * @description 曝光时长埋点
@@ -224,3 +225,34 @@ export function registerLcpLog() {
     //     })
 }
 
+/**
+ * @description 给方法的统一埋点逻辑
+ * @param originMethods 需要打点的源方法对象
+ * @returns 代理后的自动打点方法
+ */
+export function registerMethodsLog(originMethods: OriginMethodsToLog) {
+    const methodsLogged: OriginMethodsToLog = {}
+    const userStore = useUserStore()
+    const { userId } = userStore
+    const route = useRoute()
+    const { fullPath, query = {} } = route
+    const pageKey = fullPath + generateQueryString(query)
+    Object.keys(originMethods).forEach((fnName) => {
+        const fnLogged = new Proxy(originMethods[fnName], {
+            get: function (target, _, value) {
+                // toLogged methods
+                console.log('target: ', target, '\nvalue: ', value)
+                // todo: 记录方法触发的时间
+                const activeTime = new Date().toUTCString()
+                const logValueDetail = {
+                    pageKey,
+
+                }
+                // ....
+                return
+            }
+        })
+        methodsLogged[`${fnName}Logged`] = fnLogged
+    })
+    return methodsLogged
+}

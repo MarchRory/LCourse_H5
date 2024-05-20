@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DimensionCommentContentItem, DimensionCommentItem} from '@/api/dimension';
+import { SuggestionContentItem, DimensionCommentItem} from '@/api/dimension';
 import { getCommentTopics } from '@/api/courses/courses'
 import { debounce } from '@/utils/freqCtrl/freqCtrl';
 import { useUserStore } from '@/store/modules/user';
@@ -8,21 +8,19 @@ type topicsItem = DimensionCommentItem & {chosen: boolean}
 
 const props = defineProps<{
     courseId: number;
-    mailSelfThreshold: number
+    mailSelfThreshold: number;
 }>()
 
 const emits = defineEmits<{
-    (e: 'onChange', value: DimensionCommentContentItem[], wordsNum: number): void
+    (e: 'onChange', value: SuggestionContentItem[], wordsNum: number): void
 }>()
 
-
-const userStore = useUserStore()
 // 评价维度tag列表
 const dimensionList = ref<topicsItem[]>([])
 const initTopics = () => {
     return new Promise((resolve, reject) => {
         const requests = [getCommentTopics(0)]
-        userStore.departmentId && requests.push(getCommentTopics(userStore.departmentId))
+        // userStore.departmentId && requests.push(getCommentTopics(userStore.departmentId))
         Promise.allSettled(requests)
         .then((res) => {
             const data: topicsItem[] = []
@@ -48,7 +46,7 @@ const initTopics = () => {
 }
 
 // 用户评论列表
-const contentList = ref<DimensionCommentContentItem[]>([])
+const contentList = ref<SuggestionContentItem[]>([])
 
 // 选择tag进行评价
 const chooseTag = (chosenTag: typeof dimensionList.value[0]) => {
@@ -64,7 +62,7 @@ const chooseTag = (chosenTag: typeof dimensionList.value[0]) => {
 }
 
 // 删除已经选择的tag
-const delEditedDimension = (deleteItem: DimensionCommentContentItem, index: number) => {
+const delEditedDimension = (deleteItem: SuggestionContentItem, index: number) => {
     const {id} = deleteItem
 
     // 删除编辑框里的维度
@@ -75,7 +73,7 @@ const delEditedDimension = (deleteItem: DimensionCommentContentItem, index: numb
     dimensionList.value[dimensionIndex].chosen = false
 
     const wordNum = contentList.value.reduce((acc, cur) => acc + cur.text.length, 0)
-    emits('onChange', contentList.value, wordNum)
+    emits('onChange', contentList.value.filter((topic) => topic.text), wordNum)
 }
 
 const contentWordsNum = computed(() => {
@@ -128,7 +126,7 @@ init()
                 </van-field>
             </div>
         </section>
-        <section  class="words-length-tip">
+        <section v-if="props.mailSelfThreshold"  class="words-length-tip">
             <span v-show="contentWordsNum < props.mailSelfThreshold">还差{{ props.mailSelfThreshold - contentWordsNum }}字可填写未来寄语</span>
             <span v-show="contentWordsNum >= props.mailSelfThreshold">快去给未来的自己写一点寄语吧</span>
         </section>

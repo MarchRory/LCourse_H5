@@ -1,8 +1,14 @@
 import xdPerformance from '@/utils/logger/performance'
 import { registerPVLog, registerUvLog } from '@/utils/logger/hooks'
+import XdLogger from '@/utils/logger/index'
 import { type Router } from 'vue-router'
 
-function createPageLogRouterGuide(router: Router) {
+function createPageLogRouterGuard(router: Router) {
+
+    router.beforeEach((_, __, next) => {
+        async () => XdLogger.sendMethodsLog()
+        next()
+    })
 
     router.afterEach((to, __) => {
         const { fullPath, meta } = to
@@ -17,4 +23,4 @@ function createPageLogRouterGuide(router: Router) {
     })
 }
 
-export default createPageLogRouterGuide
+export default createPageLogRouterGuard

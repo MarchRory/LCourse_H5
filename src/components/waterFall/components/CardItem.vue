@@ -5,6 +5,7 @@ import { useUserStore } from '@/store/modules/user';
 import { generateCourseStateConfig } from '@/utils/course'
 import { useRouter } from 'vue-router';
 import defaultCover from '@/assets/imgs/default-cover.jpg'
+import { registerMethodsLog } from '@/utils/logger/hooks';
 
 /**
  * @description 瀑布流默认卡片, 样式在这里调整
@@ -38,10 +39,14 @@ const pageToDetail = () => {
         }
     })
 }
+
+const {
+    pageToDetailLogged
+} = registerMethodsLog({pageToDetail})
 </script>
 
 <template>
-    <div class="course-default-card" @click="pageToDetail">
+    <div class="course-default-card" @click="pageToDetailLogged">
         <van-image 
             :src="course.cover.url || defaultCover"
             height="80%"
